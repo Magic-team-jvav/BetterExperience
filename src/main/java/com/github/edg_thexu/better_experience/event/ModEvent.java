@@ -78,9 +78,9 @@ public class ModEvent {
         }
 
         if(ConfluenceLibHelper.isLoaded()){
-            event.modify(ModItems.PotionBag, builder -> builder.set(ConfluenceMagicLib.MOD_RARITY.get(), ModRarity.ORANGE));
-            event.modify(ModItems.MagicBoomStaff, builder -> builder.set(ConfluenceMagicLib.MOD_RARITY.get(), ModRarity.YELLOW));
-            event.modify(ModItems.StarBoomStaff, builder -> builder.set(ConfluenceMagicLib.MOD_RARITY.get(), ModRarity.CYAN));
+            event.modify(ModItems.POTION_BAG, builder -> builder.set(ConfluenceMagicLib.MOD_RARITY.get(), ModRarity.ORANGE));
+            event.modify(ModItems.MAGIC_BOOM_STAFF, builder -> builder.set(ConfluenceMagicLib.MOD_RARITY.get(), ModRarity.YELLOW));
+            event.modify(ModItems.STAR_BOOM_STAFF, builder -> builder.set(ConfluenceMagicLib.MOD_RARITY.get(), ModRarity.CYAN));
             event.modify(ModBlocks.AUTO_FISH_BLOCK, builder -> builder.set(ConfluenceMagicLib.MOD_RARITY.get(), ModRarity.BLUE));
 
         }

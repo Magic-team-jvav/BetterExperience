@@ -21,16 +21,35 @@ public class ModChineseProvider extends LanguageProvider {
         add("creativetab.better_experience.item", "汇流来世 | 更好的体验");
 
         // items
-        add(ModItems.MagicBoomStaff.get(), "法爆魔杖");
-        add(ModItems.StarBoomStaff.get(), "星爆魔杖");
-        add(ModItems.PotionBag.get(), "药水袋");
+        add(ModItems.MAGIC_BOOM_STAFF.get(), "法爆魔杖");
+        add(ModItems.STAR_BOOM_STAFF.get(), "星爆魔杖");
+        add(ModItems.POTION_BAG.get(), "药水袋");
         add(ModBlocks.AUTO_FISH_BLOCK.get(), "自动钓鱼机");
         add(ModBlocks.AUTO_SELL_BLOCK.get(), "自动贩卖机");
         add(ModBlocks.REFORGE_BLOCK.get(), "重铸机");
 
+        add("better_experience.staff.choose_corners", "Shift+左键选区（默认）");
+        add("better_experience.staff.first_corner", "已选A，左键选B");
+        add("better_experience.staff.locked", "已锁定｜左键爆破｜右键取消");
+        add("better_experience.staff.no_mana", "魔力不足：需要 %s");
+        add("better_experience.staff.no_target", "请瞄准范围内方块");
+        add("better_experience.staff.out_of_reach", "超出触及范围");
+        add("better_experience.staff.reselect", "已取消，重新激活选区");
+        add("better_experience.staff.size", "%s×%s×%s｜魔力 %s｜滚轮调整｜右键锁定");
+        add("better_experience.staff.too_large", "达到选区上限");
+
+        add("better_experience.staff.enter_selection", "%s+左键选区");
+        add("key.better_experience.staff_select_modifier", "法杖选区修饰键（配合左键）");
+        add("key.categories.better_experience", "更好的体验");
+
         // tooltips
-        add("better_experience.tooltip.magic_boom_staff.info", "左手物品决定镐力 [按住shift+鼠标滚轮调整大小]");
-        add("better_experience.tooltip.potion_bag.info", "可以存储一些药水和食物");
+        add("better_experience.tooltip.magic_boom_staff.info", "副手工具决定镐力");
+        add("better_experience.tooltip.magic_boom_staff.select", "Shift+左键：选区（默认键）");
+        add("better_experience.tooltip.magic_boom_staff.corners", "左键选两点，滚轮调整，右键锁定");
+        add("better_experience.tooltip.magic_boom_staff.locked", "锁定后：左键爆破，右键取消");
+        add("better_experience.tooltip.magic_boom_staff.move", "Shift+滚轮移动；Shift+中键前进");
+        add("better_experience.tooltip.magic_boom_staff.mana", "每8格消耗1魔力，向上取整");
+        add("better_experience.tooltip.potion_bag.info", "存放药水和食物");
         add("better_experience.tooltip.jei.fetch_ingredients", "从周围箱子取出材料");
         add("better_experience.tooltip.better_reforge.enable", "启用更好的重铸");
 

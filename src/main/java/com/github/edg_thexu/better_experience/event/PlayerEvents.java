@@ -42,7 +42,7 @@ public class PlayerEvents {
             if (player.connection.tickCount == 0)
                 player.sendSystemMessage(Component.translatable("better_experience.welcome_message"));
             EnderChestAttachment.syncAll(player);
-//            player.getInventory().add(ModItems.MagicBoomStaff.toStack());
+//            player.getInventory().add(ModItems.MAGIC_BOOM_STAFF.toStack());
             ClientBoundConfigPacket.sync(player);
             PacketDistributor.sendToPlayer(player, new PotionApplyPacketC2S(player.getData(ModAttachments.AUTO_POTION)));
 

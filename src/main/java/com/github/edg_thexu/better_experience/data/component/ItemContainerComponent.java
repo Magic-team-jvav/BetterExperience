@@ -1,24 +1,21 @@
 package com.github.edg_thexu.better_experience.data.component;
 
-import com.mojang.serialization.*;
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.component.DataComponentType;
-import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-public class ItemContainerComponent implements DataComponentType<ItemContainerComponent>{
+public final class ItemContainerComponent {
 
-    public static Codec<ItemContainerComponent> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+    public static final Codec<ItemContainerComponent> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             ItemContainerContents.CODEC.fieldOf("container").forGetter(ins->ins.container),
             Codec.BOOL.optionalFieldOf("autoCollect").forGetter(ins->Optional.of(ins.autoCollect)),
             Codec.INT.fieldOf("size").forGetter(ins->ins.size)
@@ -27,12 +24,12 @@ public class ItemContainerComponent implements DataComponentType<ItemContainerCo
         return new ItemContainerComponent(container, autoCollectValue,size);
     }));
 
-    public static StreamCodec<ByteBuf, ItemContainerComponent> STREAM_CODEC = ByteBufCodecs.fromCodec(CODEC);
+    public static final StreamCodec<ByteBuf, ItemContainerComponent> STREAM_CODEC = ByteBufCodecs.fromCodec(CODEC);
 
-    private boolean autoCollect;
-    public ItemContainerContents container;
+    private final boolean autoCollect;
+    public final ItemContainerContents container;
 
-    public int size;
+    public final int size;
 
     public ItemContainerComponent(int size) {
         this(ItemContainerContents.fromItems(List.of()),true,size);
@@ -40,18 +37,11 @@ public class ItemContainerComponent implements DataComponentType<ItemContainerCo
 
     public ItemContainerComponent(ItemContainerContents container, boolean autoCollect, int size) {
         this.autoCollect = autoCollect;
-        this.container = container;
+        this.container = Objects.requireNonNull(container);
+        if (size < 9 || size > 54 || size % 9 != 0) {
+            throw new IllegalArgumentException("Container size must be 9 to 54 in multiples of 9");
+        }
         this.size = size;
-    }
-
-    @Override
-    public @Nullable Codec<ItemContainerComponent> codec() {
-        return CODEC;
-    }
-
-    @Override
-    public StreamCodec<? super RegistryFriendlyByteBuf, ItemContainerComponent> streamCodec() {
-        return STREAM_CODEC;
     }
 
     @Override
@@ -70,15 +60,15 @@ public class ItemContainerComponent implements DataComponentType<ItemContainerCo
         return autoCollect;
     }
 
-    public void setAutoCollect(boolean autoCollect) {
-        this.autoCollect = autoCollect;
+    public ItemContainerComponent withAutoCollect(boolean autoCollect) {
+        return new ItemContainerComponent(container, autoCollect, size);
     }
 
     public List<ItemStack> getItems() {
         NonNullList<ItemStack> list = NonNullList.withSize(size, ItemStack.EMPTY);
         List<ItemStack> items = container.stream().toList();
-        for (int i = 0; i < items.size(); i++) {
-            list.set(i, items.get(i));
+        for (int i = 0; i < Math.min(size, items.size()); i++) {
+            list.set(i, items.get(i).copy());
         }
         return list;
     }

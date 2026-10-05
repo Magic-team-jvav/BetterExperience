@@ -24,54 +24,49 @@ import org.confluence.mod.common.init.block.FunctionalBlocks;
 
 public class StorageManager {
 
-    public static int range = 5;
+    private static final int STORAGE_RANGE = 5;
 
     /**
      * 物品存放到周围的箱子
      * @param player 玩家
      */
     public static void saveAll(Player player){
-        assert player.level() instanceof ServerLevel;
-        ServerLevel level = (ServerLevel) player.level();
+        if (!(player.level() instanceof ServerLevel level)) return;
         BlockPos center = player.blockPosition();
-        for(int i = -range; i <= range; i++){
-            for(int j = -range; j <= range; j++){
-                for(int k = -range; k <= range; k++){
+        for(int i = -STORAGE_RANGE; i <= STORAGE_RANGE; i++){
+            for(int j = -STORAGE_RANGE; j <= STORAGE_RANGE; j++){
+                for(int k = -STORAGE_RANGE; k <= STORAGE_RANGE; k++){
                     BlockPos pos = center.offset(i, j, k);
+                    if (!level.hasChunkAt(pos)) continue;
                     BlockEntity blockEntity = level.getBlockEntity(pos);
                     if(blockEntity instanceof ChestBlockEntity entity){
                         for(ItemStack stack : player.getInventory().items){
                             for(int slot = 0; slot < entity.getContainerSize(); slot++){
                                 ItemStack containerStack = entity.getItem(slot);
-                                saveItemStack(stack, containerStack, k);
+                                if (com.github.edg_thexu.better_experience.utils.ModUtils.mergeItemStacks(stack, containerStack) > 0) {
+                                    entity.setChanged();
+                                    player.getInventory().setChanged();
+                                }
                             }
                         }
                     }else if(SophisticatedHelper.isStorageLoaded() && blockEntity instanceof StorageBlockEntity entity) {
                         // 兼容精妙存储
                         for(ItemStack stack : player.getInventory().items){
                             for(int slot = 0; slot < entity.getStorageWrapper().getNumberOfInventorySlots(); slot++){
-                                ItemStack containerStack = entity.getStorageWrapper().getInventoryHandler().getSlotStack(slot);
-                                saveItemStack(stack, containerStack, k);
+                                var handler = entity.getStorageWrapper().getInventoryHandler();
+                                ItemStack containerStack = handler.getStackInSlot(slot);
+                                if (!stack.isEmpty() && !containerStack.isEmpty()
+                                        && ItemStack.isSameItemSameComponents(stack, containerStack)) {
+                                    ItemStack remaining = handler.insertItem(slot, stack, false);
+                                    stack.setCount(remaining.getCount());
+                                    player.getInventory().setChanged();
+                                }
                             }
                         }
 
 
                     }
                 }
-            }
-        }
-    }
-
-    private static void saveItemStack(ItemStack stack, ItemStack containerStack, int k) {
-        if(ItemStack.isSameItemSameComponents(stack, containerStack)){
-            int m  = containerStack.getCount() + stack.getCount();
-            int n = containerStack.getMaxStackSize();
-            if (m <= n) {
-                stack.setCount(0);
-                containerStack.setCount(m);
-            } else if (containerStack.getCount() < k) {
-                stack.shrink(n - containerStack.getCount());
-                containerStack.setCount(n);
             }
         }
     }

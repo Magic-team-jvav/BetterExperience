@@ -251,7 +251,7 @@ public class PlayerInventoryManager {
             if(ConfluenceHelper.isLoaded() &&  CommonConfig.AUTO_SAVE_MONEY.get() && !autoSave && stack.is(FunctionalBlocks.PIGGY_BANK.asItem())){
                autoSave = true;
             }
-            if(stack.getItem() == ModItems.PotionBag.get()){
+            if(stack.getItem() == ModItems.POTION_BAG.get()){
                 var data = stack.get(ModDataComponentTypes.ITEM_CONTAINER_COMPONENT);
                 if(data != null && data.isAutoCollect()) {
                     potionBags.add(stack);
@@ -301,10 +301,13 @@ public class PlayerInventoryManager {
                     ItemContainerComponent data = potionBag.get(ModDataComponentTypes.ITEM_CONTAINER_COMPONENT);
                     if(data == null) continue;
                     List<ItemStack> items1 =  data.getItems();
-                    if(ModUtils.tryPlaceBackItemStackToItemStacks(stack, items1)){
-                        potionBag.set(ModDataComponentTypes.ITEM_CONTAINER_COMPONENT, new ItemContainerComponent(ItemContainerContents.fromItems(items1), data.isAutoCollect(), data.size));
-                        break;
+                    int previousCount = stack.getCount();
+                    ModUtils.tryPlaceBackItemStackToItemStacks(stack, items1);
+                    if (stack.getCount() != previousCount) {
+                        potionBag.set(ModDataComponentTypes.ITEM_CONTAINER_COMPONENT,
+                                new ItemContainerComponent(ItemContainerContents.fromItems(items1), data.isAutoCollect(), data.size));
                     }
+                    if (stack.isEmpty()) break;
                 }
             }
         }

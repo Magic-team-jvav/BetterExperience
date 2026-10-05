@@ -48,7 +48,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy("has_platinum_ingot",has(MaterialItems.PLATINUM_INGOT))
                 .save(recipeOutput, "confluence:auto_sell_block");
 
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.PotionBag)
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.POTION_BAG)
                 .pattern("aaa")
                 .pattern("a a")
                 .pattern("aaa")

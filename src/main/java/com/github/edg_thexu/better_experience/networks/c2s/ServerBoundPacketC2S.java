@@ -2,7 +2,6 @@ package com.github.edg_thexu.better_experience.networks.c2s;
 
 import com.github.edg_thexu.better_experience.Better_experience;
 import com.github.edg_thexu.better_experience.block.AutoFishBlock;
-import com.github.edg_thexu.better_experience.data.component.ItemContainerComponent;
 import com.github.edg_thexu.better_experience.init.ModAttachments;
 import com.github.edg_thexu.better_experience.menu.PotionBagMenu;
 import com.github.edg_thexu.better_experience.mixed.IPlayer;
@@ -35,7 +34,6 @@ public record ServerBoundPacketC2S(int code) implements CustomPacketPayload {
     public static void handle(ServerBoundPacketC2S packet, final IPayloadContext context) {
         context.enqueueWork(() -> {
             Player player = context.player();
-            ServerLevel level = (ServerLevel) player.level();
             if(packet.code == 1){
                 // 自动钓鱼机器开始
                 if(((IPlayer)player).betterExperience$getInteractBlockEntity() instanceof AutoFishBlock.AutoFishMachineEntity entity){
@@ -57,8 +55,8 @@ public record ServerBoundPacketC2S(int code) implements CustomPacketPayload {
                 StorageManager.saveAll(player);
             }else if(packet.code == 5){
                 // 改变药水收纳状态
-                if(player.containerMenu instanceof PotionBagMenu  menu &&  menu.component instanceof ItemContainerComponent component){
-                    component.setAutoCollect(!component.isAutoCollect());
+                if (player.containerMenu instanceof PotionBagMenu menu) {
+                    menu.component = menu.component.withAutoCollect(!menu.component.isAutoCollect());
                 }
             }else if(packet.code == 6){
                 // 改变更好重铸状态

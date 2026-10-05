@@ -19,7 +19,7 @@ import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
-import net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent;
+import net.neoforged.neoforge.event.server.ServerStoppedEvent;
 import net.neoforged.neoforge.event.entity.player.ItemFishedEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import org.confluence.mod.common.init.ModEffects;
@@ -32,7 +32,8 @@ import java.util.List;
 public class GameEvent {
 
     @SubscribeEvent
-    public static void entitySpawn(FinalizeSpawnEvent event){
+    public static void serverStopped(ServerStoppedEvent event) {
+        ExplodeManager.getInstance().clear();
     }
 
     @SubscribeEvent
@@ -50,7 +51,6 @@ public class GameEvent {
         if(ihook.betterExperience$isSimulation() && level instanceof ServerLevel serverLevel){
             List<ItemStack> items = event.getDrops();
             if(ConfluenceHelper.isLoaded()) {
-                // 宝匣掉率增加
                 int luck = hook.luck;
 
                 Player player = hook.getPlayerOwner();
@@ -66,7 +66,6 @@ public class GameEvent {
                                     .create(LootContextParamSets.GIFT));
                 }
             }
-            // 取消原版收回物品
             ihook.betterExperience$setItems(items);
             event.setCanceled(true);
         }
@@ -79,28 +78,5 @@ public class GameEvent {
 
     }
 
-//    @SubscribeEvent
-//    public static void consumeBullet(GunEvent.ShrinkBulletEvent event) {
-//        Player player = event.getPlayer();
-//        Inventory inventory = player.getInventory();
-//        NonNullList<ItemStack> stackNonNullList = inventory.items;
-//        List<ItemStack> copyList = new ArrayList<>(stackNonNullList);
-//
-//        GunEvent.InventoryExtraEvent inventoryExtraEvent = new GunEvent.InventoryExtraEvent(player, (BaseGun) event.getGunStack().getItem(), copyList);
-//        NeoForge.EVENT_BUS.post(inventoryExtraEvent);
-//
-//        for (ItemStack item : inventoryExtraEvent.getAmmoList()) {
-//            if (item == null || item.is(Items.AIR)) continue;
-//            if (item.is(TGTags.AMMO) && isCompatible(player, item, event.getGunStack())) {
-//                if(item.getCount() >= CommonConfig.INFINITE_AMMO_STACK_SIZE.get()){
-//                    event.setCanceled(true);
-//                    return;
-//                }
-//            }
-//        }
 
-//        if(event.getBulletStack().getCount() >= CommonConfig.INFINITE_AMMO_STACK_SIZE.get()){
-//            event.setCanceled(true);
-//        }
-//    }
 }

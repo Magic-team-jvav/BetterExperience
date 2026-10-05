@@ -2,14 +2,14 @@ package com.github.edg_thexu.better_experience.client.event;
 
 import com.github.edg_thexu.better_experience.Better_experience;
 import com.github.edg_thexu.better_experience.client.buffer.AABBBuffer;
+import com.github.edg_thexu.better_experience.client.StaffSelectionHandler;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import com.github.edg_thexu.better_experience.client.gui.container.PotionBagScreen;
 import com.github.edg_thexu.better_experience.config.ClientConfig;
 import com.github.edg_thexu.better_experience.init.ModAttachments;
 import com.github.edg_thexu.better_experience.intergration.confluence.ConfluenceHelper;
-import com.github.edg_thexu.better_experience.item.MagicBoomStaff;
 import com.github.edg_thexu.better_experience.networks.c2s.ServerBoundPacketC2S;
 import net.minecraft.client.Minecraft;
-import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -26,11 +26,7 @@ public class ClientGameEvent {
 
     @SubscribeEvent
     public static void renderLevelStage(RenderLevelStageEvent event) {
-//        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_LEVEL) {
-//            //PostUtil.postProcess();
-//
-//        }
-        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_ENTITIES) {
+        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_PARTICLES) {
             AABBBuffer.getInstance().render(event);
 
         }
@@ -38,18 +34,20 @@ public class ClientGameEvent {
 
     @SubscribeEvent
     public static void event(InputEvent.MouseScrollingEvent event){
+        if (StaffSelectionHandler.scroll(event.getScrollDeltaY())) event.setCanceled(true);
+    }
 
-        if(Minecraft.getInstance().player!=null && Minecraft.getInstance().player.input.shiftKeyDown){
-            ItemStack stack = Minecraft.getInstance().player.getMainHandItem();
-            if(stack.getItem() instanceof MagicBoomStaff staff){
-                staff.range = Math.clamp( staff.range + (event.getScrollDeltaY() > 0 ? 1 : -1), 1, staff.maxRange);
-                event.setCanceled(true);
-            }
-        }
+    @SubscribeEvent
+    public static void staffTick(ClientTickEvent.Post event) {
+        StaffSelectionHandler.tick();
     }
 
     @SubscribeEvent
     public static void event(InputEvent.MouseButton.Pre event){
+        if (event.getAction() == 1 && StaffSelectionHandler.mouseClicked(event.getButton())) {
+            event.setCanceled(true);
+            return;
+        }
         if(!ConfluenceHelper.isLoaded()){
             return;
         }
@@ -62,9 +60,8 @@ public class ClientGameEvent {
 
     @SubscribeEvent
     public static void closeScreen(ScreenEvent.Closing event){
-        if(ConfluenceHelper.isLoaded() && event.getScreen() instanceof ExtraInventoryScreen
-         || event.getScreen() instanceof PotionBagScreen
-        ){
+        if ((ConfluenceHelper.isLoaded() && event.getScreen() instanceof ExtraInventoryScreen)
+                || event.getScreen() instanceof PotionBagScreen) {
             if (Minecraft.getInstance().player != null) {
                 Minecraft.getInstance().player.getData(ModAttachments.AUTO_POTION).sync(true);
             }

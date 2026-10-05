@@ -20,7 +20,6 @@ public class ModRegistries {
     public static void register(IEventBus bus) {
 //        if(JeiHelper.isLoaded()) {
 //            RecipeHandlerProviderTypes.TYPES.register(bus);
-//            RecipeHandlerFactoryProviderTypes.TYPES.register(bus);
 //            ItemMatcherTypes.TYPES.register(bus);
 //        }
     }

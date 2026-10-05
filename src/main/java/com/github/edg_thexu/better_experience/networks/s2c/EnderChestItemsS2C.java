@@ -15,12 +15,17 @@ public record EnderChestItemsS2C(EnderChestAttachment attachment, TypeIndex type
     public enum TypeIndex {
         ENDER,
         PIG,
-        SAFE
+        SAFE;
+
+        public static TypeIndex fromId(int id) {
+            if (id < 0 || id >= values().length) throw new io.netty.handler.codec.DecoderException("Invalid chest type: " + id);
+            return values()[id];
+        }
     }
 
     public static final StreamCodec<ByteBuf, EnderChestItemsS2C> STREAM_CODEC = StreamCodec.composite(
             EnderChestAttachment.STREAM_CODEC, EnderChestItemsS2C::attachment,
-            ByteBufCodecs.INT.map(j->TypeIndex.values()[j], Enum::ordinal), EnderChestItemsS2C::typeIndex,
+            ByteBufCodecs.INT.map(TypeIndex::fromId, Enum::ordinal), EnderChestItemsS2C::typeIndex,
             EnderChestItemsS2C::new
     );
 
@@ -34,12 +39,14 @@ public record EnderChestItemsS2C(EnderChestAttachment attachment, TypeIndex type
 
     public static void handle(EnderChestItemsS2C packet, final IPayloadContext context) {
         context.enqueueWork(() -> {
+            var player = Minecraft.getInstance().player;
+            if (player == null) return;
             if(packet.typeIndex == TypeIndex.ENDER) {
-                Minecraft.getInstance().player.getData(ModAttachments.ENDER_CHEST).refresh(packet.attachment);
+                player.getData(ModAttachments.ENDER_CHEST).refresh(packet.attachment);
             }else if(packet.typeIndex == TypeIndex.PIG){
-                Minecraft.getInstance().player.getData(ModAttachments.PIG_CHEST).refresh(packet.attachment);
+                player.getData(ModAttachments.PIG_CHEST).refresh(packet.attachment);
             }else if(packet.typeIndex == TypeIndex.SAFE){
-                Minecraft.getInstance().player.getData(ModAttachments.SAFE_CHEST).refresh(packet.attachment);
+                player.getData(ModAttachments.SAFE_CHEST).refresh(packet.attachment);
             }
         });
     }

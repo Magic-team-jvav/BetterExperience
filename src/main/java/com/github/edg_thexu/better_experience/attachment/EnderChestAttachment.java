@@ -24,21 +24,21 @@ import java.util.List;
 
 public class EnderChestAttachment implements INBTSerializable<CompoundTag> {
 
-    List<Item> items = new ArrayList<>();
+    private List<Item> items = new ArrayList<>();
 
-    public static Codec<EnderChestAttachment> CODEC = CompoundTag.CODEC.xmap(i->{
+    public static final Codec<EnderChestAttachment> CODEC = CompoundTag.CODEC.xmap(i->{
         EnderChestAttachment attachment = new EnderChestAttachment();
         attachment.deserializeNBT(null, i);
         return attachment;
     }, i->i.serializeNBT(null));
 
-    public static StreamCodec<ByteBuf, EnderChestAttachment> STREAM_CODEC = ByteBufCodecs.fromCodec(CODEC);
+    public static final StreamCodec<ByteBuf, EnderChestAttachment> STREAM_CODEC = ByteBufCodecs.fromCodec(CODEC);
 
     public void refresh(EnderChestAttachment attachment){
-        items = attachment.items;
+        items = new ArrayList<>(attachment.items);
     }
     public List<Item> getItems() {
-        return items;
+        return List.copyOf(items);
     }
 
 
@@ -54,10 +54,14 @@ public class EnderChestAttachment implements INBTSerializable<CompoundTag> {
 
     @Override
     public void deserializeNBT(HolderLookup.Provider provider, CompoundTag tag) {
+        items.clear();
         for (int i = 0; i < tag.size(); i++) {
             String key = tag.getString("item" + i);
             if (key.isEmpty()) continue;
-            items.add(BuiltInRegistries.ITEM.get(ResourceLocation.parse(key)));
+            ResourceLocation location = ResourceLocation.tryParse(key);
+            if (location != null && BuiltInRegistries.ITEM.containsKey(location)) {
+                items.add(BuiltInRegistries.ITEM.get(location));
+            }
         }
     }
 

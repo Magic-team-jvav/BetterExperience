@@ -34,11 +34,31 @@ public class ModEnglishProvider extends LanguageProvider {
         // items
         Consumer<DeferredHolder<Item, ? extends Item>> itemAction = item -> add(item.get(), toTitleCase(item.getId().getPath()));
         ModItems.ITEMS.getEntries().forEach(itemAction);
+        ModItems.TOOLS.getEntries().forEach(itemAction);
 //        ModBlocks.BLOCKS.getEntries().forEach(block-> add(block.get(), toTitleCase(block.getId().getPath())));
 
+        add("better_experience.staff.choose_corners", "Shift+LMB: select (default)");
+        add("better_experience.staff.first_corner", "A set | LMB: set B");
+        add("better_experience.staff.locked", "Locked | LMB blast | RMB cancel");
+        add("better_experience.staff.no_mana", "Need %s mana");
+        add("better_experience.staff.no_target", "Aim within reach");
+        add("better_experience.staff.out_of_reach", "Out of reach");
+        add("better_experience.staff.reselect", "Cancelled | Activate to reselect");
+        add("better_experience.staff.size", "%sx%sx%s | Mana %s | Scroll size | RMB lock");
+        add("better_experience.staff.too_large", "Selection limit reached");
+
+        add("better_experience.staff.enter_selection", "%s+LMB: select");
+        add("key.better_experience.staff_select_modifier", "Staff selection modifier (with left-click)");
+        add("key.categories.better_experience", "Better Experience");
+
         // tooltips
-        add("better_experience.tooltip.magic_boom_staff.info", "power depends on the item in left hand [hold shift and scroll mousewheel to adjust size]");
-        add("better_experience.tooltip.potion_bag.info", "Can store potions and food");
+        add("better_experience.tooltip.magic_boom_staff.info", "Offhand tool sets mining power");
+        add("better_experience.tooltip.magic_boom_staff.select", "Shift+LMB: select (default key)");
+        add("better_experience.tooltip.magic_boom_staff.corners", "LMB corners | Scroll size | RMB lock");
+        add("better_experience.tooltip.magic_boom_staff.locked", "Locked: LMB blast | RMB cancel");
+        add("better_experience.tooltip.magic_boom_staff.move", "Shift+Scroll: move | Shift+MMB: forward");
+        add("better_experience.tooltip.magic_boom_staff.mana", "1 mana per 8 blocks, rounded up");
+        add("better_experience.tooltip.potion_bag.info", "Stores potions and food");
         add("better_experience.tooltip.jei.fetch_ingredients", "Fetch ingredients from nearby chests");
 
         add("better_experience.tooltip.better_reforge.enable", "Enable Better Reforging");

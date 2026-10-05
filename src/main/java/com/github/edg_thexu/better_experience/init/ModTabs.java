@@ -11,7 +11,7 @@ public final class ModTabs {
     public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, Better_experience.MODID);
 
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> BETTER_EXPERIENCE = TABS.register("better_experience",
-            () -> CreativeModeTab.builder().icon(() -> ModItems.MagicBoomStaff.toStack())
+            () -> CreativeModeTab.builder().icon(() -> ModItems.MAGIC_BOOM_STAFF.toStack())
                     .title(Component.translatable("creativetab.better_experience.item"))
                     .displayItems((parameters, output) -> {
                         ModItems.TOOLS.getEntries().forEach(block -> output.accept(block.get()));

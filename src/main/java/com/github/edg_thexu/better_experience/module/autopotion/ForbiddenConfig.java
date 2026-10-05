@@ -24,15 +24,13 @@ import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class ForbiddenConfig extends SimplePreparableReloadListener<ForbiddenConfig> {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 
-    Set<Item> forbiddenItems;
-    Map<MobEffect, Integer> amplifiers;
-    List<EffectAmp> effectAmps;
-    Set<String> modId;
+    private record Snapshot(Set<Item> items, Map<MobEffect, Integer> amplifiers,
+                            List<EffectAmp> effects, Set<String> modIds) {}
+    private volatile Snapshot snapshot;
 
     record EffectAmp(MobEffect effect, int amp) {
         public static final Codec<EffectAmp> CODEC = RecordCodecBuilder.create(instance -> instance.group(
@@ -41,83 +39,44 @@ public class ForbiddenConfig extends SimplePreparableReloadListener<ForbiddenCon
         ).apply(instance, (effect, amp)-> new EffectAmp(effect, amp.orElse(0))));
     }
 
-    static ForbiddenConfig instance;
+    private static final class Holder {
+        private static final ForbiddenConfig INSTANCE = new ForbiddenConfig(Set.of(), List.of(), Set.of());
+    }
+
     public static ForbiddenConfig getInstance() {
-        if(instance == null) {
-            instance = new ForbiddenConfig(new HashSet<>(), new HashMap<>());
-        }
-        return instance;
+        return Holder.INSTANCE;
     }
 
     public boolean isItemForbidden(Item item) {
-        return forbiddenItems.contains(item);
+        return snapshot.items.contains(item);
     }
 
     public boolean isEffectForbidden(MobEffect effect, int amp) {
-        return amplifiers.containsKey(effect) && amplifiers.get(effect) <= amp;
+        Integer threshold = snapshot.amplifiers.get(effect);
+        return threshold != null && threshold <= amp;
     }
 
     public boolean isModForbidden(String modId) {
-        return this.modId.contains(modId);
+        return snapshot.modIds.contains(modId);
     }
 
-    // from default
-    ForbiddenConfig(Set<Item> forbiddenItems, Map<MobEffect, Integer> forbiddenEffects) {
-        this.forbiddenItems = forbiddenItems;
-        this.amplifiers = forbiddenEffects;
-        this.effectAmps = new ArrayList<>();
-        this.modId = new HashSet<>();
-    }
-    // from codec
-    ForbiddenConfig(Set<Item> forbiddenItems, List<EffectAmp> effectAmps, Set<String> modId) {
-        this.forbiddenItems = forbiddenItems;
-        this.amplifiers = new HashMap<>();
-        this.effectAmps = effectAmps;
-        this.modId = modId;
+    ForbiddenConfig(Set<Item> items, List<EffectAmp> effects, Set<String> modIds) {
+        Map<MobEffect, Integer> amplifiers = new HashMap<>();
+        for (EffectAmp effect : effects) {
+            amplifiers.merge(effect.effect, effect.amp, Math::min);
+        }
+        snapshot = new Snapshot(Set.copyOf(items), Map.copyOf(amplifiers),
+                List.copyOf(effects), Set.copyOf(modIds));
     }
 
     public static final MapCodec<ForbiddenConfig> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-            BuiltInRegistries.ITEM.byNameCodec().listOf().fieldOf("forbidden_items").forGetter(i->i.forbiddenItems.stream().toList()),
-//            Codec.unboundedMap(BuiltInRegistries.MOB_EFFECT.byNameCodec(),Codec.INT).fieldOf("forbidden_effects").forGetter(i->i.amplifiers)
-            EffectAmp.CODEC.listOf().fieldOf("forbidden_effects").forGetter(i->i.effectAmps),
-            Codec.STRING.listOf().optionalFieldOf("forbidden_modid_effect").forGetter(i->Optional.of(i.modId.stream().toList()))
+            BuiltInRegistries.ITEM.byNameCodec().listOf().fieldOf("forbidden_items").forGetter(i->i.snapshot.items.stream().toList()),
+            EffectAmp.CODEC.listOf().fieldOf("forbidden_effects").forGetter(i->i.snapshot.effects),
+            Codec.STRING.listOf().optionalFieldOf("forbidden_modid_effect").forGetter(i->Optional.of(i.snapshot.modIds.stream().toList()))
     ).apply(instance, (item, effect, modId)-> modId
             .map(strings -> new ForbiddenConfig(new HashSet<>(item), effect, new HashSet<>(strings)))
             .orElseGet(() -> new ForbiddenConfig(new HashSet<>(item), effect, new HashSet<>()))));
 
-//    @Override
-//    public @NotNull CompletableFuture<Void> reload(PreparationBarrier stage,
-//                                                   @NotNull ResourceManager resourceManager,
-//                                                   @NotNull ProfilerFiller preparationsProfiler,
-//                                                   @NotNull ProfilerFiller reloadProfiler,
-//                                                   @NotNull Executor backgroundExecutor,
-//                                                   @NotNull Executor gameExecutor) {
-//        getInstance().forbiddenItems.clear();
-//        getInstance().amplifiers.clear();
-//        getInstance().effectAmps.clear();
-//        return CompletableFuture.supplyAsync(() -> {
-//            ResourceLocation location = Better_experience.space("potion_config.json");
-//            Optional<Resource> file = resourceManager.getResource(location);
-//            if(file.isPresent()){
-//                try (Reader reader = file.get().openAsReader()) {
-//                    JsonObject jsonobject = GsonHelper.fromJson(GSON, reader, JsonObject.class);
-//                    return CODEC.codec().decode(JsonOps.INSTANCE, jsonobject).getOrThrow().getFirst();
-//                } catch (RuntimeException | IOException ioexception) {
-//                    Better_experience.LOGGER.error("Failed to load potion config {}", location, ioexception);
-//                }
-//            }
-//            return new ForbiddenConfig(new HashSet<>(), new HashMap<>());
-//        }, backgroundExecutor).thenCompose(stage::wait).thenAcceptAsync(config->{
-//            this.forbiddenItems.addAll(config.forbiddenItems);
-//            this.amplifiers.putAll(config.amplifiers);
-//            this.effectAmps.addAll(config.effectAmps);
-//            this.modId.addAll(config.modId);
-//            Better_experience.LOGGER.info("ForbiddenConfig reloaded");
-//            if(ServerLifecycleHooks.getCurrentServer() != null) {
-//                SyncDataS2C.syncForbiddenConfig();
-//            }
-//        }, gameExecutor);
-//    }
 
     @Override
     protected ForbiddenConfig prepare(ResourceManager resourceManager, ProfilerFiller profilerFiller) {
@@ -131,15 +90,12 @@ public class ForbiddenConfig extends SimplePreparableReloadListener<ForbiddenCon
                 Better_experience.LOGGER.error("Failed to load potion config {}", location, ioexception);
             }
         }
-        return new ForbiddenConfig(new HashSet<>(), new HashMap<>());
+        return new ForbiddenConfig(Set.of(), List.of(), Set.of());
     }
 
     @Override
     protected void apply(ForbiddenConfig config, ResourceManager resourceManager, ProfilerFiller profilerFiller) {
-        this.forbiddenItems.addAll(config.forbiddenItems);
-        this.amplifiers.putAll(config.amplifiers);
-        this.effectAmps.addAll(config.effectAmps);
-        this.modId.addAll(config.modId);
+        snapshot = config.snapshot;
         Better_experience.LOGGER.info("ForbiddenConfig reloaded");
         if(ServerLifecycleHooks.getCurrentServer() != null) {
             SyncDataS2C.syncForbiddenConfig();
@@ -147,32 +103,11 @@ public class ForbiddenConfig extends SimplePreparableReloadListener<ForbiddenCon
     }
 
     public static void handleServer(ForbiddenConfig config){
-        getInstance().forbiddenItems.clear();
-        getInstance().amplifiers.clear();
-        getInstance().effectAmps.clear();
-        getInstance().modId.clear();
-        getInstance().forbiddenItems.addAll(config.forbiddenItems);
-//        getInstance().effectAmps.addAll(config.effectAmps);
-//        config.effectAmps.forEach(effectAmp -> getInstance().amplifiers.put(effectAmp.effect, effectAmp.amp));
-        getInstance().amplifiers = config.effectAmps.stream().map(effectAmp -> new AbstractMap.SimpleEntry<>(effectAmp.effect, effectAmp.amp))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-        getInstance().modId.addAll(config.modId);
+        getInstance().snapshot = config.snapshot;
     }
 
     public static void sync(ServerPlayer player){
         SyncDataS2C.syncForbiddenConfig(player);
     }
 
-//    @Override
-//    protected JsonObject defaultConfig(RegistryAccess registryAccess) {
-//        ForbiddenConfig defaultConfig = new ForbiddenConfig(new HashSet<>(), new HashSet<>());
-//        return CODEC.codec().encodeStart( registryAccess.createSerializationContext(JsonOps.INSTANCE), defaultConfig).getOrThrow().getAsJsonObject();
-//    }
-//
-//    @Override
-//    protected void initConfig(JsonObject jsonObject) {
-//        ForbiddenConfig config = CODEC.codec().decode(JsonOps.INSTANCE, jsonObject).getOrThrow().getFirst();
-//        this.forbiddenItems = config.forbiddenItems;
-//        this.forbiddenEffects = config.forbiddenEffects;
-//    }
 }

@@ -31,14 +31,16 @@ public record ClientBoundConfigPacket(int message) implements CustomPacketPayloa
 
     public static void handle(ClientBoundConfigPacket packet, final IPayloadContext context) {
         context.enqueueWork(() -> {
+            var player = Minecraft.getInstance().player;
+            if (player == null) return;
             if(packet.message == 0) {
                 PlayerInventoryManager.getInstance().serverOpenAutoPotion = false;
             }else if(packet.message == 1) {
                 PlayerInventoryManager.getInstance().serverOpenAutoPotion = true;
             } else if(packet.message == 2) { // 更好重铸开启
-                Minecraft.getInstance().player.getData(ModAttachments.TEMP_DATA).setBetterReforge(true);
+                player.getData(ModAttachments.TEMP_DATA).setBetterReforge(true);
             } else if(packet.message == 3) { // 更好重铸关闭
-                Minecraft.getInstance().player.getData(ModAttachments.TEMP_DATA).setBetterReforge(false);
+                player.getData(ModAttachments.TEMP_DATA).setBetterReforge(false);
             }
 
         });

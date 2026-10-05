@@ -1,8 +1,5 @@
 package com.github.edg_thexu.better_experience.item;
 
-import com.github.edg_thexu.better_experience.networks.c2s.BreakBlocksPacketC2S;
-import com.github.edg_thexu.better_experience.utils.ModUtils;
-import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -11,36 +8,29 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.List;
 
 public class MagicBoomStaff extends Item {
 
-    // client
-    public int range;
-    public int maxRange;
-    public MagicBoomStaff(Properties properties, int range, int maxRange) {
+    public final int maxRange;
+    public MagicBoomStaff(Properties properties, int maxRange) {
         super(properties);
-        this.range = range;
         this.maxRange = maxRange;
     }
 
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand usedHand) {
 
-        if(level.isClientSide()){
-            BlockPos pos = ModUtils.getEyeBlockHitResult(player, maxRange * 2);
-
-            PacketDistributor.sendToServer(new BreakBlocksPacketC2S(pos.offset(-range,-range,-range), pos.offset(range,range,range)));
-            player.startUsingItem(usedHand);
-        }
+        // Mouse selection is handled on the client; use never dispatches destruction.
         return InteractionResultHolder.success(player.getItemInHand(usedHand));
     }
 
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
-        tooltipComponents.add(Component.translatable("better_experience.tooltip.magic_boom_staff.info"));
+        for (String line : List.of("info", "select", "corners", "locked", "move", "mana")) {
+            tooltipComponents.add(Component.translatable("better_experience.tooltip.magic_boom_staff." + line));
+        }
 
     }
 

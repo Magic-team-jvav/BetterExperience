@@ -15,12 +15,13 @@ public class ModItems {
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(Better_experience.MODID);
     public static final DeferredRegister.Items TOOLS = DeferredRegister.createItems(Better_experience.MODID);
 
-    public static DeferredItem<Item> MagicBoomStaff = TOOLS.register("magic_boom_staff", ()->new MagicBoomStaff(new Item.Properties().stacksTo(1), 3, 5));
-    public static DeferredItem<Item> StarBoomStaff = TOOLS.register("star_boom_staff", ()->new MagicBoomStaff(new Item.Properties().stacksTo(1), 3, 10));
-    public static DeferredItem<Item> PotionBag = TOOLS.register("potion_bag", ()->new PotionBag(new Item.Properties().stacksTo(1).component(ModDataComponentTypes.ITEM_CONTAINER_COMPONENT, new ItemContainerComponent(18))));
-    public static DeferredItem<Item> DebugItem = TOOLS.register("debug_item", ()->new DebugItem(new Item.Properties()));
-    public static DeferredItem<Item> UniversalController = TOOLS.register("universal_controller", ()->new UniversalController(new Item.Properties()));
-
+    public static final DeferredItem<Item> MAGIC_BOOM_STAFF = TOOLS.register("magic_boom_staff", () -> new MagicBoomStaff(new Item.Properties().stacksTo(1), 5));
+    public static final DeferredItem<Item> STAR_BOOM_STAFF = TOOLS.register("star_boom_staff", () -> new MagicBoomStaff(new Item.Properties().stacksTo(1), 10));
+    public static final DeferredItem<Item> POTION_BAG = TOOLS.register("potion_bag",
+            () -> new PotionBag(new Item.Properties().stacksTo(1)
+                    .component(ModDataComponentTypes.ITEM_CONTAINER_COMPONENT, new ItemContainerComponent(18))));
+    public static final DeferredItem<Item> DEBUG_ITEM = TOOLS.register("debug_item", () -> new DebugItem(new Item.Properties()));
+    public static final DeferredItem<Item> UNIVERSAL_CONTROLLER = TOOLS.register("universal_controller", () -> new UniversalController(new Item.Properties()));
 
 
     public static void register(IEventBus bus) {

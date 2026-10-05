@@ -1,6 +1,11 @@
 package com.github.edg_thexu.better_experience.client.event;
 
 import com.github.edg_thexu.better_experience.Better_experience;
+import com.github.edg_thexu.better_experience.client.StaffKeyMappings;
+import com.github.edg_thexu.better_experience.client.buffer.StaffHighlightShader;
+import net.neoforged.neoforge.client.event.RegisterShadersEvent;
+import java.io.IOException;
+import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import com.github.edg_thexu.better_experience.client.gui.container.AutoFishScreen;
 import com.github.edg_thexu.better_experience.client.gui.container.PotionBagScreen;
 import com.github.edg_thexu.better_experience.client.renderer.AutoFishBlockRenderer;
@@ -16,6 +21,16 @@ import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 
 @EventBusSubscriber(modid = Better_experience.MODID,value = Dist.CLIENT)
 public class ClientModEvent {
+
+    @SubscribeEvent
+    public static void registerStaffShader(RegisterShadersEvent event) throws IOException {
+        StaffHighlightShader.register(event);
+    }
+
+    @SubscribeEvent
+    public static void registerStaffKeys(RegisterKeyMappingsEvent event) {
+        event.register(StaffKeyMappings.SELECT_MODIFIER);
+    }
 
     @SubscribeEvent
     public static void registerMenuScreens(RegisterMenuScreensEvent event) {
