@@ -12,7 +12,9 @@ out
 *.iws
 *.iml
 .idea
+.vscode/
 *.log
+logs/
 
 # gradle
 build

@@ -362,3 +362,25 @@ tasks.register('projectAuditTest', JavaExec) {
 tasks.named('check') {
     dependsOn tasks.named('projectAuditTest')
 }
+
+tasks.register('spaceStaffTest', JavaExec) {
+    group = 'verification'
+    description = 'Checks construction geometry, material costs and persistent block states.'
+    dependsOn tasks.named('testClasses')
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'com.github.edg_thexu.better_experience.module.spacestaff.SpaceStaffTest'
+}
+tasks.named('check') {
+    dependsOn tasks.named('spaceStaffTest')
+}
+
+tasks.register('staffMiningToolsTest', JavaExec) {
+    group = 'verification'
+    description = 'Checks carried pickaxe/drill eligibility, Confluence mining tiers and queued tool snapshots.'
+    dependsOn tasks.named('testClasses')
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'com.github.edg_thexu.better_experience.module.boomstaff.StaffMiningToolsTest'
+}
+tasks.named('check') {
+    dependsOn tasks.named('staffMiningToolsTest')
+}

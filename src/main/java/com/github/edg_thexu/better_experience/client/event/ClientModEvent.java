@@ -3,9 +3,6 @@ package com.github.edg_thexu.better_experience.client.event;
 import com.github.edg_thexu.better_experience.Better_experience;
 import com.github.edg_thexu.better_experience.client.StaffKeyMappings;
 import com.github.edg_thexu.better_experience.client.buffer.StaffHighlightShader;
-import net.neoforged.neoforge.client.event.RegisterShadersEvent;
-import java.io.IOException;
-import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import com.github.edg_thexu.better_experience.client.gui.container.AutoFishScreen;
 import com.github.edg_thexu.better_experience.client.gui.container.PotionBagScreen;
 import com.github.edg_thexu.better_experience.client.renderer.AutoFishBlockRenderer;
@@ -17,7 +14,11 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
+import net.neoforged.neoforge.client.event.RegisterShadersEvent;
+
+import java.io.IOException;
 
 @EventBusSubscriber(modid = Better_experience.MODID,value = Dist.CLIENT)
 public class ClientModEvent {
@@ -30,6 +31,7 @@ public class ClientModEvent {
     @SubscribeEvent
     public static void registerStaffKeys(RegisterKeyMappingsEvent event) {
         event.register(StaffKeyMappings.SELECT_MODIFIER);
+        event.register(StaffKeyMappings.SPACE_SETTINGS);
     }
 
     @SubscribeEvent

@@ -5,6 +5,7 @@ import com.github.edg_thexu.better_experience.intergration.confluence.Confluence
 import com.github.edg_thexu.better_experience.mixed.IFishingHook;
 import com.github.edg_thexu.better_experience.module.autopotion.ForbiddenConfig;
 import com.github.edg_thexu.better_experience.module.boomstaff.ExplodeManager;
+import com.github.edg_thexu.better_experience.module.spacestaff.SpacePlacementManager;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
@@ -19,8 +20,8 @@ import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
-import net.neoforged.neoforge.event.server.ServerStoppedEvent;
 import net.neoforged.neoforge.event.entity.player.ItemFishedEvent;
+import net.neoforged.neoforge.event.server.ServerStoppedEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import org.confluence.mod.common.init.ModEffects;
 import org.confluence.mod.common.init.ModLootTables;
@@ -34,11 +35,13 @@ public class GameEvent {
     @SubscribeEvent
     public static void serverStopped(ServerStoppedEvent event) {
         ExplodeManager.getInstance().clear();
+        SpacePlacementManager.getInstance().clear();
     }
 
     @SubscribeEvent
     public static void serverTick(ServerTickEvent.Post event){
         ExplodeManager.getInstance().tickHandle();
+        SpacePlacementManager.getInstance().tick();
 
     }
 

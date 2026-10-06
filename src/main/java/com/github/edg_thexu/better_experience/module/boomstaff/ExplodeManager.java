@@ -9,17 +9,17 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.neoforged.neoforge.common.CommonHooks;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.CommonHooks;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Queue;
-import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 
@@ -55,9 +55,7 @@ public class ExplodeManager {
         while (queues.hasNext()) {
             BlockQueue blockPosQueue = queues.next();
             Queue<Tuple<BlockPos, Boolean>> blockQueue = blockPosQueue.blockQueue;
-            if (blockQueue.isEmpty() || blockPosQueue.player.hasDisconnected()
-                    || blockPosQueue.player.isRemoved()
-                    || blockPosQueue.player.serverLevel() != blockPosQueue.level) {
+            if (blockQueue.isEmpty() || !active(blockPosQueue)) {
                 queues.remove();
                 continue;
             }
@@ -69,7 +67,7 @@ public class ExplodeManager {
             double maxY = center.y;
             int top = blockQueue.peek().getA().getY();
             for (int i = 0; i < MAX_BLOCKS_PER_TICK; i++) {
-                if (blockQueue.isEmpty()) {
+                if (blockQueue.isEmpty() || !active(blockPosQueue)) {
                     break;
                 }
                 Tuple<BlockPos, Boolean> blockPos = blockQueue.peek();
@@ -85,16 +83,16 @@ public class ExplodeManager {
                 boolean isDrop = blockPos.getB();
                 BlockState state = level.getBlockState(pos);
                 BlockEntity entity2 = level.getBlockEntity(pos);
-                var eligibility = StaffBlockEligibility.evaluate(level, pos, state, blockPosQueue.tool);
+                var eligibility = blockPosQueue.tools.evaluate(level, pos, state);
                 if (eligibility == StaffBlockEligibility.Result.SKIP
                         || !level.mayInteract(player, pos)
                         || CommonHooks.fireBlockBreak(level, player.gameMode.getGameModeForPlayer(), player, pos, state).isCanceled()) {
                     continue;
                 }
-                if (level.getBlockState(pos) != state) continue;
-                // Remove without vanilla loot, then aggregate loot using the captured offhand tool.
+                if (level.getBlockState(pos) != state || !active(blockPosQueue)) continue;
+                // Use the same eligible tool for both permission checks and loot enchantments.
                 var drops = isDrop && eligibility == StaffBlockEligibility.Result.DROP
-                        ? Block.getDrops(state, level, pos, entity2, player, blockPosQueue.tool)
+                        ? Block.getDrops(state, level, pos, entity2, player, blockPosQueue.tools.forBlock(state).stack())
                         : List.<ItemStack>of();
                 if (!level.destroyBlock(pos, false, player)) continue;
                 allDrops.addAll(drops);
@@ -111,17 +109,23 @@ public class ExplodeManager {
                 entity.setDeltaMovement(0, 0.1, 0);
                 level.addFreshEntity(entity);
             }
-            if (blockQueue.isEmpty()) {
+            if (blockQueue.isEmpty() || !active(blockPosQueue)) {
                 queues.remove();
             }
         }
     }
 
+    private static boolean active(BlockQueue queue) {
+        return !queue.player.hasDisconnected() && !queue.player.isRemoved()
+                && queue.player.mayBuild() && !queue.player.isSpectator()
+                && queue.player.serverLevel() == queue.level;
+    }
+
 
     public record BlockQueue(Queue<Tuple<BlockPos, Boolean>> blockQueue, Vec3 center,
-                             ServerPlayer player, ServerLevel level, ItemStack tool) {
-        public BlockQueue(Queue<Tuple<BlockPos, Boolean>> blocks, Vec3 center, ServerPlayer player) {
-            this(new java.util.ArrayDeque<>(blocks), center, player, player.serverLevel(), player.getOffhandItem().copy());
+                             ServerPlayer player, ServerLevel level, StaffMiningTools tools) {
+        public BlockQueue(Queue<Tuple<BlockPos, Boolean>> blocks, Vec3 center, ServerPlayer player, StaffMiningTools tools) {
+            this(new java.util.ArrayDeque<>(blocks), center, player, player.serverLevel(), tools);
         }
     }
 }

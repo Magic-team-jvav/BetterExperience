@@ -1,19 +1,24 @@
 package com.github.edg_thexu.better_experience.client.event;
 
 import com.github.edg_thexu.better_experience.Better_experience;
-import com.github.edg_thexu.better_experience.client.buffer.AABBBuffer;
+import com.github.edg_thexu.better_experience.client.StaffKeyMappings;
 import com.github.edg_thexu.better_experience.client.StaffSelectionHandler;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
+import com.github.edg_thexu.better_experience.client.buffer.AABBBuffer;
+import com.github.edg_thexu.better_experience.client.gui.SpaceShapeWheelScreen;
 import com.github.edg_thexu.better_experience.client.gui.container.PotionBagScreen;
+import com.github.edg_thexu.better_experience.client.gui.hud.SpaceStaffHud;
 import com.github.edg_thexu.better_experience.config.ClientConfig;
 import com.github.edg_thexu.better_experience.init.ModAttachments;
 import com.github.edg_thexu.better_experience.intergration.confluence.ConfluenceHelper;
+import com.github.edg_thexu.better_experience.item.SpaceStaff;
 import com.github.edg_thexu.better_experience.networks.c2s.ServerBoundPacketC2S;
 import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.InputEvent;
+import net.neoforged.neoforge.client.event.RenderGuiEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -40,6 +45,19 @@ public class ClientGameEvent {
     @SubscribeEvent
     public static void staffTick(ClientTickEvent.Post event) {
         StaffSelectionHandler.tick();
+        while (StaffKeyMappings.SPACE_SETTINGS.consumeClick()) {
+            var minecraft = Minecraft.getInstance();
+            if (minecraft.screen == null && minecraft.player != null
+                    && minecraft.player.getMainHandItem().getItem() instanceof SpaceStaff) {
+                minecraft.setScreen(SpaceShapeWheelScreen.forHeldStaff(
+                        minecraft.player.getInventory().selected, minecraft.player.getMainHandItem()));
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void renderSpaceStaffPreview(RenderGuiEvent.Post event) {
+        SpaceStaffHud.render(event.getGuiGraphics());
     }
 
     @SubscribeEvent

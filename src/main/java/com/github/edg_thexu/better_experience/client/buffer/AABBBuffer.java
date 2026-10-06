@@ -2,11 +2,16 @@ package com.github.edg_thexu.better_experience.client.buffer;
 
 import com.github.edg_thexu.better_experience.client.StaffSelectionHandler;
 import com.github.edg_thexu.better_experience.config.ClientConfig;
+import com.github.edg_thexu.better_experience.item.SpaceStaff;
 import com.github.edg_thexu.better_experience.module.boomstaff.StaffSelectionBounds;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.*;
-import net.minecraft.client.Minecraft;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.BufferUploader;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.Util;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -17,6 +22,7 @@ import org.joml.Matrix4f;
 @OnlyIn(Dist.CLIENT)
 public final class AABBBuffer {
     private static final AABBBuffer INSTANCE = new AABBBuffer();
+    private final SpaceSelectionOutline spaceOutline = new SpaceSelectionOutline();
     private final StaffBlockHighlight blockHighlight = new StaffBlockHighlight();
     private StaffSelectionBounds lastLockedBounds;
     private long highlightResumeMillis;
@@ -28,11 +34,13 @@ public final class AABBBuffer {
     public void render(RenderLevelStageEvent event) {
         if (!ClientConfig.SHOW_OUTLINES.get()) {
             clearBlockHighlight();
+            spaceOutline.clear();
             return;
         }
         var bounds = StaffSelectionHandler.preview();
         if (bounds == null) {
             clearBlockHighlight();
+            spaceOutline.clear();
             return;
         }
         var camera = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
@@ -60,6 +68,13 @@ public final class AABBBuffer {
                     && !StaffSelectionHandler.isLockedSelectionMoving())
                 blockHighlight.render(bounds, matrix, camera, r, g, b);
         } else clearBlockHighlight();
+        var held = Minecraft.getInstance().player.getMainHandItem();
+        if (held.getItem() instanceof SpaceStaff) {
+            var settings = StaffSelectionHandler.previewSettings();
+            spaceOutline.render(bounds, StaffSelectionHandler.previewShape(bounds), settings, locked, matrix, camera);
+            return;
+        }
+        spaceOutline.clear();
         BufferBuilder buffer = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
         box(buffer, matrix, x1, y1, z1, x2, y2, z2, r, g, b, 22);
         float w = EDGE_HALF_WIDTH;

@@ -2,19 +2,19 @@ package com.github.edg_thexu.better_experience.networks.c2s;
 
 import com.github.edg_thexu.better_experience.Better_experience;
 import com.github.edg_thexu.better_experience.config.CommonConfig;
-import com.github.edg_thexu.better_experience.item.MagicBoomStaff;
 import com.github.edg_thexu.better_experience.init.ModDataComponentTypes;
+import com.github.edg_thexu.better_experience.intergration.confluence.ConfluenceHelper;
+import com.github.edg_thexu.better_experience.item.MagicBoomStaff;
 import com.github.edg_thexu.better_experience.module.boomstaff.ExplodeManager;
-import com.github.edg_thexu.better_experience.module.boomstaff.StaffSelectionBounds;
 import com.github.edg_thexu.better_experience.module.boomstaff.StaffAimRange;
 import com.github.edg_thexu.better_experience.module.boomstaff.StaffBlockEligibility;
-import com.github.edg_thexu.better_experience.intergration.confluence.ConfluenceHelper;
-import org.confluence.mod.util.PlayerUtils;
+import com.github.edg_thexu.better_experience.module.boomstaff.StaffMiningTools;
+import com.github.edg_thexu.better_experience.module.boomstaff.StaffSelectionBounds;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -24,6 +24,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
+import org.confluence.mod.util.PlayerUtils;
 
 import java.util.LinkedList;
 import java.util.Queue;
@@ -56,6 +57,7 @@ public record BreakBlocksPacketC2S(Vec3 center, int slot) implements CustomPacke
             }
             ItemStack stack = context.player().getMainHandItem();
             if (!(context.player() instanceof ServerPlayer player)
+                    || !player.mayBuild() || player.isSpectator()
                     || !(stack.getItem() instanceof MagicBoomStaff staff)
                     || player.getCooldowns().isOnCooldown(staff)) return;
             if (packet.slot() < 0 || packet.slot() > 8 || player.getInventory().selected != packet.slot()) return;
@@ -86,12 +88,13 @@ public record BreakBlocksPacketC2S(Vec3 center, int slot) implements CustomPacke
             }
 
             Queue<Tuple<BlockPos, Boolean>> blocks = new LinkedList<>();
+            StaffMiningTools tools = StaffMiningTools.forPlayer(player, staff);
             for(int y = y2; y >= y1; y--){
                 for(int x = x1; x <= x2; x++){
                     for(int z = z1; z <= z2; z++){
                         BlockPos pos = new BlockPos(x, y, z);
                         BlockState state = level.getBlockState(pos);
-                        var eligibility = StaffBlockEligibility.evaluate(level, pos, state, player.getOffhandItem());
+                        var eligibility = tools.evaluate(level, pos, state);
                         if (eligibility == StaffBlockEligibility.Result.SKIP) continue;
                         blocks.add(new Tuple<>(pos, eligibility == StaffBlockEligibility.Result.DROP));
                     }
@@ -104,7 +107,7 @@ public record BreakBlocksPacketC2S(Vec3 center, int slot) implements CustomPacke
                 return;
             }
             player.getCooldowns().addCooldown(staff, 20);
-            ExplodeManager.BlockQueue queue = new ExplodeManager.BlockQueue(blocks, new Vec3(centerX, centerY, centerZ), player);
+            ExplodeManager.BlockQueue queue = new ExplodeManager.BlockQueue(blocks, new Vec3(centerX, centerY, centerZ), player, tools);
             ExplodeManager.getInstance().addBlockToQueue(queue);
 
         });
