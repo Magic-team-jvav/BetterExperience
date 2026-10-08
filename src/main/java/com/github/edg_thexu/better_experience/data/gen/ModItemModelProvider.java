@@ -40,7 +40,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         TOOLS.forEach(registry -> registry.getEntries().forEach(item -> {
             String path = item.getId().getPath().toLowerCase();
             try {
-                String texture = path.equals("space_staff") ? "star_boom_staff" : path;
+                String texture = (path.equals("space_staff") || path.equals("fluid_staff")) ? "star_boom_staff" : path;
                 withExistingParent("item/"+path, "item/handheld").texture("layer0", Better_experience.space("item/"+texture));
                 }
             catch (Exception e){

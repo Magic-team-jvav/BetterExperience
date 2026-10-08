@@ -4,7 +4,7 @@ import com.github.edg_thexu.better_experience.Better_experience;
 import com.github.edg_thexu.better_experience.data.component.SpaceBezierShape;
 import com.github.edg_thexu.better_experience.data.component.StaffSelectionShape;
 import com.github.edg_thexu.better_experience.init.ModDataComponentTypes;
-import com.github.edg_thexu.better_experience.item.SpaceStaff;
+import com.github.edg_thexu.better_experience.item.ShapeSelectionStaff;
 import com.github.edg_thexu.better_experience.module.spacestaff.SpaceShape;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -26,7 +26,7 @@ public record SpaceBezierSelectionPacketC2S(int slot, SpaceBezierShape curve) im
         context.enqueueWork(() -> {
             var player = context.player();
             if (packet.slot < 0 || packet.slot > 8 || player.getInventory().selected != packet.slot
-                    || !(player.getMainHandItem().getItem() instanceof SpaceStaff)) return;
+                    || !(player.getMainHandItem().getItem() instanceof ShapeSelectionStaff)) return;
             var stack = player.getMainHandItem();
             var settings = stack.get(ModDataComponentTypes.SPACE_STAFF_SETTINGS.get());
             if (settings == null || settings.shape() != SpaceShape.BEZIER) return;

@@ -3,7 +3,9 @@ package com.github.edg_thexu.better_experience.client.gui;
 import com.github.edg_thexu.better_experience.client.StaffKeyMappings;
 import com.github.edg_thexu.better_experience.data.component.SpaceStaffSettings;
 import com.github.edg_thexu.better_experience.init.ModDataComponentTypes;
-import com.github.edg_thexu.better_experience.item.SpaceStaff;
+import com.github.edg_thexu.better_experience.item.ShapeSelectionStaff;
+import com.github.edg_thexu.better_experience.item.FluidStaff;
+import com.github.edg_thexu.better_experience.data.component.FluidStaffSettings;
 import com.github.edg_thexu.better_experience.module.spacestaff.SpaceShape;
 import com.github.edg_thexu.better_experience.networks.c2s.SpaceStaffSettingsPacketC2S;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -40,9 +42,12 @@ public final class SpaceShapeWheelScreen extends Screen {
     public static SpaceShapeWheelScreen forHeldStaff(int slot, ItemStack stack) {
         var settings = stack.getOrDefault(ModDataComponentTypes.SPACE_STAFF_SETTINGS.get(), SpaceStaffSettings.defaults());
         return new SpaceShapeWheelScreen(slot, stack, settings.shape(), settings.state(), null, true, shape -> {
-            var latest = stack.getOrDefault(ModDataComponentTypes.SPACE_STAFF_SETTINGS.get(), SpaceStaffSettings.defaults());
+            var player = net.minecraft.client.Minecraft.getInstance().player;
+            if (player == null || player.getInventory().selected != slot || player.getMainHandItem().getItem() != stack.getItem()) return;
+            var held = player.getMainHandItem();
+            var latest = held.getOrDefault(ModDataComponentTypes.SPACE_STAFF_SETTINGS.get(), SpaceStaffSettings.defaults());
             var changed = latest.withShape(shape);
-            stack.set(ModDataComponentTypes.SPACE_STAFF_SETTINGS.get(), changed);
+            held.set(ModDataComponentTypes.SPACE_STAFF_SETTINGS.get(), changed);
             PacketDistributor.sendToServer(new SpaceStaffSettingsPacketC2S(slot, changed));
         });
     }
@@ -68,7 +73,7 @@ public final class SpaceShapeWheelScreen extends Screen {
     public void tick() {
         if (minecraft.player == null || minecraft.level == null
                 || minecraft.player.getInventory().selected != slot
-                || minecraft.player.getMainHandItem() != source || !(source.getItem() instanceof SpaceStaff)) {
+                || minecraft.player.getMainHandItem().getItem() != source.getItem() || !(source.getItem() instanceof ShapeSelectionStaff)) {
             minecraft.setScreen(null);
         }
     }
@@ -79,7 +84,11 @@ public final class SpaceShapeWheelScreen extends Screen {
     }
 
     private void openEditor() {
-        minecraft.setScreen(parent == null ? new SpaceStaffScreen(slot, source) : parent);
+        if (parent != null) minecraft.setScreen(parent);
+        else {
+            var held = minecraft.player.getMainHandItem();
+            minecraft.setScreen(held.getItem() instanceof FluidStaff ? new FluidStaffScreen(slot, held) : new SpaceStaffScreen(slot, held));
+        }
     }
 
     @Override
@@ -184,10 +193,15 @@ public final class SpaceShapeWheelScreen extends Screen {
                         current.ordinal() == index ? 0xA7E6FF : 0xFFFFFF);
             }
         }
-        preview.render(graphics, state, width / 2 - 18, height / 2 - 27, 36);
-        graphics.drawCenteredString(font, Component.translatable("better_experience.space.block_state"),
+        boolean fluidStaff = source.getItem() instanceof FluidStaff;
+        if (fluidStaff) {
+            var fluid = minecraft.player.getMainHandItem().getOrDefault(ModDataComponentTypes.FLUID_STAFF_SETTINGS.get(),
+                    FluidStaffSettings.defaults()).fluid();
+            FluidBeakerPreview.render(graphics, fluid, 1, 1, false, width / 2 - 14, height / 2 - 27, 28, 36, true);
+        } else preview.render(graphics, state, width / 2 - 18, height / 2 - 27, 36);
+        graphics.drawCenteredString(font, Component.translatable(fluidStaff ? "better_experience.fluid.settings" : "better_experience.space.block_state"),
                 width / 2, height / 2 + 15, 0xA7E6FF);
-        String hint = Component.translatable(confirmOnRelease ? "better_experience.space.wheel_hold"
+        String hint = Component.translatable(confirmOnRelease ? (fluidStaff ? "better_experience.fluid.wheel_hold" : "better_experience.space.wheel_hold")
                 : "better_experience.space.wheel_click").getString();
         graphics.drawCenteredString(font, font.plainSubstrByWidth(hint, width - 12), width / 2, height - 16, 0xC8D6E2);
     }

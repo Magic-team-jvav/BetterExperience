@@ -10,7 +10,7 @@ import com.github.edg_thexu.better_experience.client.gui.hud.SpaceStaffHud;
 import com.github.edg_thexu.better_experience.config.ClientConfig;
 import com.github.edg_thexu.better_experience.init.ModAttachments;
 import com.github.edg_thexu.better_experience.intergration.confluence.ConfluenceHelper;
-import com.github.edg_thexu.better_experience.item.SpaceStaff;
+import com.github.edg_thexu.better_experience.item.ShapeSelectionStaff;
 import com.github.edg_thexu.better_experience.networks.c2s.ServerBoundPacketC2S;
 import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
@@ -48,7 +48,7 @@ public class ClientGameEvent {
         while (StaffKeyMappings.SPACE_SETTINGS.consumeClick()) {
             var minecraft = Minecraft.getInstance();
             if (minecraft.screen == null && minecraft.player != null
-                    && minecraft.player.getMainHandItem().getItem() instanceof SpaceStaff) {
+                    && minecraft.player.getMainHandItem().getItem() instanceof ShapeSelectionStaff) {
                 minecraft.setScreen(SpaceShapeWheelScreen.forHeldStaff(
                         minecraft.player.getInventory().selected, minecraft.player.getMainHandItem()));
             }

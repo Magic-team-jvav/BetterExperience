@@ -6,6 +6,7 @@ import com.github.edg_thexu.better_experience.mixed.IFishingHook;
 import com.github.edg_thexu.better_experience.module.autopotion.ForbiddenConfig;
 import com.github.edg_thexu.better_experience.module.boomstaff.ExplodeManager;
 import com.github.edg_thexu.better_experience.module.spacestaff.SpacePlacementManager;
+import com.github.edg_thexu.better_experience.module.fluidstaff.FluidStaffManager;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
@@ -36,12 +37,14 @@ public class GameEvent {
     public static void serverStopped(ServerStoppedEvent event) {
         ExplodeManager.getInstance().clear();
         SpacePlacementManager.getInstance().clear();
+        FluidStaffManager.getInstance().clear();
     }
 
     @SubscribeEvent
     public static void serverTick(ServerTickEvent.Post event){
         ExplodeManager.getInstance().tickHandle();
         SpacePlacementManager.getInstance().tick();
+        FluidStaffManager.getInstance().tick();
 
     }
 

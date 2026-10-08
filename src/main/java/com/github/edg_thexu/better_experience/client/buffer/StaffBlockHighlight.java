@@ -1,10 +1,13 @@
 package com.github.edg_thexu.better_experience.client.buffer;
 
 import com.github.edg_thexu.better_experience.data.component.SpaceStaffSettings;
+import com.github.edg_thexu.better_experience.data.component.FluidStaffSettings;
+import com.github.edg_thexu.better_experience.item.FluidStaff;
+import com.github.edg_thexu.better_experience.module.fluidstaff.FluidStaffRules;
 import com.github.edg_thexu.better_experience.data.component.StaffSelectionShape;
 import com.github.edg_thexu.better_experience.init.ModDataComponentTypes;
 import com.github.edg_thexu.better_experience.item.MagicBoomStaff;
-import com.github.edg_thexu.better_experience.item.SpaceStaff;
+import com.github.edg_thexu.better_experience.item.ShapeSelectionStaff;
 import com.github.edg_thexu.better_experience.module.boomstaff.StaffBlockEligibility;
 import com.github.edg_thexu.better_experience.module.boomstaff.StaffMiningTools;
 import com.github.edg_thexu.better_experience.module.boomstaff.StaffSelectionBounds;
@@ -32,6 +35,7 @@ final class StaffBlockHighlight {
     private ItemStack cachedTool = ItemStack.EMPTY;
     private Item cachedStaff;
     private SpaceStaffSettings cachedSettings;
+    private FluidStaffSettings cachedFluidSettings;
     private StaffSelectionShape cachedSelection;
     private long cachedTick = Long.MIN_VALUE;
 
@@ -44,6 +48,7 @@ final class StaffBlockHighlight {
         cachedTool = ItemStack.EMPTY;
         cachedStaff = null;
         cachedSettings = null;
+        cachedFluidSettings = null;
         cachedSelection = null;
         cachedTick = Long.MIN_VALUE;
     }
@@ -56,16 +61,19 @@ final class StaffBlockHighlight {
         }
         ItemStack tool = mc.player.getOffhandItem();
         var held = mc.player.getMainHandItem();
-        var settings = held.getItem() instanceof SpaceStaff
+        var settings = held.getItem() instanceof ShapeSelectionStaff
                 ? held.get(ModDataComponentTypes.SPACE_STAFF_SETTINGS.get()) : null;
+        var fluidSettings = held.getItem() instanceof FluidStaff ? held.get(ModDataComponentTypes.FLUID_STAFF_SETTINGS.get()) : null;
         var selection = held.get(ModDataComponentTypes.STAFF_SELECTION_SHAPE.get());
         long tick = mc.level.getGameTime();
         if (cachedLevel != mc.level || !bounds.equals(cachedBounds) || tick != cachedTick
                 || held.getItem() != cachedStaff
                 || !ItemStack.matches(tool, cachedTool)
                 || !Objects.equals(settings, cachedSettings)
+                || !Objects.equals(fluidSettings, cachedFluidSettings)
                 || !Objects.equals(selection, cachedSelection)) {
             cachedSettings = settings;
+            cachedFluidSettings = fluidSettings;
             cachedSelection = selection;
             rebuild(bounds, held.getItem() instanceof MagicBoomStaff staff ? StaffMiningTools.forPlayer(mc.player, staff) : null);
             cachedBounds = bounds;
@@ -89,8 +97,15 @@ final class StaffBlockHighlight {
                 : BlockPos.betweenClosed(bounds.min(), bounds.max());
         for (BlockPos pos : positions) {
             if (level.isOutsideBuildHeight(pos) || !level.hasChunkAt(pos)) continue;
-            var state = cachedSettings == null ? level.getBlockState(pos) : cachedSettings.state();
-            if (cachedSettings != null) {
+            var state = cachedSettings == null || cachedFluidSettings != null ? level.getBlockState(pos) : cachedSettings.state();
+            if (cachedFluidSettings != null) {
+                boolean eligible = cachedFluidSettings.placing()
+                        ? FluidStaffRules.canPlace(level, pos, cachedFluidSettings.fluid(), Minecraft.getInstance().player)
+                        : FluidStaffRules.canAbsorb(level, pos);
+                if (!eligible) continue;
+                nextSurfaces.add(new AABB(pos).inflate(.002));
+                continue;
+            } else if (cachedSettings != null) {
                 if (!SpacePlacementRules.canPlace(level, pos, state)) continue;
             } else if (tools == null || tools.evaluate(level, pos, state) == StaffBlockEligibility.Result.SKIP) continue;
             var shape = state.getShape(level, pos);

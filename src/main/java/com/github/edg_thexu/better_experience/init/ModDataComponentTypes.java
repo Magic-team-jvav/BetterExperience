@@ -2,6 +2,8 @@ package com.github.edg_thexu.better_experience.init;
 
 import com.github.edg_thexu.better_experience.Better_experience;
 import com.github.edg_thexu.better_experience.data.component.ItemContainerComponent;
+import com.github.edg_thexu.better_experience.data.component.FluidStaffSettings;
+import com.github.edg_thexu.better_experience.data.component.FluidStaffStorage;
 import com.github.edg_thexu.better_experience.data.component.SpaceStaffSettings;
 import com.github.edg_thexu.better_experience.data.component.StaffSelectionShape;
 import net.minecraft.core.component.DataComponentType;
@@ -18,6 +20,12 @@ public final class ModDataComponentTypes {
 
     public static final Supplier<DataComponentType<StaffSelectionShape>> STAFF_SELECTION_SHAPE = TYPES.registerComponentType("staff_selection_shape", builder ->
             builder.persistent(StaffSelectionShape.CODEC).networkSynchronized(StaffSelectionShape.STREAM_CODEC));
+    public static final Supplier<DataComponentType<FluidStaffSettings>> FLUID_STAFF_SETTINGS = TYPES.registerComponentType(
+            "fluid_staff_settings", builder -> builder.persistent(FluidStaffSettings.CODEC)
+                    .networkSynchronized(FluidStaffSettings.STREAM_CODEC));
+    public static final Supplier<DataComponentType<FluidStaffStorage>> FLUID_STAFF_STORAGE = TYPES.registerComponentType(
+            "fluid_staff_storage", builder -> builder.persistent(FluidStaffStorage.CODEC)
+                    .networkSynchronized(FluidStaffStorage.STREAM_CODEC));
     public static final Supplier<DataComponentType<SpaceStaffSettings>> SPACE_STAFF_SETTINGS = TYPES.registerComponentType(
             "space_staff_settings", builder -> builder.persistent(SpaceStaffSettings.CODEC)
                     .networkSynchronized(SpaceStaffSettings.STREAM_CODEC));

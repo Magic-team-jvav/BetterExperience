@@ -3,7 +3,7 @@ package com.github.edg_thexu.better_experience.networks.c2s;
 import com.github.edg_thexu.better_experience.Better_experience;
 import com.github.edg_thexu.better_experience.data.component.SpaceStaffSettings;
 import com.github.edg_thexu.better_experience.init.ModDataComponentTypes;
-import com.github.edg_thexu.better_experience.item.SpaceStaff;
+import com.github.edg_thexu.better_experience.item.ShapeSelectionStaff;
 import com.github.edg_thexu.better_experience.module.spacestaff.SpacePlacementRules;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -24,7 +24,7 @@ public record SpaceStaffSettingsPacketC2S(int slot, SpaceStaffSettings settings)
         context.enqueueWork(() -> {
             var player = context.player();
             if (packet.slot < 0 || packet.slot > 8 || player.getInventory().selected != packet.slot
-                    || !(player.getMainHandItem().getItem() instanceof SpaceStaff)
+                    || !(player.getMainHandItem().getItem() instanceof ShapeSelectionStaff)
                     || !SpacePlacementRules.supported(packet.settings.state())) return;
             player.getMainHandItem().set(ModDataComponentTypes.SPACE_STAFF_SETTINGS.get(), packet.settings);
             player.containerMenu.broadcastChanges();

@@ -39,7 +39,7 @@ public class ModEnglishProvider extends LanguageProvider {
 
         add("better_experience.staff.choose_corners", "Shift+LMB: select (default)");
         add("better_experience.staff.first_corner", "A set | LMB: set B");
-        add("better_experience.staff.locked", "Locked | LMB blast | RMB cancel");
+        add("better_experience.staff.locked", "Locked | LMB blast | Shift+RMB clear");
         add("better_experience.staff.no_mana", "Need %s mana");
         add("better_experience.staff.no_target", "Aim within reach");
         add("better_experience.staff.out_of_reach", "Out of reach");
@@ -51,6 +51,26 @@ public class ModEnglishProvider extends LanguageProvider {
         add("key.better_experience.staff_select_modifier", "Staff selection modifier (with left-click)");
         add("key.categories.better_experience", "Better Experience");
 
+        add("better_experience.fluid.title", "Fluid Staff");
+        add("better_experience.fluid.settings", "Fluids");
+        add("better_experience.fluid.search", "Search fluids");
+        add("better_experience.fluid.no_results", "No matching fluids");
+        add("better_experience.fluid.mode.absorb", "Absorb");
+        add("better_experience.fluid.mode.place", "Place");
+        add("better_experience.fluid.clear_selection", "Clear selection");
+        add("better_experience.fluid.total", "Total %s/%s ml");
+        add("better_experience.fluid.total_infinite", "Total ∞ ml");
+        add("better_experience.fluid.unit", "1000 ml = 1 fluid block");
+        add("better_experience.fluid.locked", "Locked | LMB use | Shift+RMB clear");
+        add("better_experience.fluid.busy", "Fluid operation in progress");
+        add("better_experience.fluid.absorbed", "Absorbed %s ml");
+        add("better_experience.fluid.placed", "Placed %s ml");
+        add("better_experience.fluid.tooltip.settings", "RMB: settings | Hold G: shapes");
+        add("better_experience.fluid.tooltip.select", "Shift+LMB: select | Scroll: size");
+        add("better_experience.fluid.tooltip.locked", "RMB: lock | Shift+RMB: clear");
+        add("better_experience.fluid.tooltip.capacity", "Survival: 512 blocks total | Creative: infinite");
+        add("better_experience.fluid.wheel_hold", "Release: choose | Center/Tab: fluids | Esc: cancel");
+
         add("better_experience.space.title", "Space Staff");
         add("better_experience.space.search", "Search blocks");
         add("better_experience.space.search_help", "Name / ID / @mod | RMB: clear");
@@ -58,14 +78,14 @@ public class ModEnglishProvider extends LanguageProvider {
         add("better_experience.space.pick", "Pick");
         add("better_experience.space.properties", "States %s/%s");
         add("better_experience.space.apply", "Save");
-        add("better_experience.space.locked", "Locked | LMB place | RMB cancel");
+        add("better_experience.space.locked", "Locked | LMB place | Shift+RMB clear");
         add("better_experience.space.size", "%sx%sx%s | Scroll size | RMB lock");
         add("better_experience.space.busy", "Placement in progress");
         add("better_experience.space.placed", "Placed %s blocks");
         add("better_experience.space.lacking", "Out of materials; placed %s blocks");
-        add("better_experience.space.tooltip.settings", "Hold G: Shape wheel; center: block state");
+        add("better_experience.space.tooltip.settings", "RMB: settings | Hold G: shapes");
         add("better_experience.space.tooltip.select", "Shift+LMB corners | Scroll size");
-        add("better_experience.space.tooltip.locked", "RMB lock | LMB place | RMB cancel");
+        add("better_experience.space.tooltip.locked", "RMB lock | LMB place | Shift+RMB clear");
         add("better_experience.space.tooltip.materials", "Survival uses materials; creative is free");
         add("better_experience.space.shape.cube", "Solid cube");
         add("better_experience.space.shape.hollow_cube", "Hollow cube");
@@ -73,7 +93,7 @@ public class ModEnglishProvider extends LanguageProvider {
         add("better_experience.space.shape.hollow_sphere", "Hollow sphere");
         add("better_experience.space.shape.line", "Line");
         add("better_experience.space.shape.bezier", "Bezier curve");
-        add("key.better_experience.space_settings", "Space staff settings");
+        add("key.better_experience.space_settings", "Staff shape wheel");
 
         add("better_experience.space.control", "%s %s: position inside selection (0-100%%)");
         add("better_experience.space.property.axis", "Axis");
@@ -128,7 +148,7 @@ public class ModEnglishProvider extends LanguageProvider {
         add("better_experience.tooltip.star_boom_staff.info", "Carried picks/drills set mining power");
         add("better_experience.tooltip.magic_boom_staff.select", "Shift+LMB: select (default key)");
         add("better_experience.tooltip.magic_boom_staff.corners", "LMB corners | Scroll size | RMB lock");
-        add("better_experience.tooltip.magic_boom_staff.locked", "Locked: LMB blast | RMB cancel");
+        add("better_experience.tooltip.magic_boom_staff.locked", "Locked: LMB blast | Shift+RMB clear");
         add("better_experience.tooltip.magic_boom_staff.move", "Shift+Scroll: move | Shift+MMB: forward");
         add("better_experience.tooltip.magic_boom_staff.mana", "1 mana per 8 blocks, rounded up");
         add("better_experience.tooltip.potion_bag.info", "Stores potions and food");

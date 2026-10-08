@@ -1,12 +1,16 @@
 package com.github.edg_thexu.better_experience.client;
 
 import com.github.edg_thexu.better_experience.config.ClientConfig;
+import com.github.edg_thexu.better_experience.client.gui.FluidStaffScreen;
+import com.github.edg_thexu.better_experience.client.gui.SpaceStaffScreen;
+import com.github.edg_thexu.better_experience.item.FluidStaff;
+import com.github.edg_thexu.better_experience.networks.c2s.FluidStaffActionPacketC2S;
 import com.github.edg_thexu.better_experience.data.component.SpaceBezierShape;
 import com.github.edg_thexu.better_experience.data.component.SpaceStaffSettings;
 import com.github.edg_thexu.better_experience.data.component.StaffSelectionShape;
 import com.github.edg_thexu.better_experience.init.ModDataComponentTypes;
 import com.github.edg_thexu.better_experience.item.SelectionStaff;
-import com.github.edg_thexu.better_experience.item.SpaceStaff;
+import com.github.edg_thexu.better_experience.item.ShapeSelectionStaff;
 import com.github.edg_thexu.better_experience.module.boomstaff.StaffAimCursor;
 import com.github.edg_thexu.better_experience.module.boomstaff.StaffAimRange;
 import com.github.edg_thexu.better_experience.module.boomstaff.StaffSelectionBounds;
@@ -76,7 +80,7 @@ public final class StaffSelectionHandler {
 
     public static void tick() {
         activeStaff();
-        if (selecting && selectedStack.getItem() instanceof SpaceStaff) {
+        if (selecting && selectedStack.getItem() instanceof ShapeSelectionStaff) {
             var settings = selectedStack.get(ModDataComponentTypes.SPACE_STAFF_SETTINGS.get());
             SpaceShape current = settings == null ? SpaceShape.CUBE : settings.shape();
             boolean wasSphere = selectingSpaceShape == SpaceShape.SPHERE || selectingSpaceShape == SpaceShape.HOLLOW_SPHERE;
@@ -119,10 +123,13 @@ public final class StaffSelectionHandler {
         }
         if (button != 0 && button != 1) return false;
         if (button == 1) {
-            if (shape != null) {
-                saveShape(null);
-                reset();
-                message("reselect");
+            if (Screen.hasShiftDown()) {
+                clearSelection();
+            } else if (!selecting && staff instanceof ShapeSelectionStaff) {
+                mc.setScreen(staff instanceof FluidStaff ? new FluidStaffScreen(selectedSlot, selectedStack)
+                        : new SpaceStaffScreen(selectedSlot, selectedStack));
+            } else if (shape != null) {
+                message("locked");
             } else if (selecting && bezierMode()) {
                 lockBezier();
             } else if (selecting && posB != null) {
@@ -147,7 +154,9 @@ public final class StaffSelectionHandler {
             }
             if (bounds == null) message("no_target");
             else if (!mc.player.getCooldowns().isOnCooldown(staff)) {
-                if (staff instanceof SpaceStaff)
+                if (staff instanceof FluidStaff)
+                    PacketDistributor.sendToServer(new FluidStaffActionPacketC2S(bounds.center(), selectedSlot));
+                else if (staff instanceof ShapeSelectionStaff)
                     PacketDistributor.sendToServer(new PlaceBlocksPacketC2S(bounds.center(), selectedSlot));
                 else PacketDistributor.sendToServer(new BreakBlocksPacketC2S(bounds.center(), selectedSlot));
             }
@@ -160,7 +169,7 @@ public final class StaffSelectionHandler {
                 return true;
             }
             selecting = true;
-            if (staff instanceof SpaceStaff) {
+            if (staff instanceof ShapeSelectionStaff) {
                 var settings = selectedStack.get(ModDataComponentTypes.SPACE_STAFF_SETTINGS.get());
                 selectingSpaceShape = settings == null ? SpaceShape.CUBE : settings.shape();
             }
@@ -267,13 +276,13 @@ public final class StaffSelectionHandler {
     }
 
     private static boolean sphereMode() {
-        if (!(selectedStack.getItem() instanceof SpaceStaff)) return false;
+        if (!(selectedStack.getItem() instanceof ShapeSelectionStaff)) return false;
         var settings = selectedStack.get(ModDataComponentTypes.SPACE_STAFF_SETTINGS.get());
         return settings != null && (settings.shape() == SpaceShape.SPHERE || settings.shape() == SpaceShape.HOLLOW_SPHERE);
     }
 
     private static boolean bezierMode() {
-        if (!(selectedStack.getItem() instanceof SpaceStaff)) return false;
+        if (!(selectedStack.getItem() instanceof ShapeSelectionStaff)) return false;
         var settings = selectedStack.get(ModDataComponentTypes.SPACE_STAFF_SETTINGS.get());
         return settings != null && settings.shape() == SpaceShape.BEZIER;
     }
@@ -365,6 +374,13 @@ public final class StaffSelectionHandler {
         return activeStaff() != null && selectedStack.has(ModDataComponentTypes.STAFF_SELECTION_SHAPE.get());
     }
 
+    public static void clearSelection() {
+        if (activeStaff() == null) return;
+        saveShape(null);
+        reset();
+        message("reselect");
+    }
+
     private static void saveShape(StaffSelectionShape shape) {
         if (shape == null) selectedStack.remove(ModDataComponentTypes.STAFF_SELECTION_SHAPE.get());
         else selectedStack.set(ModDataComponentTypes.STAFF_SELECTION_SHAPE.get(), shape);
@@ -376,7 +392,7 @@ public final class StaffSelectionHandler {
         Minecraft mc = Minecraft.getInstance();
         Vec3 from = mc.player.getEyePosition();
         Vec3 to = from.add(mc.player.getLookAngle().scale(staff.maxRange * 2));
-        var hit = mc.level.clip(new ClipContext(from, to, ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, mc.player));
+        var hit = mc.level.clip(new ClipContext(from, to, ClipContext.Block.OUTLINE, staff instanceof FluidStaff ? ClipContext.Fluid.SOURCE_ONLY : ClipContext.Fluid.NONE, mc.player));
         return hit.getType() == HitResult.Type.BLOCK ? hit.getBlockPos() : null;
     }
 
@@ -399,7 +415,7 @@ public final class StaffSelectionHandler {
         Vec3 eye = mc.player.getEyePosition();
         double reach = staff.maxRange * 2;
         var hit = mc.level.clip(new ClipContext(eye, eye.add(mc.player.getLookAngle().scale(reach)),
-                ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, mc.player));
+                ClipContext.Block.OUTLINE, staff instanceof FluidStaff ? ClipContext.Fluid.SOURCE_ONLY : ClipContext.Fluid.NONE, mc.player));
         double blockDistance = hit.getType() == HitResult.Type.BLOCK
                 ? eye.distanceTo(hit.getLocation()) : Double.NaN;
         return StaffAimRange.of(blockDistance, reach);
@@ -434,7 +450,11 @@ public final class StaffSelectionHandler {
     }
 
     private static void message(String key) {
-        boolean spaceMessage = selectedStack.getItem() instanceof SpaceStaff
+        if (key.equals("locked") && selectedStack.getItem() instanceof FluidStaff) {
+            Minecraft.getInstance().player.displayClientMessage(Component.translatable("better_experience.fluid.locked"), true);
+            return;
+        }
+        boolean spaceMessage = selectedStack.getItem() instanceof ShapeSelectionStaff
                 && (key.equals("locked") || key.startsWith("sphere_") || key.startsWith("bezier_"));
         String prefix = spaceMessage ? "better_experience.space." : "better_experience.staff.";
         Minecraft.getInstance().player.displayClientMessage(Component.translatable(prefix + key), true);
@@ -442,7 +462,7 @@ public final class StaffSelectionHandler {
 
     private static void showSize() {
         StaffSelectionBounds bounds = StaffSelectionBounds.of(posA, posB);
-        Minecraft.getInstance().player.displayClientMessage(Component.translatable(selectedStack.getItem() instanceof SpaceStaff
+        Minecraft.getInstance().player.displayClientMessage(Component.translatable(selectedStack.getItem() instanceof ShapeSelectionStaff
                 ? "better_experience.space.size" : "better_experience.staff.size",
                 bounds.max().getX() - bounds.min().getX() + 1,
                 bounds.max().getY() - bounds.min().getY() + 1,

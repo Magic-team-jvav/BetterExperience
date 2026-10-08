@@ -2,7 +2,7 @@ package com.github.edg_thexu.better_experience.client.buffer;
 
 import com.github.edg_thexu.better_experience.client.StaffSelectionHandler;
 import com.github.edg_thexu.better_experience.config.ClientConfig;
-import com.github.edg_thexu.better_experience.item.SpaceStaff;
+import com.github.edg_thexu.better_experience.item.ShapeSelectionStaff;
 import com.github.edg_thexu.better_experience.module.boomstaff.StaffSelectionBounds;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
@@ -69,7 +69,7 @@ public final class AABBBuffer {
                 blockHighlight.render(bounds, matrix, camera, r, g, b);
         } else clearBlockHighlight();
         var held = Minecraft.getInstance().player.getMainHandItem();
-        if (held.getItem() instanceof SpaceStaff) {
+        if (held.getItem() instanceof ShapeSelectionStaff) {
             var settings = StaffSelectionHandler.previewSettings();
             spaceOutline.render(bounds, StaffSelectionHandler.previewShape(bounds), settings, locked, matrix, camera);
             return;

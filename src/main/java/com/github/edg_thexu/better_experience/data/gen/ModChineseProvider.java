@@ -30,7 +30,7 @@ public class ModChineseProvider extends LanguageProvider {
 
         add("better_experience.staff.choose_corners", "Shift+左键选区（默认）");
         add("better_experience.staff.first_corner", "已选A，左键选B");
-        add("better_experience.staff.locked", "已锁定｜左键爆破｜右键取消");
+        add("better_experience.staff.locked", "已锁定｜左键爆破｜Shift+右键取消");
         add("better_experience.staff.no_mana", "魔力不足：需要 %s");
         add("better_experience.staff.no_target", "请瞄准范围内方块");
         add("better_experience.staff.out_of_reach", "超出触及范围");
@@ -42,6 +42,26 @@ public class ModChineseProvider extends LanguageProvider {
         add("key.better_experience.staff_select_modifier", "法杖选区修饰键（配合左键）");
         add("key.categories.better_experience", "更好的体验");
 
+        add("better_experience.fluid.title", "液体法杖");
+        add("better_experience.fluid.settings", "液体配置");
+        add("better_experience.fluid.search", "搜索液体");
+        add("better_experience.fluid.no_results", "无匹配液体");
+        add("better_experience.fluid.mode.absorb", "吸收模式");
+        add("better_experience.fluid.mode.place", "放置模式");
+        add("better_experience.fluid.clear_selection", "清除选区");
+        add("better_experience.fluid.total", "总量 %s/%s ml");
+        add("better_experience.fluid.total_infinite", "总量 ∞ ml");
+        add("better_experience.fluid.unit", "1000 ml = 1 格液体");
+        add("better_experience.fluid.locked", "已锁定｜左键使用｜Shift+右键取消");
+        add("better_experience.fluid.busy", "正在处理液体");
+        add("better_experience.fluid.absorbed", "已吸收 %s ml");
+        add("better_experience.fluid.placed", "已放置 %s ml");
+        add("better_experience.fluid.tooltip.settings", "右键配置；按住 G 选择形状");
+        add("better_experience.fluid.tooltip.select", "Shift+左键选区；滚轮调整");
+        add("better_experience.fluid.tooltip.locked", "右键锁定；Shift+右键取消");
+        add("better_experience.fluid.tooltip.capacity", "生存共存 512 格；创造无限");
+        add("better_experience.fluid.wheel_hold", "松开确认｜中心/Tab：液体｜Esc：取消");
+
         add("better_experience.space.title", "空间法杖");
         add("better_experience.space.search", "搜索方块");
         add("better_experience.space.search_help", "名称 / ID / @模组｜右键清空");
@@ -49,14 +69,14 @@ public class ModChineseProvider extends LanguageProvider {
         add("better_experience.space.pick", "取样");
         add("better_experience.space.properties", "状态 %s/%s");
         add("better_experience.space.apply", "保存");
-        add("better_experience.space.locked", "已锁定｜左键放置｜右键取消");
+        add("better_experience.space.locked", "已锁定｜左键放置｜Shift+右键取消");
         add("better_experience.space.size", "%s×%s×%s｜滚轮调整｜右键锁定");
         add("better_experience.space.busy", "正在放置，请稍候");
         add("better_experience.space.placed", "已放置 %s 个方块");
         add("better_experience.space.lacking", "材料不足，已放置 %s 个方块");
-        add("better_experience.space.tooltip.settings", "按住 G：形状轮盘；中心：方块状态");
+        add("better_experience.space.tooltip.settings", "右键配置；按住 G 选择形状");
         add("better_experience.space.tooltip.select", "Shift+左键选两点，滚轮调整");
-        add("better_experience.space.tooltip.locked", "右键锁定；左键放置；右键取消");
+        add("better_experience.space.tooltip.locked", "右键锁定；左键放置；Shift+右键取消");
         add("better_experience.space.tooltip.materials", "生存消耗材料；创造不限材料");
         add("better_experience.space.shape.cube", "实心立方体");
         add("better_experience.space.shape.hollow_cube", "空心立方体");
@@ -64,8 +84,9 @@ public class ModChineseProvider extends LanguageProvider {
         add("better_experience.space.shape.hollow_sphere", "空心球");
         add("better_experience.space.shape.line", "直线");
         add("better_experience.space.shape.bezier", "贝塞尔曲线");
-        add("key.better_experience.space_settings", "空间法杖设置");
+        add("key.better_experience.space_settings", "法杖形状轮盘");
         add(ModItems.SPACE_STAFF.get(), "空间法杖");
+        add(ModItems.FLUID_STAFF.get(), "液体法杖");
 
         add("better_experience.space.control", "%s %s：选区内位置 0–100%%");
         add("better_experience.space.property.axis", "轴向");
@@ -120,7 +141,7 @@ public class ModChineseProvider extends LanguageProvider {
         add("better_experience.tooltip.star_boom_staff.info", "随身镐与钻头决定镐力");
         add("better_experience.tooltip.magic_boom_staff.select", "Shift+左键：选区（默认键）");
         add("better_experience.tooltip.magic_boom_staff.corners", "左键选两点，滚轮调整，右键锁定");
-        add("better_experience.tooltip.magic_boom_staff.locked", "锁定后：左键爆破，右键取消");
+        add("better_experience.tooltip.magic_boom_staff.locked", "锁定后：左键爆破，Shift+右键取消");
         add("better_experience.tooltip.magic_boom_staff.move", "Shift+滚轮移动；Shift+中键前进");
         add("better_experience.tooltip.magic_boom_staff.mana", "每8格消耗1魔力，向上取整");
         add("better_experience.tooltip.potion_bag.info", "存放药水和食物");

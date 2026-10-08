@@ -8,6 +8,7 @@ import com.github.edg_thexu.better_experience.intergration.confluence.Confluence
 import com.github.edg_thexu.better_experience.intergration.confluence_lib.ConfluenceLibHelper;
 import com.github.edg_thexu.better_experience.module.autopotion.PlayerAttribute;
 import com.github.edg_thexu.better_experience.networks.NetworkHandler;
+import com.github.edg_thexu.better_experience.module.fluidstaff.FluidStaffHandler;
 import com.github.edg_thexu.better_experience.networks.s2c.ClientBoundConfigPacket;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
@@ -100,6 +101,7 @@ public class ModEvent {
 
     @SubscribeEvent
     public static void registerCapabilities(RegisterCapabilitiesEvent event) {
+        event.registerItem(Capabilities.FluidHandler.ITEM, (stack, context) -> new FluidStaffHandler(stack), ModItems.FLUID_STAFF.get());
         List<Block> supportBlocks = new ArrayList<>();
         supportBlocks.add(ModBlocks.AUTO_FISH_BLOCK.get());
         if(ConfluenceHelper.isLoaded()){

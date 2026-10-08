@@ -2,6 +2,8 @@ package com.github.edg_thexu.better_experience.networks;
 
 import com.github.edg_thexu.better_experience.intergration.jei.JeiHelper;
 import com.github.edg_thexu.better_experience.networks.c2s.BreakBlocksPacketC2S;
+import com.github.edg_thexu.better_experience.networks.c2s.FluidStaffSettingsPacketC2S;
+import com.github.edg_thexu.better_experience.networks.c2s.FluidStaffActionPacketC2S;
 import com.github.edg_thexu.better_experience.networks.c2s.PlaceBlocksPacketC2S;
 import com.github.edg_thexu.better_experience.networks.c2s.PotionApplyPacketC2S;
 import com.github.edg_thexu.better_experience.networks.c2s.SearchJeiIngredientsPacketC2S;
@@ -19,8 +21,10 @@ import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 public final class NetworkHandler {
 
     public static void register(RegisterPayloadHandlersEvent event) {
-        PayloadRegistrar registrar = event.registrar("6");
+        PayloadRegistrar registrar = event.registrar("7");
         registrar.playBidirectional(PotionApplyPacketC2S.TYPE, PotionApplyPacketC2S.STREAM_CODEC, PotionApplyPacketC2S::handle);
+        registrar.playToServer(FluidStaffSettingsPacketC2S.TYPE, FluidStaffSettingsPacketC2S.STREAM_CODEC, FluidStaffSettingsPacketC2S::handle);
+        registrar.playToServer(FluidStaffActionPacketC2S.TYPE, FluidStaffActionPacketC2S.STREAM_CODEC, FluidStaffActionPacketC2S::handle);
         registrar.playToServer(PlaceBlocksPacketC2S.TYPE, PlaceBlocksPacketC2S.STREAM_CODEC, PlaceBlocksPacketC2S::handle);
         registrar.playToServer(SpaceStaffSettingsPacketC2S.TYPE, SpaceStaffSettingsPacketC2S.STREAM_CODEC, SpaceStaffSettingsPacketC2S::handle);
         registrar.playToServer(SpaceBezierSelectionPacketC2S.TYPE, SpaceBezierSelectionPacketC2S.STREAM_CODEC, SpaceBezierSelectionPacketC2S::handle);

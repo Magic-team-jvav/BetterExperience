@@ -2,6 +2,9 @@ package com.github.edg_thexu.better_experience.init;
 
 import com.github.edg_thexu.better_experience.Better_experience;
 import com.github.edg_thexu.better_experience.data.component.ItemContainerComponent;
+import com.github.edg_thexu.better_experience.data.component.FluidStaffSettings;
+import com.github.edg_thexu.better_experience.data.component.FluidStaffStorage;
+import com.github.edg_thexu.better_experience.item.FluidStaff;
 import com.github.edg_thexu.better_experience.data.component.SpaceStaffSettings;
 import com.github.edg_thexu.better_experience.item.DebugItem;
 import com.github.edg_thexu.better_experience.item.MagicBoomStaff;
@@ -22,6 +25,11 @@ public class ModItems {
     public static final DeferredItem<Item> SPACE_STAFF = TOOLS.register("space_staff",
             () -> new SpaceStaff(new Item.Properties().stacksTo(1)
                     .component(ModDataComponentTypes.SPACE_STAFF_SETTINGS.get(), SpaceStaffSettings.defaults())));
+    public static final DeferredItem<Item> FLUID_STAFF = TOOLS.register("fluid_staff",
+            () -> new FluidStaff(new Item.Properties().stacksTo(1)
+                    .component(ModDataComponentTypes.SPACE_STAFF_SETTINGS.get(), SpaceStaffSettings.defaults())
+                    .component(ModDataComponentTypes.FLUID_STAFF_SETTINGS.get(), FluidStaffSettings.defaults())
+                    .component(ModDataComponentTypes.FLUID_STAFF_STORAGE.get(), FluidStaffStorage.EMPTY)));
     public static final DeferredItem<Item> POTION_BAG = TOOLS.register("potion_bag",
             () -> new PotionBag(new Item.Properties().stacksTo(1)
                     .component(ModDataComponentTypes.ITEM_CONTAINER_COMPONENT, new ItemContainerComponent(18))));

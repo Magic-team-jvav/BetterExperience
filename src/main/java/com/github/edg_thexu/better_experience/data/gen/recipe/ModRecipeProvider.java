@@ -54,6 +54,12 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy("has_ender_pearl", has(Items.ENDER_PEARL))
                 .save(recipeOutput);
 
+        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.FLUID_STAFF)
+                .pattern("  a").pattern(" b ").pattern("b  ")
+                .define('a', Items.BUCKET).define('b', Items.STICK)
+                .unlockedBy("has_bucket", has(Items.BUCKET))
+                .save(recipeOutput);
+
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.POTION_BAG)
                 .pattern("aaa")
                 .pattern("a a")
