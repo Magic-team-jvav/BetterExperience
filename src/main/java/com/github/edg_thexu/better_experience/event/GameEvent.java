@@ -8,6 +8,9 @@ import com.github.edg_thexu.better_experience.module.boomstaff.ExplodeManager;
 import com.github.edg_thexu.better_experience.module.spacestaff.SpacePlacementManager;
 import com.github.edg_thexu.better_experience.module.fluidstaff.FluidStaffManager;
 import net.minecraft.resources.ResourceKey;
+import com.github.edg_thexu.better_experience.module.locator.StructureLocatorManager;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.FishingHook;
@@ -38,6 +41,7 @@ public class GameEvent {
         ExplodeManager.getInstance().clear();
         SpacePlacementManager.getInstance().clear();
         FluidStaffManager.getInstance().clear();
+        StructureLocatorManager.getInstance().clear();
     }
 
     @SubscribeEvent
@@ -45,7 +49,26 @@ public class GameEvent {
         ExplodeManager.getInstance().tickHandle();
         SpacePlacementManager.getInstance().tick();
         FluidStaffManager.getInstance().tick();
+        StructureLocatorManager.getInstance().tick();
 
+    }
+
+    @SubscribeEvent
+    public static void locatorLogin(PlayerEvent.PlayerLoggedInEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player) StructureLocatorManager.getInstance().synchronize(player);
+    }
+
+    @SubscribeEvent
+    public static void locatorDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player) {
+            StructureLocatorManager.getInstance().cancel(player.getUUID());
+            StructureLocatorManager.getInstance().synchronize(player);
+        }
+    }
+
+    @SubscribeEvent
+    public static void locatorLogout(PlayerEvent.PlayerLoggedOutEvent event) {
+        StructureLocatorManager.getInstance().cancel(event.getEntity().getUUID());
     }
 
     @SubscribeEvent(priority = EventPriority.HIGH)

@@ -7,9 +7,13 @@ import com.github.edg_thexu.better_experience.data.component.FluidStaffStorage;
 import com.github.edg_thexu.better_experience.item.FluidStaff;
 import com.github.edg_thexu.better_experience.data.component.SpaceStaffSettings;
 import com.github.edg_thexu.better_experience.item.DebugItem;
+import com.github.edg_thexu.better_experience.item.AmmoChain;
+import com.github.edg_thexu.better_experience.data.component.AmmoChainSettings;
+import com.github.edg_thexu.better_experience.data.component.AmmoChainCursor;
 import com.github.edg_thexu.better_experience.item.MagicBoomStaff;
 import com.github.edg_thexu.better_experience.item.PotionBag;
 import com.github.edg_thexu.better_experience.item.SpaceStaff;
+import com.github.edg_thexu.better_experience.item.StructureLocatorOrb;
 import com.github.edg_thexu.better_experience.item.UniversalController;
 import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.IEventBus;
@@ -30,6 +34,11 @@ public class ModItems {
                     .component(ModDataComponentTypes.SPACE_STAFF_SETTINGS.get(), SpaceStaffSettings.defaults())
                     .component(ModDataComponentTypes.FLUID_STAFF_SETTINGS.get(), FluidStaffSettings.defaults())
                     .component(ModDataComponentTypes.FLUID_STAFF_STORAGE.get(), FluidStaffStorage.EMPTY)));
+    public static final DeferredItem<Item> STRUCTURE_LOCATOR_ORB = TOOLS.register("structure_locator_orb",
+            () -> new StructureLocatorOrb(new Item.Properties().stacksTo(1)));
+    public static final DeferredItem<Item> AMMO_CHAIN = TOOLS.register("ammo_chain", () -> new AmmoChain(new Item.Properties().stacksTo(1)
+            .component(ModDataComponentTypes.AMMO_CHAIN_SETTINGS.get(), AmmoChainSettings.defaults())
+            .component(ModDataComponentTypes.AMMO_CHAIN_CURSOR.get(), AmmoChainCursor.DEFAULT)));
     public static final DeferredItem<Item> POTION_BAG = TOOLS.register("potion_bag",
             () -> new PotionBag(new Item.Properties().stacksTo(1)
                     .component(ModDataComponentTypes.ITEM_CONTAINER_COMPONENT, new ItemContainerComponent(18))));

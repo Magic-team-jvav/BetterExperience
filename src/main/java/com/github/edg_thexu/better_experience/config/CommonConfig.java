@@ -3,6 +3,7 @@ package com.github.edg_thexu.better_experience.config;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
 public class CommonConfig {
+    public static ModConfigSpec.IntValue LOCATOR_SEARCH_RADIUS;
     //************************* Item *************************
     /**
      * 是否开启药水无线续杯
@@ -97,6 +98,8 @@ public class CommonConfig {
         final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
 
         BUILDER.push("Item");
+        LOCATOR_SEARCH_RADIUS = BUILDER.comment("Structure locator search radius in blocks; previously marked starts are excluded per player.")
+                .defineInRange("locator_search_radius", 32768, 256, 262144);
 
         // 药水无线续杯
         AUTO_POTION_OPEN = BUILDER

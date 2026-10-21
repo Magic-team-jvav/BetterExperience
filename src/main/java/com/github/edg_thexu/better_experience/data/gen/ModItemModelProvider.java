@@ -40,6 +40,15 @@ public class ModItemModelProvider extends ItemModelProvider {
         TOOLS.forEach(registry -> registry.getEntries().forEach(item -> {
             String path = item.getId().getPath().toLowerCase();
             try {
+                if (path.equals("structure_locator_orb")) {
+                    withExistingParent("item/" + path, "minecraft:item/generated").texture("layer0", "minecraft:item/ender_eye");
+                    return;
+                }
+                if (path.equals("ammo_chain")) {
+                    withExistingParent("item/" + path, "minecraft:item/generated")
+                            .texture("layer0", "minecraft:item/chain").texture("layer1", "minecraft:item/arrow");
+                    return;
+                }
                 String texture = (path.equals("space_staff") || path.equals("fluid_staff")) ? "star_boom_staff" : path;
                 withExistingParent("item/"+path, "item/handheld").texture("layer0", Better_experience.space("item/"+texture));
                 }

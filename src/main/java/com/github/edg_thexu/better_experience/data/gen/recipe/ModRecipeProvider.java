@@ -60,6 +60,16 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy("has_bucket", has(Items.BUCKET))
                 .save(recipeOutput);
 
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, ModItems.STRUCTURE_LOCATOR_ORB)
+                .requires(Items.ENDER_EYE).requires(Items.AMETHYST_SHARD).requires(Items.COMPASS)
+                .unlockedBy("has_compass", has(Items.COMPASS)).save(recipeOutput);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.AMMO_CHAIN)
+                .pattern("ici").pattern("ala").pattern("ici")
+                .define('i', Items.IRON_INGOT).define('c', Items.CHAIN)
+                .define('a', Items.ARROW).define('l', Items.LEATHER)
+                .unlockedBy("has_chain", has(Items.CHAIN)).save(recipeOutput);
+
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.POTION_BAG)
                 .pattern("aaa")
                 .pattern("a a")

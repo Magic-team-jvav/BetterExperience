@@ -42,6 +42,48 @@ public class ModChineseProvider extends LanguageProvider {
         add("key.better_experience.staff_select_modifier", "法杖选区修饰键（配合左键）");
         add("key.categories.better_experience", "更好的体验");
 
+        add("better_experience.locator.title", "结构定位球");
+        add("better_experience.ammo_chain.title", "弹药链");
+        add("better_experience.ammo_chain.slot", "槽位 %s");
+        add("better_experience.ammo_chain.slot_details", "槽位 %s\n%s × %s");
+        add("better_experience.ammo_chain.empty", "空槽");
+        add("better_experience.ammo_chain.add_slot", "添加槽位");
+        add("better_experience.ammo_chain.clear", "清空");
+        add("better_experience.ammo_chain.shots", "连射数量");
+        add("better_experience.ammo_chain.search", "搜索弹药");
+        add("better_experience.ammo_chain.enabled", "已启用");
+        add("better_experience.ammo_chain.disabled", "已停用");
+        add("better_experience.ammo_chain.enabled_help", "携带并启用时循环发射，缺弹自动跳过");
+        add("better_experience.ammo_chain.cancel", "取消");
+        add("better_experience.ammo_chain.save", "保存");
+        add("better_experience.ammo_chain.no_ammo", "背包中无匹配弹药");
+        add("better_experience.ammo_chain.tooltip.configure", "右键配置弹药与数量");
+        add("better_experience.ammo_chain.tooltip.use", "背包携带生效，消耗背包弹药");
+        add("better_experience.ammo_chain.tooltip.slots", "%s槽 · 缺弹自动跳过");
+        add("better_experience.locator.search", "搜索结构 / @模组");
+        add("better_experience.locator.select", "选择目标");
+        add("better_experience.locator.locate", "定位 · %s金币");
+        add("better_experience.locator.locate_free", "定位 · 免费");
+        add("better_experience.locator.cost_help", "成功扣%s金币，失败免费；创造免费");
+        add("better_experience.locator.insufficient_funds", "金币不足，定位需要1金币");
+        add("better_experience.locator.no_change_space", "零钱空间不足，请空出一格再试");
+        add("better_experience.locator.marked_paid", "已标记 · 消耗%s金币");
+        add("better_experience.locator.target", "目标：%s");
+        add("better_experience.locator.no_results", "无匹配结构");
+        add("better_experience.locator.marked", "已标记 %s 处");
+        add("better_experience.locator.unavailable", "此维度不生成该结构");
+        add("better_experience.locator.busy", "正在定位，请稍候");
+        add("better_experience.locator.searching", "正在搜索 %s 格内的未标记结构");
+        add("better_experience.locator.not_found", "范围内没有未标记的目标结构");
+        add("better_experience.locator.limit", "搜索达到限制，可换位置重试");
+        add("better_experience.locator.error", "搜索失败，详情见服务器日志");
+        add("better_experience.locator.history_full", "标记记录已满");
+        add("better_experience.locator.found", "已标记 %s：%s, %s, %s");
+        add("better_experience.locator.marked_success", "已标记｜右键定位下一处");
+        add("better_experience.locator.tooltip.use", "右键定位最近的未标记结构");
+        add("better_experience.locator.tooltip.settings", "Shift+右键：选择结构");
+        add("better_experience.locator.tooltip.history", "记录跟随玩家和世界保存");
+
         add("better_experience.fluid.title", "液体法杖");
         add("better_experience.fluid.settings", "液体配置");
         add("better_experience.fluid.search", "搜索液体");
@@ -87,6 +129,8 @@ public class ModChineseProvider extends LanguageProvider {
         add("key.better_experience.space_settings", "法杖形状轮盘");
         add(ModItems.SPACE_STAFF.get(), "空间法杖");
         add(ModItems.FLUID_STAFF.get(), "液体法杖");
+        add(ModItems.STRUCTURE_LOCATOR_ORB.get(), "结构定位球");
+        add(ModItems.AMMO_CHAIN.get(), "弹药链");
 
         add("better_experience.space.control", "%s %s：选区内位置 0–100%%");
         add("better_experience.space.property.axis", "轴向");

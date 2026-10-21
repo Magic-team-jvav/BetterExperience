@@ -2,6 +2,8 @@ package com.github.edg_thexu.better_experience.networks;
 
 import com.github.edg_thexu.better_experience.intergration.jei.JeiHelper;
 import com.github.edg_thexu.better_experience.networks.c2s.BreakBlocksPacketC2S;
+import com.github.edg_thexu.better_experience.networks.c2s.AmmoChainSettingsPacketC2S;
+import com.github.edg_thexu.better_experience.networks.s2c.AmmoChainOpenPacket;
 import com.github.edg_thexu.better_experience.networks.c2s.FluidStaffSettingsPacketC2S;
 import com.github.edg_thexu.better_experience.networks.c2s.FluidStaffActionPacketC2S;
 import com.github.edg_thexu.better_experience.networks.c2s.PlaceBlocksPacketC2S;
@@ -15,14 +17,22 @@ import com.github.edg_thexu.better_experience.networks.s2c.ClientBoundConfigPack
 import com.github.edg_thexu.better_experience.networks.s2c.EnderChestItemsS2C;
 import com.github.edg_thexu.better_experience.networks.s2c.SyncDataS2C;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import com.github.edg_thexu.better_experience.networks.c2s.LocatorTargetPacketC2S;
+import com.github.edg_thexu.better_experience.networks.s2c.LocatorCatalogPacket;
+import com.github.edg_thexu.better_experience.networks.s2c.LocatorMarkersPacket;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 
 public final class NetworkHandler {
 
     public static void register(RegisterPayloadHandlersEvent event) {
-        PayloadRegistrar registrar = event.registrar("7");
+        PayloadRegistrar registrar = event.registrar("9");
+        registrar.playToServer(AmmoChainSettingsPacketC2S.TYPE, AmmoChainSettingsPacketC2S.STREAM_CODEC, AmmoChainSettingsPacketC2S::handle);
+        registrar.playToClient(AmmoChainOpenPacket.TYPE, AmmoChainOpenPacket.STREAM_CODEC, AmmoChainOpenPacket::handle);
         registrar.playBidirectional(PotionApplyPacketC2S.TYPE, PotionApplyPacketC2S.STREAM_CODEC, PotionApplyPacketC2S::handle);
+        registrar.playToServer(LocatorTargetPacketC2S.TYPE, LocatorTargetPacketC2S.STREAM_CODEC, LocatorTargetPacketC2S::handle);
+        registrar.playToClient(LocatorCatalogPacket.TYPE, LocatorCatalogPacket.STREAM_CODEC, LocatorCatalogPacket::handle);
+        registrar.playToClient(LocatorMarkersPacket.TYPE, LocatorMarkersPacket.STREAM_CODEC, LocatorMarkersPacket::handle);
         registrar.playToServer(FluidStaffSettingsPacketC2S.TYPE, FluidStaffSettingsPacketC2S.STREAM_CODEC, FluidStaffSettingsPacketC2S::handle);
         registrar.playToServer(FluidStaffActionPacketC2S.TYPE, FluidStaffActionPacketC2S.STREAM_CODEC, FluidStaffActionPacketC2S::handle);
         registrar.playToServer(PlaceBlocksPacketC2S.TYPE, PlaceBlocksPacketC2S.STREAM_CODEC, PlaceBlocksPacketC2S::handle);

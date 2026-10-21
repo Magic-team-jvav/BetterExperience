@@ -12,6 +12,11 @@
     "ProjectileWeaponItemMixin",
     "RecipeManagerMixin",
     "integration.confluence.AbstractPotionItemMixin",
+    "integration.confluence.LivingProjectileSelectionMixin",
+    "integration.confluence.TerraProjectileWeaponMixin",
+    "integration.confluence.DaedalusStormbowMixin",
+    "integration.confluence.AmmoChainStormbowReleaseMixin",
+    "integration.confluence.AmmoChainRepeaterMixin",
     "integration.confluence.BossSummingItemMixin",
     "integration.confluence.NPCReforgeMenuMixin",
     "integration.confluence.StoneSaplingBlockMixin",
@@ -23,7 +28,9 @@
     "integration.confluence.herbs.ShiveringThornMixin",
     "integration.confluence.herbs.WaterleafMixin",
     "integration.jei.RecipeGuiLayoutsMixin",
-    "integration.jei.RecipeLayoutWithButtonsMixin"
+    "integration.jei.RecipeLayoutWithButtonsMixin",
+    "integration.terra_gun.AmmoChainBulletHandlerMixin",
+    "integration.terra_gun.AmmoChainGunMixin"
   ],
   "client": [
     "accessor.ScreenAccessor",

@@ -7,6 +7,7 @@ import com.github.edg_thexu.better_experience.client.buffer.AABBBuffer;
 import com.github.edg_thexu.better_experience.client.gui.SpaceShapeWheelScreen;
 import com.github.edg_thexu.better_experience.client.gui.container.PotionBagScreen;
 import com.github.edg_thexu.better_experience.client.gui.hud.SpaceStaffHud;
+import com.github.edg_thexu.better_experience.client.locator.LocatorClient;
 import com.github.edg_thexu.better_experience.config.ClientConfig;
 import com.github.edg_thexu.better_experience.init.ModAttachments;
 import com.github.edg_thexu.better_experience.intergration.confluence.ConfluenceHelper;
@@ -45,6 +46,7 @@ public class ClientGameEvent {
     @SubscribeEvent
     public static void staffTick(ClientTickEvent.Post event) {
         StaffSelectionHandler.tick();
+        LocatorClient.tick();
         while (StaffKeyMappings.SPACE_SETTINGS.consumeClick()) {
             var minecraft = Minecraft.getInstance();
             if (minecraft.screen == null && minecraft.player != null
@@ -58,6 +60,7 @@ public class ClientGameEvent {
     @SubscribeEvent
     public static void renderSpaceStaffPreview(RenderGuiEvent.Post event) {
         SpaceStaffHud.render(event.getGuiGraphics());
+        LocatorClient.render(event.getGuiGraphics());
     }
 
     @SubscribeEvent
