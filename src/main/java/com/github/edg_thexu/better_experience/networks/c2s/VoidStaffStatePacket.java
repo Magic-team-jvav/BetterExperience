@@ -10,6 +10,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
+import org.confluence.lib.util.LibStreamCodecUtils;
 
 import java.util.UUID;
 
@@ -17,7 +18,7 @@ public record VoidStaffStatePacket(int slot, UUID token, BlockState state) imple
     public static final Type<VoidStaffStatePacket> TYPE = new Type<>(Better_experience.space("void_staff_state"));
     public static final StreamCodec<RegistryFriendlyByteBuf, VoidStaffStatePacket> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.VAR_INT, VoidStaffStatePacket::slot, UUIDUtil.STREAM_CODEC, VoidStaffStatePacket::token,
-            ByteBufCodecs.fromCodecWithRegistries(BlockState.CODEC), VoidStaffStatePacket::state, VoidStaffStatePacket::new);
+            LibStreamCodecUtils.BLOCK_STATE, VoidStaffStatePacket::state, VoidStaffStatePacket::new);
     @Override public Type<? extends CustomPacketPayload> type() { return TYPE; }
     public static void handle(VoidStaffStatePacket packet, IPayloadContext context) {
         context.enqueueWork(() -> {

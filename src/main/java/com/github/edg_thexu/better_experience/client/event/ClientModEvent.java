@@ -4,6 +4,7 @@ import com.github.edg_thexu.better_experience.Better_experience;
 import com.github.edg_thexu.better_experience.client.StaffKeyMappings;
 import com.github.edg_thexu.better_experience.client.buffer.StaffHighlightShader;
 import com.github.edg_thexu.better_experience.client.gui.container.AutoFishScreen;
+import com.github.edg_thexu.better_experience.client.gui.container.ChronopilotScreen;
 import com.github.edg_thexu.better_experience.client.gui.container.PotionBagScreen;
 import com.github.edg_thexu.better_experience.client.renderer.AutoFishBlockRenderer;
 import com.github.edg_thexu.better_experience.client.renderer.AutoSellBlockRenderer;
@@ -36,6 +37,7 @@ public class ClientModEvent {
 
     @SubscribeEvent
     public static void registerMenuScreens(RegisterMenuScreensEvent event) {
+        event.register(ModMenus.CHRONOPILOT_MENU.get(), ChronopilotScreen::new);
         event.register(ModMenus.AUTO_FISH_MENU.get(), AutoFishScreen::new);
         event.register(ModMenus.POTION_BAG_MENU.get(), PotionBagScreen::new);
 

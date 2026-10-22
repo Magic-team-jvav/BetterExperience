@@ -9,7 +9,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.*;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.item.Item;
@@ -26,6 +25,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.ChestType;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
+import org.confluence.lib.util.LibUtils;
 import org.confluence.mod.common.component.ValueComponent;
 import org.confluence.mod.common.init.ModTags;
 import org.confluence.mod.util.PlayerUtils;
@@ -143,7 +143,7 @@ public class AutoSellBlock extends BaseEntityBlock {
                                         }
                                     }
                                     if (k == 27) {
-                                        level.addFreshEntity(new ItemEntity(level, pos.getX(), pos.getY() - 1, pos.getZ(), new ItemStack(item, coins.getInt(j))));
+                                        LibUtils.createItemEntity(item, coins.getInt(j), pos.getX(), pos.getY() - 1, pos.getZ(), level, 0);
                                     }
                                 }
                                 break;

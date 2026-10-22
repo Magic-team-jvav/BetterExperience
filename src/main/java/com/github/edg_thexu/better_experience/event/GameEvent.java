@@ -28,6 +28,7 @@ import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.entity.player.ItemFishedEvent;
 import net.neoforged.neoforge.event.server.ServerStoppedEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import org.confluence.lib.util.LibMathUtils;
 import org.confluence.mod.common.init.ModEffects;
 import org.confluence.mod.common.init.ModLootTables;
 import org.confluence.mod.mixed.IMinecraftServer;
@@ -96,7 +97,7 @@ public class GameEvent {
                 float chance = player != null && player.hasEffect(ModEffects.CRATE) ? 0.25f : 0.1f;
                 chance += luck / 30f;
 
-                if (level.random.nextFloat() < chance) {
+                if (LibMathUtils.checkChance(chance, level.random)) {
                     ResourceKey<LootTable> lootTable = IMinecraftServer.isHardmode(level.getServer()) ? ModLootTables.CRATE_HARDMODE : ModLootTables.CRATE;
                     items = serverLevel.getServer().reloadableRegistries().getLootTable(lootTable)
                             .getRandomItems(new LootParams.Builder(serverLevel)

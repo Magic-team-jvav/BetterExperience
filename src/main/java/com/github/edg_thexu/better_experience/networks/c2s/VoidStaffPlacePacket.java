@@ -11,6 +11,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
+import org.confluence.lib.util.LibStreamCodecUtils;
 
 import java.util.UUID;
 
@@ -18,7 +19,7 @@ public record VoidStaffPlacePacket(int slot, UUID token, BlockPos pos, BlockStat
     public static final Type<VoidStaffPlacePacket> TYPE = new Type<>(Better_experience.space("void_staff_place"));
     public static final StreamCodec<RegistryFriendlyByteBuf, VoidStaffPlacePacket> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.VAR_INT, VoidStaffPlacePacket::slot, UUIDUtil.STREAM_CODEC, VoidStaffPlacePacket::token,
-            BlockPos.STREAM_CODEC, VoidStaffPlacePacket::pos, ByteBufCodecs.fromCodecWithRegistries(BlockState.CODEC),
+            BlockPos.STREAM_CODEC, VoidStaffPlacePacket::pos, LibStreamCodecUtils.BLOCK_STATE,
             VoidStaffPlacePacket::state, VoidStaffPlacePacket::new);
     @Override public Type<? extends CustomPacketPayload> type() { return TYPE; }
     public static void handle(VoidStaffPlacePacket packet, IPayloadContext context) {

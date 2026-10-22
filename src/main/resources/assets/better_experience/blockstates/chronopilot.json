@@ -1,0 +1,36 @@
+{
+  "variants": {
+    "facing=north,vertical_two_part=base": {
+      "model": "better_experience:block/chronopilot_base",
+      "y": 0
+    },
+    "facing=north,vertical_two_part=up": {
+      "model": "better_experience:block/chronopilot_up",
+      "y": 0
+    },
+    "facing=east,vertical_two_part=base": {
+      "model": "better_experience:block/chronopilot_base",
+      "y": 90
+    },
+    "facing=east,vertical_two_part=up": {
+      "model": "better_experience:block/chronopilot_up",
+      "y": 90
+    },
+    "facing=south,vertical_two_part=base": {
+      "model": "better_experience:block/chronopilot_base",
+      "y": 180
+    },
+    "facing=south,vertical_two_part=up": {
+      "model": "better_experience:block/chronopilot_up",
+      "y": 180
+    },
+    "facing=west,vertical_two_part=base": {
+      "model": "better_experience:block/chronopilot_base",
+      "y": 270
+    },
+    "facing=west,vertical_two_part=up": {
+      "model": "better_experience:block/chronopilot_up",
+      "y": 270
+    }
+  }
+}

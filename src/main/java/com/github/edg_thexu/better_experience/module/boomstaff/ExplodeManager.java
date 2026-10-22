@@ -15,6 +15,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.CommonHooks;
+import org.confluence.lib.util.LibMathUtils;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -96,7 +97,7 @@ public class ExplodeManager {
                         : List.<ItemStack>of();
                 if (!level.destroyBlock(pos, false, player)) continue;
                 allDrops.addAll(drops);
-                if (level.random.nextFloat() < 0.05f) {
+                if (LibMathUtils.checkChance(0.05f, level.random)) {
                     level.playSound(null, pos, SoundEvents.GENERIC_EXPLODE.value(), SoundSource.BLOCKS, 0.2f,0.6f);
                     level.sendParticles(ParticleTypes.EXPLOSION, pos.getX(), pos.getY(), pos.getZ(), 1, 0.5, 0.1,0,0);
                 }

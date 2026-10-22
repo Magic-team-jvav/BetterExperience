@@ -33,6 +33,7 @@
     "integration.terra_gun.AmmoChainGunMixin"
   ],
   "client": [
+    "integration.confluence.ChronopilotInformationMixin",
     "accessor.PreviewRenderTypeAccess",
     "accessor.PreviewRenderStateAccess",
     "accessor.PreviewTextureAccess",

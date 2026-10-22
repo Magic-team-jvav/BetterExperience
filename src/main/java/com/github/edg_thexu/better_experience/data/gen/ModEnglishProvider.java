@@ -31,6 +31,16 @@ public class ModEnglishProvider extends LanguageProvider {
         add("creativetab.better_experience.item", "Confluence | Better Experience");
 
 
+        add("better_experience.chronopilot.current", "Time: %s");
+        add("better_experience.chronopilot.hour", "Hour");
+        add("better_experience.chronopilot.minute", "Minute");
+        add("better_experience.chronopilot.apply", "Set time");
+        add("better_experience.chronopilot.dawn", "Dawn");
+        add("better_experience.chronopilot.noon", "Noon");
+        add("better_experience.chronopilot.dusk", "Dusk");
+        add("better_experience.chronopilot.midnight", "Midnight");
+        add("better_experience.chronopilot.world_time", "World time · 24-hour clock");
+
         // items
         Consumer<DeferredHolder<Item, ? extends Item>> itemAction = item -> add(item.get(), toTitleCase(item.getId().getPath()));
         ModItems.ITEMS.getEntries().forEach(itemAction);

@@ -4,10 +4,10 @@ import com.github.edg_thexu.better_experience.module.boomstaff.StaffSelectionBou
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.phys.Vec3;
+import org.confluence.lib.util.LibUtils;
 
 /** Two independent radii; a horizontal circle and a vertical scale describe a spheroid. */
 public record SpaceSphere(Vec3 center, double horizontalRadius, double verticalRadius) {
-    private static final Direction[] DIRECTIONS = Direction.values();
     public static SpaceSphere fromBounds(StaffSelectionBounds bounds) {
         return new SpaceSphere(bounds.center(),
                 Math.min(bounds.max().getX() - bounds.min().getX() + 1,
@@ -38,7 +38,7 @@ public record SpaceSphere(Vec3 center, double horizontalRadius, double verticalR
     }
 
     public boolean isShell(BlockPos pos) {
-        for (Direction direction : DIRECTIONS) {
+        for (Direction direction : LibUtils.DIRECTIONS) {
             if (!contains(pos.relative(direction))) return true;
         }
         return false;

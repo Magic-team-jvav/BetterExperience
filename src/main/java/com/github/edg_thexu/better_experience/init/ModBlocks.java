@@ -3,6 +3,7 @@ package com.github.edg_thexu.better_experience.init;
 import com.github.edg_thexu.better_experience.Better_experience;
 import com.github.edg_thexu.better_experience.block.AutoFishBlock;
 import com.github.edg_thexu.better_experience.block.AutoSellBlock;
+import com.github.edg_thexu.better_experience.block.ChronopilotBlock;
 import com.github.edg_thexu.better_experience.block.ReforgeBlock;
 import com.github.edg_thexu.better_experience.intergration.confluence.ConfluenceHelper;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -28,6 +29,11 @@ public class ModBlocks {
     public static final DeferredBlock<AutoFishBlock> AUTO_FISH_BLOCK = registerSingleBlock("auto_fish_block", ()-> new AutoFishBlock(Block.Properties.ofFullCopy(Blocks.GOLD_BLOCK).lightLevel(state->state.getValue(AutoFishBlock.TURN)? 10 : 0)));
     public static final Supplier<BlockEntityType<AutoFishBlock.AutoFishMachineEntity>> AUTO_FISH_BLOCK_ENTITY = registerBlockEntity("auto_fish_block_entity", () -> BlockEntityType.Builder.of(AutoFishBlock.AutoFishMachineEntity::new, AUTO_FISH_BLOCK.get()).build(null));
     public static final DeferredItem<BlockItem> AUTO_FISH_BLOCK_ITEM = ModItems.ITEMS.register("auto_fish_block", () -> new AutoFishBlock.Item(AUTO_FISH_BLOCK.get()));
+
+    public static final DeferredBlock<ChronopilotBlock> CHRONOPILOT = registerWithItem("chronopilot",
+            () -> new ChronopilotBlock(Block.Properties.ofFullCopy(Blocks.DARK_OAK_PLANKS).noOcclusion()));
+    public static final Supplier<BlockEntityType<ChronopilotBlock.Entity>> CHRONOPILOT_ENTITY = registerBlockEntity("chronopilot",
+            () -> BlockEntityType.Builder.of(ChronopilotBlock.Entity::new, CHRONOPILOT.get()).build(null));
 
     // 以下是加载confluence以后才会注册
     public static final DeferredBlock<AutoSellBlock> AUTO_SELL_BLOCK = registerDecoration("auto_sell_block", ()-> new AutoSellBlock(Block.Properties.ofFullCopy(Blocks.STONE).noOcclusion()), ModBlocks::registerWithItem, ConfluenceHelper::isLoaded);

@@ -28,6 +28,10 @@ public class ModItemModelProvider extends ItemModelProvider {
         ALL.forEach(registry -> registry.getEntries().forEach(item -> {
             String path = item.getId().getPath().toLowerCase();
             try {
+                if (path.equals("chronopilot")) {
+                    withExistingParent("item/chronopilot", Better_experience.space("block/chronopilot_item"));
+                    return;
+                }
                 withExistingParent("item/"+path, "item/generated").texture("layer0", Better_experience.space("item/"+path));
             }catch (Exception e){
                 withExistingParent("item/"+path,MISSING_ITEM);
