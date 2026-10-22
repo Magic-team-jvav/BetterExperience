@@ -28,6 +28,11 @@ public class ModRecipeProvider extends RecipeProvider {
     @Override
     protected void buildRecipes(RecipeOutput recipeOutput) {
 
+        ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, ModBlocks.CHRONOPILOT)
+                .pattern("ppp").pattern("pcp").pattern("pgp")
+                .define('p', Items.DARK_OAK_PLANKS).define('c', Items.CLOCK).define('g', Items.GOLD_INGOT)
+                .unlockedBy("has_clock", has(Items.CLOCK)).save(recipeOutput);
+
         ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, ModBlocks.AUTO_FISH_BLOCK)
                 .pattern("aaa")
                 .pattern("bcb")

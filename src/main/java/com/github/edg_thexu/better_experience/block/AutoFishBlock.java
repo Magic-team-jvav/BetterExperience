@@ -21,7 +21,6 @@ import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.*;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.FishingHook;
@@ -46,6 +45,8 @@ import net.minecraft.world.level.block.state.properties.ChestType;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
+import org.confluence.lib.util.LibMathUtils;
+import org.confluence.lib.util.LibUtils;
 import org.confluence.mod.client.renderer.item.SimpleGeoItemRenderer;
 import org.confluence.mod.common.init.ModTags;
 import org.confluence.mod.common.init.item.AccessoryItems;
@@ -234,16 +235,12 @@ public class AutoFishBlock extends BaseEntityBlock {
 //                                    pos.getX() + 0.5 + r * Math.sin(dir),
 //                                    pos.getY() + 1,
 //                                    pos.getZ() + 0.5 + r * Math.cos(dir), item);
-                                ItemEntity itemEntity = new ItemEntity(level,
-                                        pos.getX() + 0.5,
-                                        pos.getY() + 1,
-                                        pos.getZ() + 0.5, item);
-                                level.addFreshEntity(itemEntity);
+                                LibUtils.createItemEntity(item, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, level, 0);
                             }
                         }
 
                         // 消耗鱼饵, 根据运气降低消耗概率
-                        if (!bait.isEmpty() && level.random.nextFloat() < 0.33f - entity.owner.getLuck() * 0.2f) {
+                        if (!bait.isEmpty() && LibMathUtils.checkChance(0.33f - entity.owner.getLuck() * 0.2f, level.random)) {
                             bait.shrink(1);
                         }
                         if (!entity.tryStart(entity.owner)) {

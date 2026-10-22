@@ -20,6 +20,17 @@ public class ModChineseProvider extends LanguageProvider {
 
         add("creativetab.better_experience.item", "汇流来世 | 更好的体验");
 
+        add(ModBlocks.CHRONOPILOT.get(), "Chronopilot 时钟");
+        add("better_experience.chronopilot.current", "时间 %s");
+        add("better_experience.chronopilot.hour", "时");
+        add("better_experience.chronopilot.minute", "分");
+        add("better_experience.chronopilot.apply", "设置时间");
+        add("better_experience.chronopilot.dawn", "清晨");
+        add("better_experience.chronopilot.noon", "正午");
+        add("better_experience.chronopilot.dusk", "黄昏");
+        add("better_experience.chronopilot.midnight", "午夜");
+        add("better_experience.chronopilot.world_time", "调整世界时间 · 24小时制");
+
         // items
         add(ModItems.MAGIC_BOOM_STAFF.get(), "法爆魔杖");
         add(ModItems.STAR_BOOM_STAFF.get(), "星爆魔杖");

@@ -22,6 +22,7 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
 
     @Override
     protected void addTags(HolderLookup.@NotNull Provider provider) {
+        tag(BlockTags.MINEABLE_WITH_AXE).add(ModBlocks.CHRONOPILOT.get());
         tag(BlockTags.NEEDS_STONE_TOOL).add(
                 ModBlocks.AUTO_FISH_BLOCK.get(),
                 ModBlocks.AUTO_SELL_BLOCK.get(),

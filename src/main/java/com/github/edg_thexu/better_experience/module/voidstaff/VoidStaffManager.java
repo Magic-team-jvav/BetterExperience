@@ -27,6 +27,7 @@ import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.SlotItemHandler;
+import org.confluence.lib.util.LibUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -84,7 +85,7 @@ public final class VoidStaffManager {
                 states.add(state);
                 var inventory = level.getCapability(Capabilities.ItemHandler.BLOCK, pos, null);
                 if (inventory != null) handlers.add(inventory);
-                for (Direction side : Direction.values()) {
+                for (Direction side : LibUtils.DIRECTIONS) {
                     var sided = level.getCapability(Capabilities.ItemHandler.BLOCK, pos, side);
                     if (sided != null && !handlers.contains(sided)) handlers.add(sided);
                 }

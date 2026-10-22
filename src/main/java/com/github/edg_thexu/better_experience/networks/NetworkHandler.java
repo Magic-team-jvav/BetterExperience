@@ -1,15 +1,12 @@
 package com.github.edg_thexu.better_experience.networks;
 
 import com.github.edg_thexu.better_experience.intergration.jei.JeiHelper;
-import com.github.edg_thexu.better_experience.networks.c2s.BreakBlocksPacketC2S;
-import com.github.edg_thexu.better_experience.networks.c2s.VoidStaffPlacePacket;
-import com.github.edg_thexu.better_experience.networks.c2s.VoidStaffStatePacket;
-import com.github.edg_thexu.better_experience.networks.s2c.VoidCargoPacket;
-import com.github.edg_thexu.better_experience.networks.s2c.VoidStaffRejectedPacket;
 import com.github.edg_thexu.better_experience.networks.c2s.AmmoChainSettingsPacketC2S;
-import com.github.edg_thexu.better_experience.networks.s2c.AmmoChainOpenPacket;
-import com.github.edg_thexu.better_experience.networks.c2s.FluidStaffSettingsPacketC2S;
+import com.github.edg_thexu.better_experience.networks.c2s.BreakBlocksPacketC2S;
+import com.github.edg_thexu.better_experience.networks.c2s.ChronopilotTimePacket;
 import com.github.edg_thexu.better_experience.networks.c2s.FluidStaffActionPacketC2S;
+import com.github.edg_thexu.better_experience.networks.c2s.FluidStaffSettingsPacketC2S;
+import com.github.edg_thexu.better_experience.networks.c2s.LocatorTargetPacketC2S;
 import com.github.edg_thexu.better_experience.networks.c2s.PlaceBlocksPacketC2S;
 import com.github.edg_thexu.better_experience.networks.c2s.PotionApplyPacketC2S;
 import com.github.edg_thexu.better_experience.networks.c2s.SearchJeiIngredientsPacketC2S;
@@ -17,20 +14,27 @@ import com.github.edg_thexu.better_experience.networks.c2s.ServerBoundPacketC2S;
 import com.github.edg_thexu.better_experience.networks.c2s.SpaceBezierSelectionPacketC2S;
 import com.github.edg_thexu.better_experience.networks.c2s.SpaceStaffSettingsPacketC2S;
 import com.github.edg_thexu.better_experience.networks.c2s.StaffSelectionPacketC2S;
+import com.github.edg_thexu.better_experience.networks.c2s.VoidStaffPlacePacket;
+import com.github.edg_thexu.better_experience.networks.c2s.VoidStaffStatePacket;
+import com.github.edg_thexu.better_experience.networks.s2c.AmmoChainOpenPacket;
 import com.github.edg_thexu.better_experience.networks.s2c.ClientBoundConfigPacket;
 import com.github.edg_thexu.better_experience.networks.s2c.EnderChestItemsS2C;
-import com.github.edg_thexu.better_experience.networks.s2c.SyncDataS2C;
-import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
-import com.github.edg_thexu.better_experience.networks.c2s.LocatorTargetPacketC2S;
 import com.github.edg_thexu.better_experience.networks.s2c.LocatorCatalogPacket;
 import com.github.edg_thexu.better_experience.networks.s2c.LocatorMarkersPacket;
+import com.github.edg_thexu.better_experience.networks.s2c.SyncDataS2C;
+import com.github.edg_thexu.better_experience.networks.s2c.VoidCargoPacket;
+import com.github.edg_thexu.better_experience.networks.s2c.VoidStaffRejectedPacket;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 
 public final class NetworkHandler {
 
     public static void register(RegisterPayloadHandlersEvent event) {
-        PayloadRegistrar registrar = event.registrar("10");
+        PayloadRegistrar registrar = event.registrar("12");
+        registrar.playToServer(ChronopilotTimePacket.TYPE,
+                ChronopilotTimePacket.STREAM_CODEC,
+                ChronopilotTimePacket::handle);
         registrar.playToServer(VoidStaffPlacePacket.TYPE, VoidStaffPlacePacket.STREAM_CODEC, VoidStaffPlacePacket::handle);
         registrar.playToServer(VoidStaffStatePacket.TYPE, VoidStaffStatePacket.STREAM_CODEC, VoidStaffStatePacket::handle);
         registrar.playToClient(VoidCargoPacket.TYPE, VoidCargoPacket.STREAM_CODEC, VoidCargoPacket::handle);
