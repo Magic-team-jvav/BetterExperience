@@ -43,6 +43,26 @@ public class ModChineseProvider extends LanguageProvider {
         add("key.categories.better_experience", "更好的体验");
 
         add("better_experience.locator.title", "结构定位球");
+        add("better_experience.void_staff.tooltip.pickup", "Shift+右键容器：搬起");
+        add("better_experience.void_staff.tooltip.place", "Shift+左键放置 · 滚轮调距离");
+        add("better_experience.void_staff.tooltip.wheel", "按住轮盘键：方向与方块状态");
+        add("better_experience.void_staff.carrying", "已有搬运中的容器，请先放置");
+        add("better_experience.void_staff.picked_up", "已搬起 · Shift+左键放置");
+        add("better_experience.void_staff.placed", "容器已放置");
+        add("better_experience.void_staff.failed", "无法搬运，原容器保持完整");
+        add("better_experience.void_staff.blocked", "此处不可放置");
+        add("better_experience.void_staff.ready", "可放置");
+        add("better_experience.void_staff.preview", "%s · %s · 滚轮距离 · 轮盘调状态");
+        add("better_experience.void_staff.wheel", "虚空法杖");
+        add("better_experience.void_staff.wheel_help", "松键选择 · 点击可连调 · 中心恢复贴面");
+        add("better_experience.void_staff.rotate_left", "左转");
+        add("better_experience.void_staff.rotate_right", "右转");
+        add("better_experience.void_staff.closer", "靠近");
+        add("better_experience.void_staff.farther", "远离");
+        add("better_experience.void_staff.previous_property", "上一属性");
+        add("better_experience.void_staff.next_property", "下一属性");
+        add("better_experience.void_staff.previous_value", "上一取值");
+        add("better_experience.void_staff.next_value", "下一取值");
         add("better_experience.ammo_chain.title", "弹药链");
         add("better_experience.ammo_chain.slot", "槽位 %s");
         add("better_experience.ammo_chain.slot_details", "槽位 %s\n%s × %s");
@@ -130,6 +150,7 @@ public class ModChineseProvider extends LanguageProvider {
         add(ModItems.SPACE_STAFF.get(), "空间法杖");
         add(ModItems.FLUID_STAFF.get(), "液体法杖");
         add(ModItems.STRUCTURE_LOCATOR_ORB.get(), "结构定位球");
+        add(ModItems.VOID_STAFF.get(), "虚空法杖");
         add(ModItems.AMMO_CHAIN.get(), "弹药链");
 
         add("better_experience.space.control", "%s %s：选区内位置 0–100%%");

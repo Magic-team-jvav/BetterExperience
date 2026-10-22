@@ -7,6 +7,7 @@ import com.github.edg_thexu.better_experience.data.component.FluidStaffStorage;
 import com.github.edg_thexu.better_experience.item.FluidStaff;
 import com.github.edg_thexu.better_experience.data.component.SpaceStaffSettings;
 import com.github.edg_thexu.better_experience.item.DebugItem;
+import com.github.edg_thexu.better_experience.item.VoidStaff;
 import com.github.edg_thexu.better_experience.item.AmmoChain;
 import com.github.edg_thexu.better_experience.data.component.AmmoChainSettings;
 import com.github.edg_thexu.better_experience.data.component.AmmoChainCursor;
@@ -36,6 +37,7 @@ public class ModItems {
                     .component(ModDataComponentTypes.FLUID_STAFF_STORAGE.get(), FluidStaffStorage.EMPTY)));
     public static final DeferredItem<Item> STRUCTURE_LOCATOR_ORB = TOOLS.register("structure_locator_orb",
             () -> new StructureLocatorOrb(new Item.Properties().stacksTo(1)));
+    public static final DeferredItem<Item> VOID_STAFF = TOOLS.register("void_staff", () -> new VoidStaff(new Item.Properties().stacksTo(1)));
     public static final DeferredItem<Item> AMMO_CHAIN = TOOLS.register("ammo_chain", () -> new AmmoChain(new Item.Properties().stacksTo(1)
             .component(ModDataComponentTypes.AMMO_CHAIN_SETTINGS.get(), AmmoChainSettings.defaults())
             .component(ModDataComponentTypes.AMMO_CHAIN_CURSOR.get(), AmmoChainCursor.DEFAULT)));

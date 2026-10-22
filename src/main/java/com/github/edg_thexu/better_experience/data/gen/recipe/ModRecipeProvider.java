@@ -64,6 +64,11 @@ public class ModRecipeProvider extends RecipeProvider {
                 .requires(Items.ENDER_EYE).requires(Items.AMETHYST_SHARD).requires(Items.COMPASS)
                 .unlockedBy("has_compass", has(Items.COMPASS)).save(recipeOutput);
 
+        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.VOID_STAFF)
+                .pattern("  e").pattern(" s ").pattern("s  ")
+                .define('e', Items.ENDER_CHEST).define('s', Items.STICK)
+                .unlockedBy("has_ender_chest", has(Items.ENDER_CHEST)).save(recipeOutput);
+
         ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.AMMO_CHAIN)
                 .pattern("ici").pattern("ala").pattern("ici")
                 .define('i', Items.IRON_INGOT).define('c', Items.CHAIN)

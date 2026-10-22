@@ -33,6 +33,9 @@
     "integration.terra_gun.AmmoChainGunMixin"
   ],
   "client": [
+    "accessor.PreviewRenderTypeAccess",
+    "accessor.PreviewRenderStateAccess",
+    "accessor.PreviewTextureAccess",
     "accessor.ScreenAccessor",
     "client.AbstractContainerScreenMixin",
     "client.ScreenMixin",

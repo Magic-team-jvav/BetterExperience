@@ -6,6 +6,7 @@ import com.github.edg_thexu.better_experience.mixed.IFishingHook;
 import com.github.edg_thexu.better_experience.module.autopotion.ForbiddenConfig;
 import com.github.edg_thexu.better_experience.module.boomstaff.ExplodeManager;
 import com.github.edg_thexu.better_experience.module.spacestaff.SpacePlacementManager;
+import com.github.edg_thexu.better_experience.module.voidstaff.VoidStaffManager;
 import com.github.edg_thexu.better_experience.module.fluidstaff.FluidStaffManager;
 import net.minecraft.resources.ResourceKey;
 import com.github.edg_thexu.better_experience.module.locator.StructureLocatorManager;
@@ -55,7 +56,15 @@ public class GameEvent {
 
     @SubscribeEvent
     public static void locatorLogin(PlayerEvent.PlayerLoggedInEvent event) {
-        if (event.getEntity() instanceof ServerPlayer player) StructureLocatorManager.getInstance().synchronize(player);
+        if (event.getEntity() instanceof ServerPlayer player) {
+            StructureLocatorManager.getInstance().synchronize(player);
+            VoidStaffManager.synchronize(player);
+        }
+    }
+
+    @SubscribeEvent
+    public static void voidStaffRespawn(PlayerEvent.PlayerRespawnEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player) VoidStaffManager.synchronize(player);
     }
 
     @SubscribeEvent
@@ -63,6 +72,7 @@ public class GameEvent {
         if (event.getEntity() instanceof ServerPlayer player) {
             StructureLocatorManager.getInstance().cancel(player.getUUID());
             StructureLocatorManager.getInstance().synchronize(player);
+            VoidStaffManager.synchronize(player);
         }
     }
 

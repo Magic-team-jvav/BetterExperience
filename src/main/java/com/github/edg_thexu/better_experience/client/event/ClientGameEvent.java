@@ -5,6 +5,9 @@ import com.github.edg_thexu.better_experience.client.StaffKeyMappings;
 import com.github.edg_thexu.better_experience.client.StaffSelectionHandler;
 import com.github.edg_thexu.better_experience.client.buffer.AABBBuffer;
 import com.github.edg_thexu.better_experience.client.gui.SpaceShapeWheelScreen;
+import com.github.edg_thexu.better_experience.client.gui.VoidStaffWheelScreen;
+import com.github.edg_thexu.better_experience.client.voidstaff.VoidStaffClient;
+import com.github.edg_thexu.better_experience.client.voidstaff.VoidStaffRenderer;
 import com.github.edg_thexu.better_experience.client.gui.container.PotionBagScreen;
 import com.github.edg_thexu.better_experience.client.gui.hud.SpaceStaffHud;
 import com.github.edg_thexu.better_experience.client.locator.LocatorClient;
@@ -34,21 +37,27 @@ public class ClientGameEvent {
     public static void renderLevelStage(RenderLevelStageEvent event) {
         if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_PARTICLES) {
             AABBBuffer.getInstance().render(event);
+            VoidStaffRenderer.render(event);
 
         }
     }
 
     @SubscribeEvent
     public static void event(InputEvent.MouseScrollingEvent event){
-        if (StaffSelectionHandler.scroll(event.getScrollDeltaY())) event.setCanceled(true);
+        if (VoidStaffClient.scroll(event.getScrollDeltaY()) || StaffSelectionHandler.scroll(event.getScrollDeltaY())) event.setCanceled(true);
     }
 
     @SubscribeEvent
     public static void staffTick(ClientTickEvent.Post event) {
         StaffSelectionHandler.tick();
         LocatorClient.tick();
+        VoidStaffClient.tick();
         while (StaffKeyMappings.SPACE_SETTINGS.consumeClick()) {
             var minecraft = Minecraft.getInstance();
+            if (minecraft.screen == null && VoidStaffClient.active()) {
+                minecraft.setScreen(new VoidStaffWheelScreen());
+                continue;
+            }
             if (minecraft.screen == null && minecraft.player != null
                     && minecraft.player.getMainHandItem().getItem() instanceof ShapeSelectionStaff) {
                 minecraft.setScreen(SpaceShapeWheelScreen.forHeldStaff(
@@ -61,10 +70,15 @@ public class ClientGameEvent {
     public static void renderSpaceStaffPreview(RenderGuiEvent.Post event) {
         SpaceStaffHud.render(event.getGuiGraphics());
         LocatorClient.render(event.getGuiGraphics());
+        VoidStaffClient.hud(event.getGuiGraphics());
     }
 
     @SubscribeEvent
     public static void event(InputEvent.MouseButton.Pre event){
+        if (event.getAction() == 1 && VoidStaffClient.mouseClicked(event.getButton())) {
+            event.setCanceled(true);
+            return;
+        }
         if (event.getAction() == 1 && StaffSelectionHandler.mouseClicked(event.getButton())) {
             event.setCanceled(true);
             return;

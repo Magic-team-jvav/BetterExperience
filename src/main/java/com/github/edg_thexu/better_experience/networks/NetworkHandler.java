@@ -2,6 +2,10 @@ package com.github.edg_thexu.better_experience.networks;
 
 import com.github.edg_thexu.better_experience.intergration.jei.JeiHelper;
 import com.github.edg_thexu.better_experience.networks.c2s.BreakBlocksPacketC2S;
+import com.github.edg_thexu.better_experience.networks.c2s.VoidStaffPlacePacket;
+import com.github.edg_thexu.better_experience.networks.c2s.VoidStaffStatePacket;
+import com.github.edg_thexu.better_experience.networks.s2c.VoidCargoPacket;
+import com.github.edg_thexu.better_experience.networks.s2c.VoidStaffRejectedPacket;
 import com.github.edg_thexu.better_experience.networks.c2s.AmmoChainSettingsPacketC2S;
 import com.github.edg_thexu.better_experience.networks.s2c.AmmoChainOpenPacket;
 import com.github.edg_thexu.better_experience.networks.c2s.FluidStaffSettingsPacketC2S;
@@ -26,7 +30,11 @@ import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 public final class NetworkHandler {
 
     public static void register(RegisterPayloadHandlersEvent event) {
-        PayloadRegistrar registrar = event.registrar("9");
+        PayloadRegistrar registrar = event.registrar("10");
+        registrar.playToServer(VoidStaffPlacePacket.TYPE, VoidStaffPlacePacket.STREAM_CODEC, VoidStaffPlacePacket::handle);
+        registrar.playToServer(VoidStaffStatePacket.TYPE, VoidStaffStatePacket.STREAM_CODEC, VoidStaffStatePacket::handle);
+        registrar.playToClient(VoidCargoPacket.TYPE, VoidCargoPacket.STREAM_CODEC, VoidCargoPacket::handle);
+        registrar.playToClient(VoidStaffRejectedPacket.TYPE, VoidStaffRejectedPacket.STREAM_CODEC, VoidStaffRejectedPacket::handle);
         registrar.playToServer(AmmoChainSettingsPacketC2S.TYPE, AmmoChainSettingsPacketC2S.STREAM_CODEC, AmmoChainSettingsPacketC2S::handle);
         registrar.playToClient(AmmoChainOpenPacket.TYPE, AmmoChainOpenPacket.STREAM_CODEC, AmmoChainOpenPacket::handle);
         registrar.playBidirectional(PotionApplyPacketC2S.TYPE, PotionApplyPacketC2S.STREAM_CODEC, PotionApplyPacketC2S::handle);

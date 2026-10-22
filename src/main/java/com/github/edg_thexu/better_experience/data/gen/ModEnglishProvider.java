@@ -52,6 +52,26 @@ public class ModEnglishProvider extends LanguageProvider {
         add("key.categories.better_experience", "Better Experience");
 
         add("better_experience.locator.title", "Structure Locator");
+        add("better_experience.void_staff.tooltip.pickup", "Shift+RMB container: lift");
+        add("better_experience.void_staff.tooltip.place", "Shift+LMB: place | Scroll: distance");
+        add("better_experience.void_staff.tooltip.wheel", "Hold wheel key: facing and block states");
+        add("better_experience.void_staff.carrying", "Place the carried container first");
+        add("better_experience.void_staff.picked_up", "Lifted | Shift+LMB: place");
+        add("better_experience.void_staff.placed", "Container placed");
+        add("better_experience.void_staff.failed", "Transfer failed; container retained");
+        add("better_experience.void_staff.blocked", "Cannot place here");
+        add("better_experience.void_staff.ready", "Ready to place");
+        add("better_experience.void_staff.preview", "%s | %s | Scroll: distance | Wheel: states");
+        add("better_experience.void_staff.wheel", "Void Staff");
+        add("better_experience.void_staff.wheel_help", "Release: choose | Click: repeat | Center: surface");
+        add("better_experience.void_staff.rotate_left", "Turn left");
+        add("better_experience.void_staff.rotate_right", "Turn right");
+        add("better_experience.void_staff.closer", "Closer");
+        add("better_experience.void_staff.farther", "Farther");
+        add("better_experience.void_staff.previous_property", "Previous property");
+        add("better_experience.void_staff.next_property", "Next property");
+        add("better_experience.void_staff.previous_value", "Previous value");
+        add("better_experience.void_staff.next_value", "Next value");
         add("better_experience.ammo_chain.title", "Ammo Chain");
         add("better_experience.ammo_chain.slot", "Slot %s");
         add("better_experience.ammo_chain.slot_details", "Slot %s\n%s × %s");
