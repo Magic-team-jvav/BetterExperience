@@ -1,11 +1,15 @@
 package com.github.edg_thexu.better_experience.mixin;
 
 import com.github.edg_thexu.better_experience.mixed.IPlayer;
+import com.github.edg_thexu.better_experience.module.worldoptions.WorldOptions;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.FishingHook;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.At;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -21,6 +25,12 @@ public class PlayerMixin implements IPlayer {
 
     @Unique
     int betterExperience$hammerUsingTicks;
+
+    @WrapOperation(method = "onEnchantmentPerformed", at = @At(value = "INVOKE",
+            target = "Lnet/minecraft/world/entity/player/Player;giveExperienceLevels(I)V"))
+    private void betterExperience$enchantWithoutExperience(Player player, int levels, Operation<Void> original) {
+        if (!WorldOptions.enabled(player.level(), WorldOptions.Feature.FREE_ENCHANTING)) original.call(player, levels);
+    }
 
     @Override
     public BlockEntity betterExperience$getInteractBlockEntity() {

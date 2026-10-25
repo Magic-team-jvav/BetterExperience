@@ -15,6 +15,27 @@ public class ModChineseProvider extends LanguageProvider {
 
     @Override
     protected void addTranslations() {
+        add("better_experience.world_options.title", "世界便利设置");
+        add("better_experience.world_options.join_world", "进入世界后可调整设置");
+        add("better_experience.world_options.world_scope", "当前世界 · 服务端生效");
+        add("better_experience.world_options.read_only", "只读 · 房主或 OP 可调整");
+        add("better_experience.world_options.apply", "应用设置");
+        add("better_experience.world_options.defaults", "恢复默认");
+        add("better_experience.world_options.free_enchanting", "附魔免经验：%s");
+        add("better_experience.world_options.free_enchanting_help", "附魔不扣经验，仍需达到等级要求并消耗青金石。保留附魔种子刷新。");
+        add("better_experience.world_options.free_anchor", "重生锚免消耗：%s");
+        add("better_experience.world_options.free_anchor_help", "充能不扣手中荧石，重生不扣充能次数；仍需至少一次充能。");
+        add("better_experience.world_options.safe_sleep", "跨维度睡觉：%s");
+        add("better_experience.world_options.safe_sleep_help", "床在其他维度也能睡觉、设置重生点且不爆炸。仍需满足距离、空间、时间及附近无怪物等条件。");
+        add("better_experience.world_options.bed_blast_immunity", "床爆炸免伤：%s");
+        add("better_experience.world_options.bed_blast_immunity_help", "保留床爆炸及方块破坏，玩家不受该次爆炸的直接伤害和击退。不影响重生锚和其他爆炸；开启跨维度睡觉后床不会爆炸。");
+        add("better_experience.world_options.instant_smelting", "瞬间熔炼：%s");
+        add("better_experience.world_options.instant_smelting_help", "熔炉、高炉、烟熏炉每刻完成一次熔炼。仍需配方、燃料和产物空间，保留经验产出。");
+        add("better_experience.world_options.instant_brewing", "瞬间酿造：%s");
+        add("better_experience.world_options.instant_brewing_help", "酿造台每刻完成一批药水。正常消耗原料和燃料，并保留模组酿造事件。");
+        add("better_experience.world_options.crops", "农作物生长速度：%s×");
+        add("better_experience.world_options.saplings", "树苗生长速度：%s×");
+        add("better_experience.world_options.growth_help", "0 暂停自然生长，1 为原速，2 倍约为一半平均耗时，最高 20 倍。保留光照、土壤及空间要求，不改变骨粉、全局随机刻或未加载区域。");
         add("better_experience.spawning.title", "更好的体验 · 设置");
         add("better_experience.spawning.rate", "刷怪速率：%s×");
         add("better_experience.spawning.cap", "刷怪上限：%s×");
