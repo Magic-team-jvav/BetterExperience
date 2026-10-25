@@ -25,6 +25,27 @@ public class ModEnglishProvider extends LanguageProvider {
 
     @Override
     protected void addTranslations() {
+        add("better_experience.world_options.title", "World Convenience Settings");
+        add("better_experience.world_options.join_world", "Join a world to change settings");
+        add("better_experience.world_options.world_scope", "Current world · Server settings");
+        add("better_experience.world_options.read_only", "Read only · Host or OP required");
+        add("better_experience.world_options.apply", "Apply settings");
+        add("better_experience.world_options.defaults", "Reset defaults");
+        add("better_experience.world_options.free_enchanting", "Free enchant XP: %s");
+        add("better_experience.world_options.free_enchanting_help", "Enchanting spends no experience. Level requirements, lapis consumption and enchantment seed updates remain active.");
+        add("better_experience.world_options.free_anchor", "Free anchor fuel: %s");
+        add("better_experience.world_options.free_anchor_help", "Charging preserves held glowstone; respawning preserves charges. At least one charge is still required.");
+        add("better_experience.world_options.safe_sleep", "Sleep anywhere: %s");
+        add("better_experience.world_options.safe_sleep_help", "Beds also allow sleep and set spawn in other dimensions without exploding. Reach, space, time and nearby monster checks still apply.");
+        add("better_experience.world_options.bed_blast_immunity", "Bed blast immunity: %s");
+        add("better_experience.world_options.bed_blast_immunity_help", "Bed explosions still break blocks, but do no direct explosion damage or knockback to players. Anchors and other explosions are unchanged. Cross-dimension sleep prevents bed explosions entirely.");
+        add("better_experience.world_options.instant_smelting", "Instant smelting: %s");
+        add("better_experience.world_options.instant_smelting_help", "Furnaces, blast furnaces and smokers finish one recipe per tick. Recipes, fuel, output limits and experience still apply.");
+        add("better_experience.world_options.instant_brewing", "Instant brewing: %s");
+        add("better_experience.world_options.instant_brewing_help", "Brewing stands finish one batch per tick. Ingredients, fuel and mod brewing events still apply.");
+        add("better_experience.world_options.crops", "Crop growth speed: %s×");
+        add("better_experience.world_options.saplings", "Sapling growth speed: %s×");
+        add("better_experience.world_options.growth_help", "0 pauses natural growth; 1 is normal; 2 roughly halves average growth time. Maximum 20×. Light, soil and space rules still apply. Bonemeal, global random ticks and unloaded areas are unchanged.");
         add("better_experience.spawning.title", "Better Experience · Settings");
         add("better_experience.spawning.rate", "Spawn rate: %s×");
         add("better_experience.spawning.cap", "Spawn cap: %s×");

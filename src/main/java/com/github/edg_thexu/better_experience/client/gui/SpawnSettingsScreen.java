@@ -65,7 +65,7 @@ public final class SpawnSettingsScreen extends Screen {
         if (minecraft.level == null) { snapshot = null; dirty = false; }
         int panelWidth = Math.min(300, width - 24);
         int left = (width - panelWidth) / 2;
-        top = Math.max(28, (height - 190) / 2);
+        top = Math.max(28, (height - 216) / 2);
         double oldRate = rate == null ? 1.0 : rate.multiplier();
         double oldCap = cap == null ? 1.0 : cap.multiplier();
         rate = addRenderableWidget(new MultiplierSlider(left, top + 24, panelWidth, "rate", oldRate));
@@ -85,10 +85,12 @@ public final class SpawnSettingsScreen extends Screen {
         Button mobs = addRenderableWidget(Button.builder(text("mobs"), button -> minecraft.setScreen(new SpawnMobScreen(this)))
                 .bounds(left, top + 102, panelWidth, 20).build());
         mobs.setTooltip(Tooltip.create(text("filter_help")));
-        addRenderableWidget(Button.builder(text("other"), button -> minecraft.setScreen(new ConfigurationScreen(container, this)))
+        addRenderableWidget(Button.builder(Component.translatable("better_experience.world_options.title"), button -> minecraft.setScreen(new WorldOptionsScreen(this)))
                 .bounds(left, top + 128, panelWidth, 20).build());
-        addRenderableWidget(Button.builder(Component.translatable("gui.done"), button -> onClose())
+        addRenderableWidget(Button.builder(text("other"), button -> minecraft.setScreen(new ConfigurationScreen(container, this)))
                 .bounds(left, top + 154, panelWidth, 20).build());
+        addRenderableWidget(Button.builder(Component.translatable("gui.done"), button -> onClose())
+                .bounds(left, top + 180, panelWidth, 20).build());
         rate.active = cap.active = apply.active = reset.active = false;
         mobs.active = minecraft.level != null;
         if (snapshot != null) accept(snapshot);

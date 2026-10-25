@@ -1,6 +1,8 @@
 package com.github.edg_thexu.better_experience.networks;
 
 import com.github.edg_thexu.better_experience.intergration.jei.JeiHelper;
+import com.github.edg_thexu.better_experience.networks.c2s.WorldOptionsPacket;
+import com.github.edg_thexu.better_experience.networks.s2c.WorldOptionsSnapshotPacket;
 import com.github.edg_thexu.better_experience.networks.c2s.SpawnControlPacket;
 import com.github.edg_thexu.better_experience.networks.s2c.SpawnSnapshotPacket;
 import com.github.edg_thexu.better_experience.networks.c2s.AmmoChainSettingsPacketC2S;
@@ -33,7 +35,9 @@ import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 public final class NetworkHandler {
 
     public static void register(RegisterPayloadHandlersEvent event) {
-        PayloadRegistrar registrar = event.registrar("15");
+        PayloadRegistrar registrar = event.registrar("16");
+        registrar.playToServer(WorldOptionsPacket.TYPE, WorldOptionsPacket.STREAM_CODEC, WorldOptionsPacket::handle);
+        registrar.playToClient(WorldOptionsSnapshotPacket.TYPE, WorldOptionsSnapshotPacket.STREAM_CODEC, WorldOptionsSnapshotPacket::handle);
         registrar.playToServer(SpawnControlPacket.TYPE, SpawnControlPacket.STREAM_CODEC, SpawnControlPacket::handle);
         registrar.playToClient(SpawnSnapshotPacket.TYPE, SpawnSnapshotPacket.STREAM_CODEC, SpawnSnapshotPacket::handle);
         registrar.playToServer(ChronopilotTimePacket.TYPE,
