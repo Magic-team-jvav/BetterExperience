@@ -15,7 +15,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Pseudo
 @Mixin(targets = "org.confluence.terra_guns.impl.BulletHandler", remap = false)
 public abstract class AmmoChainBulletHandlerMixin {
-    @Inject(method = "getAmmo(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/item/ItemStack;)Lnet/minecraft/world/item/ItemStack;",
+    @Inject(method = {
+            "getAmmo(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/item/ItemStack;)Lnet/minecraft/world/item/ItemStack;",
+            "getAmmoForShot(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/item/ItemStack;)Lnet/minecraft/world/item/ItemStack;"},
             at = @At("RETURN"), cancellable = true)
     private static void betterExperience$selectChainAmmo(Player player, ItemStack gun, CallbackInfoReturnable<ItemStack> callback) {
         if (!(gun.getItem() instanceof BaseGun)) return;

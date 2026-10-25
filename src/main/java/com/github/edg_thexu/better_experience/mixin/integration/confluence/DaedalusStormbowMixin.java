@@ -7,8 +7,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
+import org.confluence.mod.api.IGeneration;
 import org.confluence.mod.common.item.bow.DaedalusStormbow;
-import org.confluence.terraentity.api.entity.IGeneration;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -33,15 +33,14 @@ public class DaedalusStormbowMixin {
         return ammo;
     }
 
-    @WrapOperation(method = "onUseTick", at = @At(value = "INVOKE", target = "Lorg/confluence/terraentity/api/entity/IGeneration;genProjectile(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/item/ItemStack;FLjava/util/function/Supplier;)V"))
-    private void betterExperience$trackGeneration(IGeneration generation, LivingEntity shooter, ItemStack weapon, float velocity,
-                                                  Supplier<? extends Projectile> supplier, Operation<Void> original) {
-        if (!(shooter instanceof Player player) || shooter.level().isClientSide()) {
-            original.call(generation, shooter, weapon, velocity, supplier);
-            return;
+    @WrapOperation(method = "onUseTick", at = @At(value = "INVOKE", target = "Lorg/confluence/mod/api/IGeneration;genProjectile(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/item/ItemStack;FLjava/util/function/Supplier;)I"))
+    private int betterExperience$trackGeneration(IGeneration generation, LivingEntity shooter, ItemStack weapon, float velocity,
+                                                  Supplier<? extends Projectile> supplier, Operation<Integer> original) {
+        if (weapon == null || !(shooter instanceof Player player) || shooter.level().isClientSide()) {
+            return original.call(generation, shooter, weapon, velocity, supplier);
         }
         if (AmmoChainManager.controls(player, weapon)
-                && AmmoChainManager.projectile(player, weapon, ItemStack.EMPTY).isEmpty()) return;
+                && AmmoChainManager.projectile(player, weapon, ItemStack.EMPTY).isEmpty()) return 0;
         ItemStack weaponSnapshot = weapon.copy();
         List<ItemStack> ammoSnapshots = new ArrayList<>(1);
         List<Projectile> projectiles = new ArrayList<>(1);
@@ -55,10 +54,11 @@ public class DaedalusStormbowMixin {
                 }
                 return projectile;
             };
-            original.call(generation, shooter, weapon, velocity, trackedSupplier);
+            int generated = original.call(generation, shooter, weapon, velocity, trackedSupplier);
             if (!ammoSnapshots.isEmpty() && projectiles.stream().anyMatch(Projectile::isAddedToLevel)) {
                 AmmoChainManager.shot(player, weaponSnapshot, ammoSnapshots.getFirst());
             }
+            return generated;
         } finally {
             if (previousCapture == null) {
                 BETTER_EXPERIENCE_AMMO_CAPTURE.remove();

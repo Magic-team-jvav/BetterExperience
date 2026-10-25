@@ -93,6 +93,7 @@ public class CommonConfig {
      * 禁止史莱姆死亡时生成熔岩
      */
     public static ModConfigSpec.BooleanValue SLIME_DIE_NO_LAVA;
+    public static ModConfigSpec.BooleanValue NO_NATURAL_MONSTERS_DURING_BOSS;
 
     public static ModConfigSpec init() {
         final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
@@ -177,6 +178,12 @@ public class CommonConfig {
         SLIME_DIE_NO_LAVA = BUILDER
                 .comment("Forbidden slime to generate lava?")
                 .define("slime_die_no_lava", true);
+
+        NO_NATURAL_MONSTERS_DURING_BOSS = BUILDER
+                .comment("Prevent natural hostile mob spawns within 192 blocks of a living boss. "
+                        + "Existing mobs, boss summons, spawners and passive mobs are unaffected. "
+                        + "In multiplayer, the server's setting applies.")
+                .define("no_natural_monsters_during_boss", false);
 
         BUILDER.pop();
 

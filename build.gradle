@@ -232,14 +232,14 @@ dependencies {
 //    implementation "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
 
 //    implementation "curse.maven:confluence-1209464:7677430"
-    implementation(files("libs/ConfluenceOtherworld-1.3.0-beta-260424.jar"))
-    implementation(files("libs/terra_entity-1.2.3.jar"))
-    implementation(files("libs/terra_guns-1.21.1-1.0.jar"))
-    implementation(files("libs/terra_curio-1.2.0.jar"))
+    implementation(files("libs/ConfluenceOtherworld-1.2.11+1.21.1-261025.jar"))
+    implementation(files("libs/terra_entity-1.3.0.jar"))
+    implementation(files("libs/terra_guns-1.3.0+1.21.1.jar"))
+    implementation(files("libs/terra_curio-1.3.2+1.21.1.jar"))
 
 //    implementation "curse.maven:confluence-1209464:6867835"
 //    implementation("org.confluence.lib:Confluence-Magic-Lib:0.0.2a-SNAPSHOT")
-    implementation(files("libs/confluence_magic_lib-0.0.9.jar"))
+    implementation(files("libs/confluence_magic_lib-1.3.1.jar"))
 
 //    compileOnly(files("libs/ConfluenceOtherworld-1.1.4-beta.jar"))
 //    compileOnly(files("libs/terra_entity-1.1.15.jar"))

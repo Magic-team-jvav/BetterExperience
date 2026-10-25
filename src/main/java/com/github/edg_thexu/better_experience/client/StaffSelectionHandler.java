@@ -450,14 +450,20 @@ public final class StaffSelectionHandler {
     }
 
     private static void message(String key) {
+        var player = Minecraft.getInstance().player;
+        if (key.equals("choose_corners") || key.equals("reselect")) {
+            player.displayClientMessage(Component.translatable("better_experience.staff." + key,
+                    StaffKeyMappings.SELECT_MODIFIER.getTranslatedKeyMessage()), true);
+            return;
+        }
         if (key.equals("locked") && selectedStack.getItem() instanceof FluidStaff) {
-            Minecraft.getInstance().player.displayClientMessage(Component.translatable("better_experience.fluid.locked"), true);
+            player.displayClientMessage(Component.translatable("better_experience.fluid.locked"), true);
             return;
         }
         boolean spaceMessage = selectedStack.getItem() instanceof ShapeSelectionStaff
                 && (key.equals("locked") || key.startsWith("sphere_") || key.startsWith("bezier_"));
         String prefix = spaceMessage ? "better_experience.space." : "better_experience.staff.";
-        Minecraft.getInstance().player.displayClientMessage(Component.translatable(prefix + key), true);
+        player.displayClientMessage(Component.translatable(prefix + key), true);
     }
 
     private static void showSize() {

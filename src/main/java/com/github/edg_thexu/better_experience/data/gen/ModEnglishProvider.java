@@ -47,13 +47,13 @@ public class ModEnglishProvider extends LanguageProvider {
         ModItems.TOOLS.getEntries().forEach(itemAction);
 //        ModBlocks.BLOCKS.getEntries().forEach(block-> add(block.get(), toTitleCase(block.getId().getPath())));
 
-        add("better_experience.staff.choose_corners", "Shift+LMB: select (default)");
+        add("better_experience.staff.choose_corners", "%s+LMB: select");
         add("better_experience.staff.first_corner", "A set | LMB: set B");
         add("better_experience.staff.locked", "Locked | LMB blast | Shift+RMB clear");
         add("better_experience.staff.no_mana", "Need %s mana");
         add("better_experience.staff.no_target", "Aim within reach");
         add("better_experience.staff.out_of_reach", "Out of reach");
-        add("better_experience.staff.reselect", "Cancelled | Activate to reselect");
+        add("better_experience.staff.reselect", "Cancelled | %s+LMB: reselect");
         add("better_experience.staff.size", "%sx%sx%s | Mana %s | Scroll size | RMB lock");
         add("better_experience.staff.too_large", "Selection limit reached");
 
@@ -71,7 +71,7 @@ public class ModEnglishProvider extends LanguageProvider {
         add("better_experience.void_staff.failed", "Transfer failed; container retained");
         add("better_experience.void_staff.blocked", "Cannot place here");
         add("better_experience.void_staff.ready", "Ready to place");
-        add("better_experience.void_staff.preview", "%s | %s | Scroll: distance | Wheel: states");
+        add("better_experience.void_staff.preview", "Scroll: distance | Wheel: states");
         add("better_experience.void_staff.wheel", "Void Staff");
         add("better_experience.void_staff.wheel_help", "Release: choose | Click: repeat | Center: surface");
         add("better_experience.void_staff.rotate_left", "Turn left");
@@ -230,6 +230,7 @@ public class ModEnglishProvider extends LanguageProvider {
 
 
         add("better_experience.gui.fast_storage", "Fast Storage");
+        add("better_experience.gui.open_config", "Open Better Experience Settings");
         add("better_experience.gui.potion_screen.auto_collect.message", "Auto Collect Potions and Food");
 
         // Config
@@ -237,6 +238,8 @@ public class ModEnglishProvider extends LanguageProvider {
         add("better_experience.configuration.World", "World");
         add("better_experience.configuration.Entity", "Entity");
         add("better_experience.configuration.Item", "Item");
+        add("better_experience.configuration.locator_search_radius", "Structure Locator Search Radius (blocks)");
+        add("better_experience.configuration.locator_search_radius.tooltip", "Maximum structure search radius in blocks. Default: 32768. Skips structure starts already marked by the current player. Larger radii may take longer to search. The server setting applies in multiplayer.");
 
 
 
@@ -251,6 +254,8 @@ public class ModEnglishProvider extends LanguageProvider {
         add("better_experience.configuration.modify_max_stack_size", "Modify Item Max Stack Size (Restart the game to make it effect)");
         add("better_experience.configuration.no_consume_summoner", "No Consume Summon Item");
         add("better_experience.configuration.slime_die_no_lava", "Slime Dies Without Lava");
+        add("better_experience.configuration.no_natural_monsters_during_boss", "No Natural Monsters During Boss Fights");
+        add("better_experience.configuration.no_natural_monsters_during_boss.tooltip", "Prevent natural hostile spawns within 192 blocks of a living boss. Existing mobs, boss minions, spawners and passive mobs are unaffected. The server setting applies in multiplayer.");
         add("better_experience.configuration.additional_fall_distance", "Additional Fall Distance");
         add("better_experience.configuration.stone_sapling_tree_no_strict", "Stone Sapling Tree No Strict");
         add("better_experience.configuration.fill_life_on_respawn", "Fill Life on Respawn");
