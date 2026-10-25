@@ -233,6 +233,17 @@ public class ModChineseProvider extends LanguageProvider {
         add("better_experience.configuration.World", "世界");
         add("better_experience.configuration.Entity", "生物");
         add("better_experience.configuration.Item", "物品");
+        add("better_experience.configuration.AntiRage", "防急眼模式");
+        add("better_experience.configuration.anti_rage_mode", "启用防急眼模式");
+        add("better_experience.configuration.anti_rage_mode.tooltip", "第3次死亡开启全世界死亡不掉落，并在单人世界开启作弊。第4至9次死亡后，重生的10n秒内受击无敌帧额外延长x秒（n为本轮死亡次数）。第10次重生给予100秒创造模式，结束后恢复原游戏模式并清零计数；保留作弊和死亡不掉落。关闭模式会清零计数并结束临时创造。联机时以服务器配置为准，不自动授予OP。");
+        add("better_experience.configuration.anti_rage_extra_invulnerability_seconds", "受击无敌帧额外延长（秒）");
+        add("better_experience.configuration.anti_rage_extra_invulnerability_seconds.tooltip", "保护时段内，每次正常受击后的无敌时间额外延长x秒；默认1秒，可设置为0至60秒。不改变绕过无敌帧的伤害规则。");
+        add("better_experience.anti_rage.assistance", "防急眼模式：连续死亡3次，已开启死亡不掉落。");
+        add("better_experience.anti_rage.cheats", "防急眼模式：已为单人世界开启作弊。");
+        add("better_experience.anti_rage.creative", "防急眼模式：连续死亡10次，进入100秒临时创造模式。");
+        add("better_experience.anti_rage.reset", "防急眼模式：临时创造已结束，死亡计数已清零。");
+        add("better_experience.anti_rage.progress", "防急眼模式：本轮死亡%s/10次，受击保护从第4次重生开始。");
+        add("better_experience.anti_rage.protection", "防急眼模式：本轮死亡%s次，重生保护窗口%s秒；受击后无敌时间额外延长%s秒。");
         add("better_experience.configuration.locator_search_radius", "结构定位球搜索半径（方块）");
         add("better_experience.configuration.locator_search_radius.tooltip", "结构定位球搜索结构的最大半径，单位为方块，默认32768。搜索时会跳过当前玩家已标记的结构起点。半径越大，搜索可能耗时越长；联机时以服务器配置为准。");
 

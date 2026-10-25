@@ -3,6 +3,8 @@ package com.github.edg_thexu.better_experience.config;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
 public class CommonConfig {
+    public static ModConfigSpec.BooleanValue ANTI_RAGE_MODE;
+    public static ModConfigSpec.DoubleValue ANTI_RAGE_EXTRA_INVULNERABILITY_SECONDS;
     public static ModConfigSpec.IntValue LOCATOR_SEARCH_RADIUS;
     //************************* Item *************************
     /**
@@ -185,6 +187,15 @@ public class CommonConfig {
                         + "In multiplayer, the server's setting applies.")
                 .define("no_natural_monsters_during_boss", false);
 
+        BUILDER.pop();
+
+        BUILDER.push("AntiRage");
+        ANTI_RAGE_MODE = BUILDER
+                .comment("Enable death-streak assistance. Server-side setting; disabled by default.")
+                .define("anti_rage_mode", false);
+        ANTI_RAGE_EXTRA_INVULNERABILITY_SECONDS = BUILDER
+                .comment("Extra post-hit invulnerability in seconds during the respawn protection window.")
+                .defineInRange("anti_rage_extra_invulnerability_seconds", 1.0, 0.0, 60.0);
         BUILDER.pop();
 
         SPEC = BUILDER.build();

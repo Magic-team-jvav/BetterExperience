@@ -5,6 +5,8 @@
   "compatibilityLevel": "JAVA_21",
   "refmap": "better_experience.refmap.json",
   "mixins": [
+    "accessor.PrimaryLevelDataAccess",
+    "accessor.LevelSettingsAccess",
     "ChestMenuMixin",
     "FishingHookMixin",
     "ItemMixin",
