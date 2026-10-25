@@ -39,13 +39,13 @@ public class ModChineseProvider extends LanguageProvider {
         add(ModBlocks.AUTO_SELL_BLOCK.get(), "自动贩卖机");
         add(ModBlocks.REFORGE_BLOCK.get(), "重铸机");
 
-        add("better_experience.staff.choose_corners", "Shift+左键选区（默认）");
+        add("better_experience.staff.choose_corners", "%s+左键选区");
         add("better_experience.staff.first_corner", "已选A，左键选B");
         add("better_experience.staff.locked", "已锁定｜左键爆破｜Shift+右键取消");
         add("better_experience.staff.no_mana", "魔力不足：需要 %s");
         add("better_experience.staff.no_target", "请瞄准范围内方块");
         add("better_experience.staff.out_of_reach", "超出触及范围");
-        add("better_experience.staff.reselect", "已取消，重新激活选区");
+        add("better_experience.staff.reselect", "已取消，%s+左键重新选区");
         add("better_experience.staff.size", "%s×%s×%s｜魔力 %s｜滚轮调整｜右键锁定");
         add("better_experience.staff.too_large", "达到选区上限");
 
@@ -63,7 +63,7 @@ public class ModChineseProvider extends LanguageProvider {
         add("better_experience.void_staff.failed", "无法搬运，原容器保持完整");
         add("better_experience.void_staff.blocked", "此处不可放置");
         add("better_experience.void_staff.ready", "可放置");
-        add("better_experience.void_staff.preview", "%s · %s · 滚轮距离 · 轮盘调状态");
+        add("better_experience.void_staff.preview", "滚轮距离 · 轮盘调状态");
         add("better_experience.void_staff.wheel", "虚空法杖");
         add("better_experience.void_staff.wheel_help", "松键选择 · 点击可连调 · 中心恢复贴面");
         add("better_experience.void_staff.rotate_left", "左转");
@@ -225,6 +225,7 @@ public class ModChineseProvider extends LanguageProvider {
         add("better_experience.tooltip.better_reforge.enable", "启用更好的重铸");
 
         add("better_experience.gui.fast_storage", "一键存储");
+        add("better_experience.gui.open_config", "打开更好的体验配置");
         add("better_experience.gui.potion_screen.auto_collect.message", "自动收集药水");
 
         // config
@@ -232,6 +233,8 @@ public class ModChineseProvider extends LanguageProvider {
         add("better_experience.configuration.World", "世界");
         add("better_experience.configuration.Entity", "生物");
         add("better_experience.configuration.Item", "物品");
+        add("better_experience.configuration.locator_search_radius", "结构定位球搜索半径（方块）");
+        add("better_experience.configuration.locator_search_radius.tooltip", "结构定位球搜索结构的最大半径，单位为方块，默认32768。搜索时会跳过当前玩家已标记的结构起点。半径越大，搜索可能耗时越长；联机时以服务器配置为准。");
 
 
 
@@ -246,6 +249,8 @@ public class ModChineseProvider extends LanguageProvider {
         add("better_experience.configuration.modify_max_stack_size", "调整 物品 最大堆叠（重启游戏生效）");
         add("better_experience.configuration.no_consume_summoner", "不消耗BOSS召唤物");
         add("better_experience.configuration.slime_die_no_lava", "岩浆史莱姆死亡不生成岩浆");
+        add("better_experience.configuration.no_natural_monsters_during_boss", "打BOSS时不生成小怪");
+        add("better_experience.configuration.no_natural_monsters_during_boss.tooltip", "阻止存活BOSS周围192格内自然刷新的敌怪。保留已有怪物、BOSS召唤的随从、刷怪笼和友好生物；联机时以服务器配置为准。");
         add("better_experience.configuration.additional_fall_distance", "额外的摔落免疫高度");
         add("better_experience.configuration.stone_sapling_tree_no_strict", "宝石树生长无限制");
         add("better_experience.configuration.fill_life_on_respawn", "重生时回满生命值");

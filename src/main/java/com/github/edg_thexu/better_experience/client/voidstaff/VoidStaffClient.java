@@ -142,8 +142,12 @@ public final class VoidStaffClient {
     public static void hud(GuiGraphics graphics) {
         if (!active()) return;
         var minecraft = Minecraft.getInstance();
-        var message = Component.translatable("better_experience.void_staff.preview", cargo.state().getBlock().getName(),
-                Component.translatable("better_experience.void_staff." + (valid ? "ready" : "blocked")));
+        // Compose the line from components instead of a positional "%s" pattern, which leaked placeholders into the HUD.
+        var message = VoidStaffRenderer.displayName(cargo.state()).copy()
+                .append(Component.literal(" | "))
+                .append(Component.translatable("better_experience.void_staff." + (valid ? "ready" : "blocked")))
+                .append(Component.literal(" | "))
+                .append(Component.translatable("better_experience.void_staff.preview"));
         graphics.drawCenteredString(minecraft.font, minecraft.font.plainSubstrByWidth(message.getString(), graphics.guiWidth() - 12),
                 graphics.guiWidth() / 2, graphics.guiHeight() - 66, valid ? 0xA7E6FF : 0xFF8877);
     }

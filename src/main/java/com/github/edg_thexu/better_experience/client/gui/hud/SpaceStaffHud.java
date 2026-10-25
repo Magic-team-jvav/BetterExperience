@@ -31,6 +31,6 @@ public final class SpaceStaffHud {
         int y = graphics.guiHeight() - size - (rightOffhand ? 34 : 12);
         PREVIEW.render(graphics, settings.state(), x, y, size);
         graphics.drawCenteredString(minecraft.font, minecraft.font.plainSubstrByWidth(
-                settings.state().getBlock().getName().getString(), size), x + size / 2, y + size + 2, 0xA7E6FF);
+                BlockStatePreview.displayName(settings.state()).getString(), size), x + size / 2, y + size + 2, 0xA7E6FF);
     }
 }

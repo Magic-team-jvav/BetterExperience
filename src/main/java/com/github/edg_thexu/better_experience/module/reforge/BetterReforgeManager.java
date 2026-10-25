@@ -10,7 +10,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import org.confluence.mod.client.gui.container.NPCReforgeScreen;
+import org.confluence.mod.client.gui.container.npc_screen.NPCReforgeScreen;
 import org.confluence.mod.common.component.prefix.ModPrefix;
 import org.confluence.mod.common.component.prefix.PrefixComponent;
 import org.confluence.mod.common.component.prefix.PrefixType;
@@ -30,12 +30,14 @@ public class BetterReforgeManager {
         if (cp == null) {
             throw new IllegalStateException(itemStack + "不能获得前缀");
         }
-        float originalValue = cp.value();
+        float originalValue = ModPrefix.ID_MAP.values().stream()
+                .filter(prefix -> prefix.name().equals(cp.name()))
+                .findFirst().map(ModPrefix::value).orElse(0.0F);
         List<Integer> availableList = new ArrayList<>();
         for (ModPrefix prefix : available) {
             int ii = ModPrefix.ID_MAP.inverse().getOrDefault(prefix, -1);
             ModPrefix modPrefix = ModPrefix.ID_MAP.get(ii);
-            float value = modPrefix.createComponent(prefixType).value();
+            float value = modPrefix.value();
             if (value >= originalValue) {
                 availableList.add(ii);
             }

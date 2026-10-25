@@ -8,6 +8,9 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -47,7 +50,8 @@ public final class BlockStatePreview {
             }
             if (entity != null) {
                 // No world insertion or ticking; the level allows renderers to read this state's facing.
-                entity.setLevel(minecraft.level);
+                // Barrels and similar block entities assume a non-null level, so it is set once and never cleared.
+                if (entity.getLevel() != minecraft.level) entity.setLevel(minecraft.level);
                 minecraft.getBlockEntityRenderDispatcher().renderItem(entity, pose, graphics.bufferSource(),
                         LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
             } else {
@@ -63,7 +67,6 @@ public final class BlockStatePreview {
                 // GuiGraphics.flush disables depth testing, which is unsuitable for a 3D model.
                 graphics.bufferSource().endBatch();
             } finally {
-                if (entity != null) entity.setLevel(null);
                 pose.popPose();
                 graphics.disableScissor();
                 RenderSystem.setShaderColor(1, 1, 1, 1);
@@ -77,5 +80,14 @@ public final class BlockStatePreview {
         cachedState = null;
         entity = null;
         failed = false;
+    }
+
+    /**
+     * Blocks such as Sophisticated Storage barrels declare "%s%sBarrel" and only resolve those placeholders
+     * through their item, so {@code Block#getName()} leaks them into the UI.
+     */
+    public static Component displayName(BlockState state) {
+        var item = state.getBlock().asItem();
+        return item == Items.AIR ? state.getBlock().getName() : new ItemStack(item).getHoverName();
     }
 }

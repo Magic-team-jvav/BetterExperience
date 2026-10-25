@@ -8,7 +8,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantments;
-import org.confluence.lib.util.EnchantmentUtil;
+import org.confluence.lib.util.LibEnchantmentUtils;
 import org.confluence.mod.common.init.item.AccessoryItems;
 import org.confluence.mod.common.item.fishing.BaitItem;
 import org.confluence.terra_curio.util.TCUtils;
@@ -30,7 +30,7 @@ public class AutoFishManager {
     public static float computeFishingPower(@Nullable Player player, @Nullable ItemStack pole, @Nullable Item bait, @Nullable ItemStack curios){
 
         // 人物属性
-        float base = 2 + EnchantmentUtil.getEnchantmentLevel(Enchantments.LUCK_OF_THE_SEA, pole); // 0 1 2 3
+        float base = 2 + LibEnchantmentUtils.getEnchantmentLevel(Enchantments.LUCK_OF_THE_SEA, pole); // 0 1 2 3
         if (player != null && TCHelper.isLoaded()) {
             base += TCUtils.getValue(player, AccessoryItems.FISHING$POWER);
         }

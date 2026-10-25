@@ -44,3 +44,11 @@ versionRange = "(1.1.3,)"
 ordering = "NONE"
 side = "BOTH"
 
+# Keep our particle definition overrides above Terra Entity's resources.
+[[dependencies."${mod_id}"]]
+modId = "terra_entity"
+type = "optional"
+versionRange = "[1.3.0,)"
+ordering = "AFTER"
+side = "BOTH"
+

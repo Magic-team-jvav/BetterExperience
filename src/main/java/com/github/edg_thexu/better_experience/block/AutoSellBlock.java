@@ -25,7 +25,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.ChestType;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
-import org.confluence.lib.util.LibUtils;
+import org.confluence.lib.util.LibEntityUtils;
 import org.confluence.mod.common.component.ValueComponent;
 import org.confluence.mod.common.init.ModTags;
 import org.confluence.mod.util.PlayerUtils;
@@ -143,7 +143,7 @@ public class AutoSellBlock extends BaseEntityBlock {
                                         }
                                     }
                                     if (k == 27) {
-                                        LibUtils.createItemEntity(item, coins.getInt(j), pos.getX(), pos.getY() - 1, pos.getZ(), level, 0);
+                                        LibEntityUtils.createItemEntity(item, coins.getInt(j), pos.getX(), pos.getY() - 1, pos.getZ(), level, 0);
                                     }
                                 }
                                 break;

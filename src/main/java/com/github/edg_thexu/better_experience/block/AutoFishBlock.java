@@ -46,7 +46,7 @@ import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import org.confluence.lib.util.LibMathUtils;
-import org.confluence.lib.util.LibUtils;
+import org.confluence.lib.util.LibEntityUtils;
 import org.confluence.mod.client.renderer.item.SimpleGeoItemRenderer;
 import org.confluence.mod.common.init.ModTags;
 import org.confluence.mod.common.init.item.AccessoryItems;
@@ -235,7 +235,7 @@ public class AutoFishBlock extends BaseEntityBlock {
 //                                    pos.getX() + 0.5 + r * Math.sin(dir),
 //                                    pos.getY() + 1,
 //                                    pos.getZ() + 0.5 + r * Math.cos(dir), item);
-                                LibUtils.createItemEntity(item, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, level, 0);
+                                LibEntityUtils.createItemEntity(item, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, level, 0);
                             }
                         }
 

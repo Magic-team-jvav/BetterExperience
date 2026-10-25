@@ -1,7 +1,7 @@
 package com.github.edg_thexu.better_experience.mixin.integration.confluence;
 
 import com.github.edg_thexu.better_experience.module.reforge.BetterReforgeManager;
-import org.confluence.mod.client.gui.container.NPCReforgeScreen;
+import org.confluence.mod.client.gui.container.npc_screen.NPCReforgeScreen;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

@@ -11,12 +11,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import org.confluence.mod.common.init.ModDataComponentTypes;
+import org.confluence.mod.common.component.RepeaterContents;
 import org.confluence.mod.common.item.crossbow.BaseTerraRepeaterItem;
-import org.confluence.mod.util.RepeaterContentsComponentHandler;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -26,31 +23,19 @@ import java.util.List;
 /** Keep the repeater's shooting scheduler while sourcing each shot from the active chain. */
 @Mixin(value = BaseTerraRepeaterItem.class, remap = false)
 public abstract class AmmoChainRepeaterMixin extends CrossbowItem {
-    @Shadow @Final private int baseCapacity;
 
     protected AmmoChainRepeaterMixin(Properties properties) { super(properties); }
 
-    @WrapOperation(method = {"onLeftClick", "lambda$onLeftClick$3"}, at = @At(value = "INVOKE",
-            target = "Lorg/confluence/mod/common/item/crossbow/BaseTerraRepeaterItem;getHandler(Lnet/minecraft/world/item/ItemStack;)Lorg/confluence/mod/util/RepeaterContentsComponentHandler;"))
-    private RepeaterContentsComponentHandler betterExperience$chainHandler(BaseTerraRepeaterItem repeater, ItemStack weapon,
-            Operation<RepeaterContentsComponentHandler> original, @Local(argsOnly = true) Player player) {
-        var handler = original.call(repeater, weapon);
-        if (handler == null && AmmoChainManager.controls(player, weapon)) {
-            return new RepeaterContentsComponentHandler(weapon, ModDataComponentTypes.REPEATER_CONTENTS.get(), baseCapacity);
-        }
-        return handler;
-    }
-
-    @WrapOperation(method = {"onLeftClick", "lambda$onLeftClick$3"}, at = @At(value = "INVOKE",
-            target = "Lorg/confluence/mod/util/RepeaterContentsComponentHandler;isEmpty()Z"))
-    private boolean betterExperience$chainEmpty(RepeaterContentsComponentHandler handler, Operation<Boolean> original,
+    @WrapOperation(method = {"onLeftClick", "lambda$onLeftClick$1"}, at = @At(value = "INVOKE",
+            target = "Lorg/confluence/mod/common/component/RepeaterContents;isEmpty()Z"))
+    private boolean betterExperience$chainNotEmpty(RepeaterContents contents, Operation<Boolean> original,
             @Local(argsOnly = true) Player player, @Local(argsOnly = true) ItemStack weapon) {
-        return AmmoChainManager.controls(player, weapon)
-                ? AmmoChainManager.projectile(player, weapon, ItemStack.EMPTY).isEmpty() : original.call(handler);
+        if (!original.call(contents)) return false;
+        return AmmoChainManager.projectile(player, weapon, ItemStack.EMPTY).isEmpty();
     }
 
     @WrapOperation(method = "shootingPerform", at = @At(value = "INVOKE",
-            target = "Lorg/confluence/mod/util/RepeaterContentsComponentHandler;extractItemList(Lnet/minecraft/world/item/ItemStack;IZ)Ljava/util/List;"))
+            target = "Lorg/confluence/mod/common/item/crossbow/BaseTerraRepeaterItem;extractFromContents(Lnet/minecraft/world/item/ItemStack;IZ)Ljava/util/List;"))
     private List<ItemStack> betterExperience$drawChainAmmo(ItemStack weapon, int count, boolean simulate,
             Operation<List<ItemStack>> original, @Local(argsOnly = true, ordinal = 0) LivingEntity shooter) {
         if (!(shooter instanceof Player player) || !AmmoChainManager.controls(player, weapon)) {
@@ -62,17 +47,6 @@ public abstract class AmmoChainRepeaterMixin extends CrossbowItem {
         // The repeater already schedules multishot through its burst/concurrent counters.
         ItemStack projectile = useAmmo(weapon, simulate ? ammo.copy() : ammo, shooter, false);
         return projectile.isEmpty() ? List.of() : List.of(projectile);
-    }
-
-    @Inject(method = "shootingPerform", at = @At(value = "INVOKE",
-            target = "Lorg/confluence/mod/common/item/crossbow/BaseTerraRepeaterItem;shoot(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/InteractionHand;Lnet/minecraft/world/item/ItemStack;Ljava/util/List;FFZLnet/minecraft/world/entity/LivingEntity;)V"),
-            cancellable = true)
-    private void betterExperience$stopEmptyChainShot(Level level, LivingEntity shooter, InteractionHand hand, ItemStack weapon,
-            float velocity, float inaccuracy, LivingEntity target, boolean consume, CallbackInfoReturnable<Boolean> callback,
-            @Local List<ItemStack> projectiles) {
-        if (shooter instanceof Player player && projectiles.isEmpty() && AmmoChainManager.controls(player, weapon)) {
-            callback.setReturnValue(false);
-        }
     }
 
     @Inject(method = "use", at = @At("HEAD"), cancellable = true)
