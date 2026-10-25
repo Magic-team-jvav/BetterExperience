@@ -12,7 +12,6 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ScreenEvent;
-import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 
 @EventBusSubscriber(modid = Better_experience.MODID, value = Dist.CLIENT)
 public final class PauseMenuConfigShortcut {
@@ -46,7 +45,7 @@ public final class PauseMenuConfigShortcut {
         int x = modsButton.getX() + originalWidth - size;
         modsButton.setWidth(originalWidth - size - GAP);
         event.addListener(Button.builder(Component.literal("BE"), button ->
-                        Minecraft.getInstance().setScreen(new ConfigurationScreen(container, pause)))
+                        Minecraft.getInstance().setScreen(new SpawnSettingsScreen(container, pause)))
                 .bounds(x, modsButton.getY(), size, size)
                 .tooltip(Tooltip.create(Component.translatable(TITLE)))
                 .createNarration(supplier -> Component.translatable(TITLE))

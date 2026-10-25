@@ -25,6 +25,28 @@ public class ModEnglishProvider extends LanguageProvider {
 
     @Override
     protected void addTranslations() {
+        add("better_experience.spawning.title", "Better Experience · Settings");
+        add("better_experience.spawning.rate", "Spawn rate: %s×");
+        add("better_experience.spawning.cap", "Spawn cap: %s×");
+        add("better_experience.spawning.rate_help", "Natural spawn attempt frequency; 0 disables it. Preserves Confluence modifiers. Excludes spawner blocks and invasion events.");
+        add("better_experience.spawning.cap_help", "Multiplies global and local natural spawn caps. Lowering the cap does not remove existing mobs.");
+        add("better_experience.spawning.apply", "Apply multipliers");
+        add("better_experience.spawning.reset", "Reset to 1×");
+        add("better_experience.spawning.mobs", "Spawn environment & mobs");
+        add("better_experience.spawning.other", "Other settings");
+        add("better_experience.spawning.join_world", "Join a world to adjust spawning");
+        add("better_experience.spawning.loading", "Reading server data…");
+        add("better_experience.spawning.world_scope", "Current world · Natural spawning");
+        add("better_experience.spawning.read_only", "Read only · Host or OP required");
+        add("better_experience.spawning.filter_help", "Checked mobs may spawn naturally if terrain, light and other rules allow. Applies nearby in your current biome; resets on biome change. The closest player's filter wins in shared areas.");
+        add("better_experience.spawning.search", "Search mobs or mods");
+        add("better_experience.spawning.allow_all", "Allow all");
+        add("better_experience.spawning.environment", "Y %s · Light %s · Time %s");
+        add("better_experience.spawning.empty", "No matching natural spawns");
+        add("better_experience.spawning.truncated", "Showing the first 2048 entries");
+        add("better_experience.spawning.enabled", "Allow");
+        add("better_experience.spawning.disabled", "Block");
+        add("better_experience.spawning.entry_info", "Candidate weight %s · Group %s–%s");
 
         add("better_experience.welcome_message", "Better Experience has been enabled, press ESC to access the mod's configuration to enable features.");
 

@@ -15,6 +15,28 @@ public class ModChineseProvider extends LanguageProvider {
 
     @Override
     protected void addTranslations() {
+        add("better_experience.spawning.title", "更好的体验 · 设置");
+        add("better_experience.spawning.rate", "刷怪速率：%s×");
+        add("better_experience.spawning.cap", "刷怪上限：%s×");
+        add("better_experience.spawning.rate_help", "自然生成尝试频率，0 为关闭。保留汇流原有加成，不影响刷怪笼、入侵事件。");
+        add("better_experience.spawning.cap_help", "自然刷怪的全局与玩家附近上限倍率。降低上限不会移除已有生物。");
+        add("better_experience.spawning.apply", "应用倍率");
+        add("better_experience.spawning.reset", "恢复 1 倍");
+        add("better_experience.spawning.mobs", "刷怪环境与生物筛选");
+        add("better_experience.spawning.other", "其他设置");
+        add("better_experience.spawning.join_world", "进入世界后可调整刷怪");
+        add("better_experience.spawning.loading", "正在读取服务端数据…");
+        add("better_experience.spawning.world_scope", "当前世界 · 自然刷怪");
+        add("better_experience.spawning.read_only", "只读 · 房主或 OP 可调整");
+        add("better_experience.spawning.filter_help", "勾选允许自然生成，仍需满足地形、光照等条件。筛选限自身附近的当前群系，切换群系即清除；多人重叠以最近玩家为准。");
+        add("better_experience.spawning.search", "搜索生物或模组");
+        add("better_experience.spawning.allow_all", "全部允许");
+        add("better_experience.spawning.environment", "高度 %s · 光照 %s · 时间 %s");
+        add("better_experience.spawning.empty", "没有匹配的自然生成生物");
+        add("better_experience.spawning.truncated", "生物过多，列表仅显示前 2048 项");
+        add("better_experience.spawning.enabled", "允许");
+        add("better_experience.spawning.disabled", "禁止");
+        add("better_experience.spawning.entry_info", "候选权重 %s · 每群 %s–%s");
 
         add("better_experience.welcome_message", "已启用 [汇流来世:更好的体验] , 按ESC并在mod中找到本模组配置启用功能。");
 
