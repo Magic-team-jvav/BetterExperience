@@ -238,6 +238,17 @@ public class ModEnglishProvider extends LanguageProvider {
         add("better_experience.configuration.World", "World");
         add("better_experience.configuration.Entity", "Entity");
         add("better_experience.configuration.Item", "Item");
+        add("better_experience.configuration.AntiRage", "Anti-Rage Mode");
+        add("better_experience.configuration.anti_rage_mode", "Enable Anti-Rage Mode");
+        add("better_experience.configuration.anti_rage_mode.tooltip", "Death 3 enables world-wide keep inventory and singleplayer cheats. After deaths 4-9, hits grant x extra seconds of invulnerability during the first 10n seconds after respawn (n is this cycle's death count). Death 10 grants 100 seconds of creative, then restores the original game mode and clears the count. Cheats and keep inventory remain enabled. Disabling clears the count and ends temporary creative. Uses server settings in multiplayer; never grants OP.");
+        add("better_experience.configuration.anti_rage_extra_invulnerability_seconds", "Extra Post-Hit Invulnerability (seconds)");
+        add("better_experience.configuration.anti_rage_extra_invulnerability_seconds.tooltip", "Add x seconds to normal post-hit invulnerability during the protection window. Default: 1 second; range: 0-60. Damage that bypasses invulnerability still follows its normal rules.");
+        add("better_experience.anti_rage.assistance", "Anti-Rage: 3 consecutive deaths. Keep inventory enabled.");
+        add("better_experience.anti_rage.cheats", "Anti-Rage: singleplayer cheats enabled.");
+        add("better_experience.anti_rage.creative", "Anti-Rage: 10 consecutive deaths. Temporary creative mode for 100 seconds.");
+        add("better_experience.anti_rage.reset", "Anti-Rage: temporary creative ended and the death count was reset.");
+        add("better_experience.anti_rage.progress", "Anti-Rage: %s/10 deaths this cycle. Post-hit protection starts on the fourth respawn.");
+        add("better_experience.anti_rage.protection", "Anti-Rage: %s deaths. Respawn protection window: %s seconds; extra post-hit invulnerability: %s seconds.");
         add("better_experience.configuration.locator_search_radius", "Structure Locator Search Radius (blocks)");
         add("better_experience.configuration.locator_search_radius.tooltip", "Maximum structure search radius in blocks. Default: 32768. Skips structure starts already marked by the current player. Larger radii may take longer to search. The server setting applies in multiplayer.");
 
