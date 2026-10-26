@@ -14,6 +14,7 @@ public final class WorldOptions extends SavedData {
     public static final double MAX_GROWTH = 20.0;
     private static final Factory<WorldOptions> FACTORY = new Factory<>(WorldOptions::new, WorldOptions::load);
     private Values values = Values.DEFAULT;
+    private static volatile Values clientValues = Values.DEFAULT;
 
     public enum Feature {
         FREE_ENCHANTING("free_enchanting"),
@@ -21,7 +22,19 @@ public final class WorldOptions extends SavedData {
         SAFE_SLEEP("safe_sleep"),
         BED_BLAST_IMMUNITY("bed_blast_immunity"),
         INSTANT_SMELTING("instant_smelting"),
-        INSTANT_BREWING("instant_brewing");
+        INSTANT_BREWING("instant_brewing"),
+        UNBREAKABLE_EYES("unbreakable_eyes"),
+        FAIR_TRADES("fair_trades"),
+        FRIENDLY_NEUTRALS("friendly_neutrals"),
+        PROTECTED_PETS("protected_pets"),
+        REUSABLE_TEMPLATES("reusable_templates"),
+        NO_CURSED_LOOT("no_cursed_loot"),
+        HUNGRY_SPRINTING("hungry_sprinting"),
+        FULL_SPEED_BOWS("full_speed_bows"),
+        PERMANENT_NIGHT_VISION("permanent_night_vision"),
+        EXTRA_GOLEM_IRON("extra_golem_iron"),
+        LEATHER_RECIPE("leather_recipe"),
+        ENCHANTED_APPLE_RECIPE("enchanted_apple_recipe");
 
         private final String key;
 
@@ -56,7 +69,14 @@ public final class WorldOptions extends SavedData {
     }
 
     public static boolean enabled(Level level, Feature feature) {
+        if (level.isClientSide) return clientEnabled(feature);
         return level instanceof ServerLevel serverLevel && get(serverLevel.getServer()).values.enabled(feature);
+    }
+
+    public static boolean clientEnabled(Feature feature) { return clientValues.enabled(feature); }
+
+    public static void acceptClientValues(Values values) {
+        if (values.valid()) clientValues = values;
     }
 
     public Values values() { return values; }

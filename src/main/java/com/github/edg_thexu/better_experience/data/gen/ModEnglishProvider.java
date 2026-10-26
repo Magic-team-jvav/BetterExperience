@@ -25,6 +25,30 @@ public class ModEnglishProvider extends LanguageProvider {
 
     @Override
     protected void addTranslations() {
+        add("better_experience.world_options.unbreakable_eyes", "Eye recovery: %s");
+        add("better_experience.world_options.unbreakable_eyes_help", "Thrown Eyes of Ender always drop for recovery after their flight.");
+        add("better_experience.world_options.fair_trades", "Fair trades: %s");
+        add("better_experience.world_options.fair_trades_help", "Removes demand and reputation price increases while preserving discounts, stock and restocking. Prices may rise again after disabling.");
+        add("better_experience.world_options.friendly_neutrals", "Friendly neutrals: %s");
+        add("better_experience.world_options.friendly_neutrals_help", "Neutral creatures stop targeting or damaging players and forget player anger. Hostile monsters and owned pets retain their normal combat.");
+        add("better_experience.world_options.protected_pets", "Protect pets: %s");
+        add("better_experience.world_options.protected_pets_help", "Owned pets retain at least 1 health. At 1 health they stop attacking and enemies forget them. Healing above 1 health restores combat.");
+        add("better_experience.world_options.reusable_templates", "Keep templates: %s");
+        add("better_experience.world_options.reusable_templates_help", "Smithing upgrades and armor trims preserve the template. Base equipment and additional materials are still consumed.");
+        add("better_experience.world_options.no_cursed_loot", "No cursed loot: %s");
+        add("better_experience.world_options.no_cursed_loot_help", "Removes curse enchantments from generated loot, trade results and newly spawned mob equipment while preserving items and other enchantments. Existing inventories are unchanged.");
+        add("better_experience.world_options.hungry_sprinting", "Hungry sprint: %s");
+        add("better_experience.world_options.hungry_sprinting_help", "Low hunger no longer prevents or stops sprinting. Food exhaustion and starvation damage retain their normal rules.");
+        add("better_experience.world_options.full_speed_bows", "Full-speed bows: %s");
+        add("better_experience.world_options.full_speed_bows_help", "Keeps normal movement and sprinting while drawing vanilla or Confluence bows. Eating, blocking and other movement restrictions are unchanged.");
+        add("better_experience.world_options.permanent_night_vision", "Night vision: %s");
+        add("better_experience.world_options.permanent_night_vision_help", "Provides steady night-vision brightness without replacing real potion effects. Disabling restores normal lighting or existing potion vision.");
+        add("better_experience.world_options.extra_golem_iron", "Double golem iron: %s");
+        add("better_experience.world_options.extra_golem_iron_help", "Doubles the iron ingots actually dropped by iron golems without changing other drops or loot conditions.");
+        add("better_experience.world_options.leather_recipe", "Craft leather: %s");
+        add("better_experience.world_options.leather_recipe_help", "Craft 1 leather from 4 rotten flesh in any arrangement, including the 2×2 inventory grid.");
+        add("better_experience.world_options.enchanted_apple_recipe", "Craft god apples: %s");
+        add("better_experience.world_options.enchanted_apple_recipe_help", "Craft 1 enchanted golden apple using 8 gold blocks surrounding 1 apple.");
         add("better_experience.world_options.title", "World Convenience Settings");
         add("better_experience.world_options.join_world", "Join a world to change settings");
         add("better_experience.world_options.world_scope", "Current world · Server settings");

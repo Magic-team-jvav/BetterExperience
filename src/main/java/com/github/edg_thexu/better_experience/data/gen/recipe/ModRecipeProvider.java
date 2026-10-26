@@ -4,6 +4,7 @@ package com.github.edg_thexu.better_experience.data.gen.recipe;
 import com.github.edg_thexu.better_experience.Better_experience;
 import com.github.edg_thexu.better_experience.init.ModBlocks;
 import com.github.edg_thexu.better_experience.init.ModItems;
+import com.github.edg_thexu.better_experience.module.worldoptions.ConvenienceRules;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.*;
@@ -27,6 +28,15 @@ public class ModRecipeProvider extends RecipeProvider {
 
     @Override
     protected void buildRecipes(RecipeOutput recipeOutput) {
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, Items.LEATHER)
+                .requires(Items.ROTTEN_FLESH, 4).group(ConvenienceRules.LEATHER_GROUP)
+                .unlockedBy("has_rotten_flesh", has(Items.ROTTEN_FLESH))
+                .save(recipeOutput, Better_experience.space("leather_from_rotten_flesh"));
+        ShapedRecipeBuilder.shaped(RecipeCategory.FOOD, Items.ENCHANTED_GOLDEN_APPLE)
+                .pattern("ggg").pattern("gag").pattern("ggg")
+                .define('g', Items.GOLD_BLOCK).define('a', Items.APPLE).group(ConvenienceRules.APPLE_GROUP)
+                .unlockedBy("has_gold_block", has(Items.GOLD_BLOCK))
+                .save(recipeOutput, Better_experience.space("enchanted_golden_apple"));
 
         ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, ModBlocks.CHRONOPILOT)
                 .pattern("ppp").pattern("pcp").pattern("pgp")

@@ -31,7 +31,17 @@ public record WorldOptionsPacket(int request, boolean update, WorldOptions.Value
     public static void handle(ServerPlayer player, WorldOptionsPacket packet) {
         var options = WorldOptions.get(player.server);
         boolean editable = SpawnController.canEdit(player);
-        if (packet.update && editable) options.update(packet.values);
+        if (packet.update && editable && !options.values().equals(packet.values) && options.update(packet.values)) {
+            PacketDistributor.sendToAllPlayers(new WorldOptionsSnapshotPacket(0, false, options.values()));
+            // Invalidate already displayed crafting results when either optional recipe is disabled.
+            for (ServerPlayer viewer : player.server.getPlayerList().getPlayers()) {
+                var menu = viewer.containerMenu;
+                if (menu instanceof net.minecraft.world.inventory.CraftingMenu || menu instanceof net.minecraft.world.inventory.InventoryMenu) {
+                    menu.slotsChanged(viewer.getInventory());
+                    menu.broadcastChanges();
+                }
+            }
+        }
         PacketDistributor.sendToPlayer(player, new WorldOptionsSnapshotPacket(packet.request, editable, options.values()));
     }
 }

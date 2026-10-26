@@ -18,6 +18,7 @@ import java.util.Locale;
 import java.util.Map;
 
 public final class WorldOptionsScreen extends Screen {
+    private static final int TOGGLES_PER_PAGE = 6;
     private final Screen parent;
     private final int request = SpawnSettingsScreen.nextRequest();
     private final Map<Feature, Button> toggles = new EnumMap<>(Feature.class);
@@ -30,6 +31,9 @@ public final class WorldOptionsScreen extends Screen {
     private boolean dirty;
     private int top;
     private int ticks;
+    private int page;
+    private Button previous;
+    private Button next;
 
     public WorldOptionsScreen(Screen parent) {
         super(text("title"));
@@ -63,29 +67,48 @@ public final class WorldOptionsScreen extends Screen {
         int panelWidth = Math.min(340, width - 24);
         int left = (width - panelWidth) / 2;
         int half = (panelWidth - 4) / 2;
-        top = Math.max(28, (height - 200) / 2);
-        toggles.clear();
-        for (Feature feature : Feature.values()) {
-            int index = feature.ordinal();
-            Button button = addRenderableWidget(Button.builder(Component.empty(), ignored -> {
-                draft = draft.with(feature, !draft.enabled(feature));
-                changed();
-            }).bounds(left + index % 2 * (half + 4), top + 24 + index / 2 * 24, half, 20)
-                    .tooltip(Tooltip.create(text(feature.key() + "_help"))).build());
-            toggles.put(feature, button);
-        }
-        crops = addRenderableWidget(new GrowthSlider(left, top + 98, panelWidth, false));
-        saplings = addRenderableWidget(new GrowthSlider(left, top + 122, panelWidth, true));
+        top = Math.max(28, (height - 208) / 2);
+        rebuildToggles(left, half);
+        previous = addRenderableWidget(Button.builder(Component.literal("<"), ignored -> changePage(-1))
+                .bounds(left, top + 92, 22, 16).build());
+        next = addRenderableWidget(Button.builder(Component.literal(">"), ignored -> changePage(1))
+                .bounds(left + panelWidth - 22, top + 92, 22, 16).build());
+        crops = addRenderableWidget(new GrowthSlider(left, top + 112, panelWidth, false));
+        saplings = addRenderableWidget(new GrowthSlider(left, top + 134, panelWidth, true));
         apply = addRenderableWidget(Button.builder(text("apply"), ignored -> send(true))
-                .bounds(left, top + 146, half, 20).build());
+                .bounds(left, top + 156, half, 20).build());
         reset = addRenderableWidget(Button.builder(text("defaults"), ignored -> {
             draft = WorldOptions.Values.DEFAULT;
             changed();
-        }).bounds(left + half + 4, top + 146, half, 20).build());
+        }).bounds(left + half + 4, top + 156, half, 20).build());
         addRenderableWidget(Button.builder(Component.translatable("gui.done"), ignored -> onClose())
-                .bounds(left, top + 170, panelWidth, 20).build());
+                .bounds(left, top + 178, panelWidth, 20).build());
         refresh();
         send(false);
+    }
+
+    private int pages() { return (Feature.values().length + TOGGLES_PER_PAGE - 1) / TOGGLES_PER_PAGE; }
+
+    private void changePage(int delta) {
+        page = Math.clamp(page + delta, 0, pages() - 1);
+        int panelWidth = Math.min(340, width - 24);
+        rebuildToggles((width - panelWidth) / 2, (panelWidth - 4) / 2);
+        refresh();
+    }
+
+    private void rebuildToggles(int left, int half) {
+        toggles.values().forEach(this::removeWidget);
+        toggles.clear();
+        Feature[] features = Feature.values();
+        for (int index = 0; index < TOGGLES_PER_PAGE && page * TOGGLES_PER_PAGE + index < features.length; index++) {
+            Feature feature = features[page * TOGGLES_PER_PAGE + index];
+            Button button = addRenderableWidget(Button.builder(Component.empty(), ignored -> {
+                draft = draft.with(feature, !draft.enabled(feature));
+                changed();
+            }).bounds(left + index % 2 * (half + 4), top + 24 + index / 2 * 22, half, 20)
+                    .tooltip(Tooltip.create(text(feature.key() + "_help"))).build());
+            toggles.put(feature, button);
+        }
     }
 
     private boolean editable() {
@@ -107,6 +130,8 @@ public final class WorldOptionsScreen extends Screen {
         saplings.setMultiplier(draft.saplings());
         crops.active = saplings.active = reset.active = editable;
         apply.active = editable && dirty;
+        previous.active = page > 0;
+        next.active = page + 1 < pages();
     }
 
     private void send(boolean update) {
@@ -137,6 +162,7 @@ public final class WorldOptionsScreen extends Screen {
                 : snapshot == null ? SpawnSettingsScreen.text("loading")
                 : text(snapshot.editable() ? "world_scope" : "read_only");
         graphics.drawCenteredString(font, status, width / 2, top + 5, 0xA9BCCB);
+        graphics.drawCenteredString(font, (page + 1) + "/" + pages(), width / 2, top + 96, 0xCBD8DF);
     }
 
     @Override
