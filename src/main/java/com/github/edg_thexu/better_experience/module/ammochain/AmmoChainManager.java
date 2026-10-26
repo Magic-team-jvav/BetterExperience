@@ -5,6 +5,8 @@ import com.github.edg_thexu.better_experience.data.component.AmmoChainSettings;
 import com.github.edg_thexu.better_experience.init.ModDataComponentTypes;
 import com.github.edg_thexu.better_experience.intergration.terra_gun.AmmoChainGunSupport;
 import com.github.edg_thexu.better_experience.intergration.terra_gun.TGHelper;
+import com.github.edg_thexu.better_experience.intergration.confluence.ConfluenceHelper;
+import com.github.edg_thexu.better_experience.intergration.confluence.ConfluenceGunSupport;
 import com.github.edg_thexu.better_experience.item.AmmoChain;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -26,9 +28,9 @@ import java.util.function.Predicate;
 /** Selection is read-only. Only a successful logical shot advances the persistent cursor. */
 public final class AmmoChainManager {
     private static final List<TagKey<Item>> AMMO_TAGS = List.of(
-            ammoTag("terra_guns:ammo"), ammoTag("c:ammo"), ammoTag("c:arrows"),
+            ammoTag("confluence:ammo"), ammoTag("terra_guns:ammo"), ammoTag("c:ammo"), ammoTag("c:arrows"),
             ammoTag("c:bullets"), ammoTag("c:rockets"), ammoTag("c:darts"));
-    private static final ResourceLocation FALLEN_STAR = ResourceLocation.parse("confluence:fallen_star");
+    private static final ResourceLocation FALLING_STAR = ResourceLocation.parse("confluence:falling_star");
     private record Active(ItemStack stack, AmmoChainSettings settings, AmmoChainCursor cursor) {}
 
     private AmmoChainManager() {}
@@ -40,12 +42,15 @@ public final class AmmoChainManager {
     public static boolean isAmmo(ItemStack stack) {
         return !stack.isEmpty() && (stack.getItem() instanceof ArrowItem || stack.is(ItemTags.ARROWS)
                 || stack.is(Items.FIREWORK_ROCKET) || AMMO_TAGS.stream().anyMatch(stack::is)
-                || BuiltInRegistries.ITEM.getKey(stack.getItem()).equals(FALLEN_STAR));
+                || BuiltInRegistries.ITEM.getKey(stack.getItem()).equals(FALLING_STAR));
     }
 
     public static Predicate<ItemStack> projectilePredicate(Player player, ItemStack weapon) {
         if (weapon.getItem() instanceof ProjectileWeaponItem item) {
             return item.getAllSupportedProjectiles(weapon).or(item.getSupportedHeldProjectiles(weapon));
+        }
+        if (ConfluenceHelper.isLoaded() && ConfluenceGunSupport.isGun(weapon)) {
+            return ammo -> ConfluenceGunSupport.compatible(player, ammo, weapon);
         }
         if (TGHelper.isLoaded() && AmmoChainGunSupport.isGun(weapon)) {
             return ammo -> AmmoChainGunSupport.compatible(player, ammo, weapon);
@@ -93,7 +98,13 @@ public final class AmmoChainManager {
         for (var stack : player.getInventory().items) {
             if (!stack.isEmpty() && ItemStack.isSameItemSameComponents(stack, sample)) return stack;
         }
+        ItemStack offhand = player.getOffhandItem();
+        if (!offhand.isEmpty() && ItemStack.isSameItemSameComponents(offhand, sample)) return offhand;
         return ItemStack.EMPTY;
+    }
+
+    public static boolean hasAmmo(Player player, ItemStack sample) {
+        return !sample.isEmpty() && !findAmmo(player, sample).isEmpty();
     }
 
     public static void shot(Player player, ItemStack weapon, ItemStack projectile) {

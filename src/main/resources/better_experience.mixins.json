@@ -31,6 +31,8 @@
     "RecipeManagerMixin",
     "integration.confluence.AbstractPotionItemMixin",
     "integration.confluence.LivingProjectileSelectionMixin",
+    "integration.confluence.AmmoChainGunAmmoMixin",
+    "integration.confluence.AmmoChainGunShotMixin",
     "integration.confluence.TerraProjectileWeaponMixin",
     "integration.confluence.DaedalusStormbowMixin",
     "integration.confluence.AmmoChainStormbowReleaseMixin",

@@ -1,6 +1,8 @@
 package com.github.edg_thexu.better_experience.networks;
 
 import com.github.edg_thexu.better_experience.intergration.jei.JeiHelper;
+import com.github.edg_thexu.better_experience.networks.c2s.AntiRageSettingsPacket;
+import com.github.edg_thexu.better_experience.networks.s2c.AntiRageSnapshotPacket;
 import com.github.edg_thexu.better_experience.networks.c2s.WorldOptionsPacket;
 import com.github.edg_thexu.better_experience.networks.s2c.WorldOptionsSnapshotPacket;
 import com.github.edg_thexu.better_experience.networks.c2s.SpawnControlPacket;
@@ -35,7 +37,9 @@ import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 public final class NetworkHandler {
 
     public static void register(RegisterPayloadHandlersEvent event) {
-        PayloadRegistrar registrar = event.registrar("17");
+        PayloadRegistrar registrar = event.registrar("18");
+        registrar.playToServer(AntiRageSettingsPacket.TYPE, AntiRageSettingsPacket.STREAM_CODEC, AntiRageSettingsPacket::handle);
+        registrar.playToClient(AntiRageSnapshotPacket.TYPE, AntiRageSnapshotPacket.STREAM_CODEC, AntiRageSnapshotPacket::handle);
         registrar.playToServer(WorldOptionsPacket.TYPE, WorldOptionsPacket.STREAM_CODEC, WorldOptionsPacket::handle);
         registrar.playToClient(WorldOptionsSnapshotPacket.TYPE, WorldOptionsSnapshotPacket.STREAM_CODEC, WorldOptionsSnapshotPacket::handle);
         registrar.playToServer(SpawnControlPacket.TYPE, SpawnControlPacket.STREAM_CODEC, SpawnControlPacket::handle);

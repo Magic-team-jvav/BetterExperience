@@ -31,7 +31,7 @@ public record AmmoChainSettingsPacketC2S(int slot, AmmoChainSettings settings) i
                 if (entry.isEmpty()) continue;
                 var ammo = entry.ammo();
                 if (!AmmoChainManager.isAmmo(ammo)) return;
-                boolean owned = player.getInventory().items.stream().anyMatch(item -> !item.isEmpty() && ItemStack.isSameItemSameComponents(item, ammo));
+                boolean owned = AmmoChainManager.hasAmmo(player, ammo);
                 boolean retained = previous.entries().stream().anyMatch(item -> ItemStack.isSameItemSameComponents(item.ammo(), ammo));
                 if (!owned && !retained) return;
             }

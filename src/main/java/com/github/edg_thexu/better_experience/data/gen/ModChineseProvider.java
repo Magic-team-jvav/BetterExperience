@@ -15,6 +15,10 @@ public class ModChineseProvider extends LanguageProvider {
 
     @Override
     protected void addTranslations() {
+        add("better_experience.anti_rage.prompt.toggle", "防急眼模式：%s");
+        add("better_experience.anti_rage.prompt.help", "3 次死亡开启不掉落，4 次起延长受击无敌帧，10 次给予临时创造。仅房主或 OP 可修改；不改变上方软核选择。");
+        add("better_experience.anti_rage.prompt.read_only", "以服务器配置为准，仅房主或 OP 可修改。");
+        add("better_experience.anti_rage.prompt.save_failed", "防急眼模式保存失败，设置未更改。");
         add("better_experience.world_options.unbreakable_eyes", "末影之眼不碎：%s");
         add("better_experience.world_options.unbreakable_eyes_help", "投出的末影之眼结束飞行后必定掉落，可重新拾取。");
         add("better_experience.world_options.fair_trades", "村民不涨价：%s");

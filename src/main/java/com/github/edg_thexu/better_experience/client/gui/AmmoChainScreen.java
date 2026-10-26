@@ -211,7 +211,9 @@ public final class AmmoChainScreen extends Screen {
     private void refreshAmmunition() {
         if (minecraft.player == null) return;
         List<AmmoChoice> choices = new ArrayList<>();
-        for (var stack : minecraft.player.getInventory().items) {
+        var inventory = new ArrayList<>(minecraft.player.getInventory().items);
+        inventory.addAll(minecraft.player.getInventory().offhand);
+        for (var stack : inventory) {
             if (!AmmoChainManager.isAmmo(stack)) continue;
             int existing = -1;
             for (int index = 0; index < choices.size(); index++) {
