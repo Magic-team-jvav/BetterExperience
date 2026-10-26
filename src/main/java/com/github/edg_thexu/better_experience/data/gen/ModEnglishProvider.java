@@ -25,6 +25,10 @@ public class ModEnglishProvider extends LanguageProvider {
 
     @Override
     protected void addTranslations() {
+        add("better_experience.anti_rage.prompt.toggle", "Anti-Rage: %s");
+        add("better_experience.anti_rage.prompt.help", "Death 3 enables keep inventory; deaths 4+ extend hit protection; death 10 grants temporary creative. Host or OP only. Independent of the softcore choice above.");
+        add("better_experience.anti_rage.prompt.read_only", "Uses server settings. Only the host or an OP can change this.");
+        add("better_experience.anti_rage.prompt.save_failed", "Could not save Anti-Rage. The setting was not changed.");
         add("better_experience.world_options.unbreakable_eyes", "Eye recovery: %s");
         add("better_experience.world_options.unbreakable_eyes_help", "Thrown Eyes of Ender always drop for recovery after their flight.");
         add("better_experience.world_options.fair_trades", "Fair trades: %s");
