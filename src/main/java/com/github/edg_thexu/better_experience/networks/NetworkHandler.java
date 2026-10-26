@@ -35,7 +35,7 @@ import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 public final class NetworkHandler {
 
     public static void register(RegisterPayloadHandlersEvent event) {
-        PayloadRegistrar registrar = event.registrar("16");
+        PayloadRegistrar registrar = event.registrar("17");
         registrar.playToServer(WorldOptionsPacket.TYPE, WorldOptionsPacket.STREAM_CODEC, WorldOptionsPacket::handle);
         registrar.playToClient(WorldOptionsSnapshotPacket.TYPE, WorldOptionsSnapshotPacket.STREAM_CODEC, WorldOptionsSnapshotPacket::handle);
         registrar.playToServer(SpawnControlPacket.TYPE, SpawnControlPacket.STREAM_CODEC, SpawnControlPacket::handle);

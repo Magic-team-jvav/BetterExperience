@@ -15,6 +15,30 @@ public class ModChineseProvider extends LanguageProvider {
 
     @Override
     protected void addTranslations() {
+        add("better_experience.world_options.unbreakable_eyes", "末影之眼不碎：%s");
+        add("better_experience.world_options.unbreakable_eyes_help", "投出的末影之眼结束飞行后必定掉落，可重新拾取。");
+        add("better_experience.world_options.fair_trades", "村民不涨价：%s");
+        add("better_experience.world_options.fair_trades_help", "清除并抑制村民交易涨价，保留折扣、库存及补货规则。关闭后可再次产生涨价。");
+        add("better_experience.world_options.friendly_neutrals", "中立生物友好：%s");
+        add("better_experience.world_options.friendly_neutrals_help", "中立生物不再攻击玩家，已有对玩家的仇恨会清除。敌对怪物及玩家宠物的正常战斗不受影响。");
+        add("better_experience.world_options.protected_pets", "宠物保护：%s");
+        add("better_experience.world_options.protected_pets_help", "已认主的宠物至少保留 1 点生命。濒危时停止攻击并被其他生物放弃仇恨，治疗到 1 点以上可恢复战斗。");
+        add("better_experience.world_options.reusable_templates", "锻造模板保留：%s");
+        add("better_experience.world_options.reusable_templates_help", "锻造升级和盔甲纹饰不消耗模板，仍正常消耗装备及附加材料。");
+        add("better_experience.world_options.no_cursed_loot", "禁止生成诅咒：%s");
+        add("better_experience.world_options.no_cursed_loot_help", "从新战利品、交易产物及新生成生物装备中移除诅咒附魔，保留物品及其他附魔。已有背包物品不处理。");
+        add("better_experience.world_options.hungry_sprinting", "饥饿可疾跑：%s");
+        add("better_experience.world_options.hungry_sprinting_help", "饱食度过低也能开始和保持疾跑。饱食度消耗及饥饿伤害保持原规则。");
+        add("better_experience.world_options.full_speed_bows", "拉弓不减速：%s");
+        add("better_experience.world_options.full_speed_bows_help", "使用原版及汇流弓时保留正常移动和疾跑速度。不影响进食、格挡或冰冻等其他减速。");
+        add("better_experience.world_options.permanent_night_vision", "常驻夜视：%s");
+        add("better_experience.world_options.permanent_night_vision_help", "持续获得夜视亮度，无药水闪烁；关闭后恢复正常亮度，不覆盖或移除实际药水效果。");
+        add("better_experience.world_options.extra_golem_iron", "傀儡铁锭翻倍：%s");
+        add("better_experience.world_options.extra_golem_iron_help", "铁傀儡实际掉落的铁锭数量翻倍，不改变其他掉落或掉落条件。");
+        add("better_experience.world_options.leather_recipe", "皮革合成：%s");
+        add("better_experience.world_options.leather_recipe_help", "4 个腐肉无序合成 1 个皮革，2×2 合成栏即可制作。");
+        add("better_experience.world_options.enchanted_apple_recipe", "附魔金苹果：%s");
+        add("better_experience.world_options.enchanted_apple_recipe_help", "8 个金块围住 1 个苹果，合成 1 个附魔金苹果。");
         add("better_experience.world_options.title", "世界便利设置");
         add("better_experience.world_options.join_world", "进入世界后可调整设置");
         add("better_experience.world_options.world_scope", "当前世界 · 服务端生效");

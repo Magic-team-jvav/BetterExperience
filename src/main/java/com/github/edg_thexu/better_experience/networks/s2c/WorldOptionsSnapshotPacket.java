@@ -20,6 +20,9 @@ public record WorldOptionsSnapshotPacket(int request, boolean editable, WorldOpt
     public Type<? extends CustomPacketPayload> type() { return TYPE; }
 
     public static void handle(WorldOptionsSnapshotPacket packet, IPayloadContext context) {
-        context.enqueueWork(() -> WorldOptionsScreen.receive(packet));
+        context.enqueueWork(() -> {
+            WorldOptions.acceptClientValues(packet.values());
+            WorldOptionsScreen.receive(packet);
+        });
     }
 }

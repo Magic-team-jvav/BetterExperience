@@ -7,6 +7,7 @@
   "mixins": [
     "accessor.PrimaryLevelDataAccess",
     "accessor.LevelSettingsAccess",
+    "accessor.MerchantOfferAccess",
     "ChestMenuMixin",
     "SpawnRateMixin",
     "SpawnCapMixin",
@@ -17,6 +18,12 @@
     "FurnaceWorldOptionsMixin",
     "BrewingWorldOptionsMixin",
     "PlantGrowthMixin",
+    "EyeOfEnderMixin",
+    "VillagerOffersMixin",
+    "SmithingTemplateMixin",
+    "GeneratedLootMixin",
+    "OptionalRecipeMixin",
+    "FriendlyMobMixin",
     "FishingHookMixin",
     "ItemMixin",
     "PlayerMixin",
@@ -44,6 +51,9 @@
     "integration.terra_gun.AmmoChainGunMixin"
   ],
   "client": [
+    "client.ConvenienceMovementMixin",
+    "client.NightVisionLightMixin",
+    "client.NightVisionScaleMixin",
     "integration.confluence.ChronopilotInformationMixin",
     "accessor.PreviewRenderTypeAccess",
     "accessor.PreviewRenderStateAccess",
