@@ -39,6 +39,7 @@
     "integration.confluence.AmmoChainRepeaterMixin",
     "integration.confluence.BossSummingItemMixin",
     "integration.confluence.NPCReforgeMenuMixin",
+    "integration.confluence.NPCReforgeSlotMixin",
     "integration.confluence.StoneSaplingBlockMixin",
     "integration.confluence.herbs.BlinkrootMixin",
     "integration.confluence.herbs.DaybloomMixin",

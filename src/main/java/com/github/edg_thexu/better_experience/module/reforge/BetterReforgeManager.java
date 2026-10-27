@@ -15,7 +15,7 @@ import org.confluence.mod.common.component.prefix.ModPrefix;
 import org.confluence.mod.common.component.prefix.PrefixComponent;
 import org.confluence.mod.common.component.prefix.PrefixType;
 import org.confluence.mod.common.init.ModDataComponentTypes;
-import org.confluence.terraentity.utils.AdapterUtils;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,17 +30,26 @@ public class BetterReforgeManager {
         if (cp == null) {
             throw new IllegalStateException(itemStack + "不能获得前缀");
         }
-        float originalValue = ModPrefix.ID_MAP.values().stream()
-                .filter(prefix -> prefix.name().equals(cp.name()))
-                .findFirst().map(ModPrefix::value).orElse(0.0F);
+        ModPrefix current = java.util.Arrays.stream(available)
+                .filter(prefix -> prefix.name().equals(cp.name())).findFirst()
+                .orElseGet(() -> ModPrefix.ID_MAP.values().stream()
+                        .filter(prefix -> prefix.name().equals(cp.name())).findFirst().orElse(null));
+        float originalValue = current == null ? 0.0F : current.value();
         List<Integer> availableList = new ArrayList<>();
         for (ModPrefix prefix : available) {
-            int ii = ModPrefix.ID_MAP.inverse().getOrDefault(prefix, -1);
-            ModPrefix modPrefix = ModPrefix.ID_MAP.get(ii);
-            float value = modPrefix.value();
-            if (value >= originalValue) {
-                availableList.add(ii);
+            Integer id = ModPrefix.ID_MAP.inverse().get(prefix);
+            if (id == null || prefix.value() < originalValue) continue;
+            availableList.add(id);
+        }
+        // 当前词条已经是最优时没有任何候选，退回当前词条，避免 getFirst() 抛异常让这次重铸直接失败。
+        if (availableList.isEmpty()) {
+            Integer id = current == null ? null : ModPrefix.ID_MAP.inverse().get(current);
+            if (id != null) return id;
+            for (ModPrefix prefix : available) {
+                Integer fallback = ModPrefix.ID_MAP.inverse().get(prefix);
+                if (fallback != null) return fallback;
             }
+            throw new IllegalStateException(itemStack + "不能获得前缀");
         }
         Collections.shuffle(availableList);
         return availableList.getFirst();
@@ -49,8 +58,8 @@ public class BetterReforgeManager {
     @OnlyIn(Dist.CLIENT)
     public static void init(NPCReforgeScreen screen){
         FloatButton button = new FloatButton((FloatButton.Builder) FloatButton.builder(Component.literal("B"), (p)->{
-            AdapterUtils.sendToServer(new ServerBoundPacketC2S(6));
-        }).tooltip(Tooltip.create(Component.translatable("better_experience.tooltip.better_reforge.enable"))).bounds(screen.width / 2 - 88, screen.height / 2 - 30, 30, 15));
+            PacketDistributor.sendToServer(new ServerBoundPacketC2S(6));
+        }).tooltip(Tooltip.create(Component.translatable("better_experience.tooltip.better_reforge.enable"))).bounds(screen.getGuiLeft() + 4, screen.getGuiTop() + 99, 28, 16));
         ((ScreenAccessor)screen).callAddRenderableWidget(button);
         button.setSelectedDirectly(Minecraft.getInstance().player.getData(ModAttachments.TEMP_DATA).enableBetterReforge());
 

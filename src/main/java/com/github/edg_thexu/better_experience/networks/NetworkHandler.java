@@ -37,7 +37,10 @@ import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 public final class NetworkHandler {
 
     public static void register(RegisterPayloadHandlersEvent event) {
-        PayloadRegistrar registrar = event.registrar("18");
+        PayloadRegistrar registrar = event.registrar("19");
+        registrar.playToServer(com.github.edg_thexu.better_experience.networks.c2s.ReforgeHistoryPacket.TYPE,
+                com.github.edg_thexu.better_experience.networks.c2s.ReforgeHistoryPacket.STREAM_CODEC,
+                com.github.edg_thexu.better_experience.networks.c2s.ReforgeHistoryPacket::handle);
         registrar.playToServer(AntiRageSettingsPacket.TYPE, AntiRageSettingsPacket.STREAM_CODEC, AntiRageSettingsPacket::handle);
         registrar.playToClient(AntiRageSnapshotPacket.TYPE, AntiRageSnapshotPacket.STREAM_CODEC, AntiRageSnapshotPacket::handle);
         registrar.playToServer(WorldOptionsPacket.TYPE, WorldOptionsPacket.STREAM_CODEC, WorldOptionsPacket::handle);
