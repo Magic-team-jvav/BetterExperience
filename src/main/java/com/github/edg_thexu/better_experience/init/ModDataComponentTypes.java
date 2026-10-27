@@ -1,23 +1,26 @@
 package com.github.edg_thexu.better_experience.init;
 
 import com.github.edg_thexu.better_experience.Better_experience;
-import com.github.edg_thexu.better_experience.data.component.ItemContainerComponent;
-import com.github.edg_thexu.better_experience.data.component.AmmoChainSettings;
 import com.github.edg_thexu.better_experience.data.component.AmmoChainCursor;
+import com.github.edg_thexu.better_experience.data.component.AmmoChainSettings;
 import com.github.edg_thexu.better_experience.data.component.FluidStaffSettings;
 import com.github.edg_thexu.better_experience.data.component.FluidStaffStorage;
+import com.github.edg_thexu.better_experience.data.component.ItemContainerComponent;
+import com.github.edg_thexu.better_experience.data.component.ReforgeHistory;
 import com.github.edg_thexu.better_experience.data.component.SpaceStaffSettings;
 import com.github.edg_thexu.better_experience.data.component.StaffSelectionShape;
-import net.minecraft.core.component.DataComponentType;
-import net.minecraft.resources.ResourceLocation;
 import com.github.edg_thexu.better_experience.module.locator.StructureMarker;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.function.Supplier;
 
 public final class ModDataComponentTypes {
     public static final DeferredRegister.DataComponents TYPES = DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, Better_experience.MODID);
+    public static final Supplier<DataComponentType<ReforgeHistory>> REFORGE_HISTORY = TYPES.registerComponentType(
+            "reforge_history", builder -> builder.persistent(ReforgeHistory.CODEC).networkSynchronized(ReforgeHistory.STREAM_CODEC));
 
     public static final Supplier<DataComponentType<ItemContainerComponent>> ITEM_CONTAINER_COMPONENT = TYPES.registerComponentType("item_container", builder ->
             builder.persistent(ItemContainerComponent.CODEC).networkSynchronized(ItemContainerComponent.STREAM_CODEC));
