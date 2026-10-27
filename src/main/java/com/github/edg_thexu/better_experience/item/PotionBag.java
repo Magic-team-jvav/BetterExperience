@@ -1,10 +1,9 @@
 package com.github.edg_thexu.better_experience.item;
 
-import com.github.edg_thexu.better_experience.data.component.ItemContainerComponent;
-import com.github.edg_thexu.better_experience.init.ModDataComponentTypes;
 import com.github.edg_thexu.better_experience.menu.PotionBagMenu;
+import com.github.edg_thexu.better_experience.module.potionbag.PotionBagStorage;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.SimpleMenuProvider;
@@ -13,46 +12,26 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-
 import java.util.List;
 
 public class PotionBag extends Item {
-    public PotionBag(Properties properties) {
-        super(properties);
+    public PotionBag(Properties properties) { super(properties); }
+
+    @Override
+    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+        ItemStack bag = player.getItemInHand(hand);
+        if (player instanceof ServerPlayer serverPlayer) {
+            int slot = hand == InteractionHand.MAIN_HAND ? player.getInventory().selected : 40;
+            serverPlayer.openMenu(new SimpleMenuProvider((id, inventory, opener) -> new PotionBagMenu(id, inventory, slot),
+                    bag.getHoverName()), buffer -> buffer.writeVarInt(slot));
+        }
+        return InteractionResultHolder.sidedSuccess(bag, level.isClientSide);
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand usedHand) {
-        ItemStack stack = player.getItemInHand(usedHand);
-        if(!level.isClientSide() && usedHand == InteractionHand.MAIN_HAND) {
-            ItemContainerComponent data = stack.get(ModDataComponentTypes.ITEM_CONTAINER_COMPONENT);
-            if (data != null) {
-                player.openMenu(new SimpleMenuProvider((id, inventory, p) -> new PotionBagMenu(id, inventory, data), Component.translatable(stack.getDescriptionId()).withColor(0x333333)));
-            }
-        }
-
-        return InteractionResultHolder.success(player.getItemInHand(usedHand));
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> lines, TooltipFlag flag) {
+        var contents = PotionBagStorage.read(stack);
+        lines.add(Component.translatable("better_experience.tooltip.potion_bag.info"));
+        lines.add(Component.translatable("better_experience.potion_bag.capacity", contents.entries().size(), contents.capacity()));
     }
-
-    @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
-        tooltipComponents.add(Component.translatable("better_experience.tooltip.potion_bag.info"));
-        var data = stack.get(ModDataComponentTypes.ITEM_CONTAINER_COMPONENT);
-        if (data != null) {
-            int size = data.size;
-            int filled = 0;
-            for( var item : data.getItems()){
-                if(!item.isEmpty()){
-                    filled++;
-                }
-            }
-            MutableComponent component = Component.literal("(" + filled + "/" +size  + ")");
-            if(filled >= size){
-                component.withStyle(style -> style.withColor(0xFF0000));
-            }
-            tooltipComponents.add(component);
-        }
-
-    }
-
 }

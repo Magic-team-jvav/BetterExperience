@@ -36,13 +36,15 @@ public record ServerBoundPacketC2S(int code) implements CustomPacketPayload {
             Player player = context.player();
             if(packet.code == 1){
                 // 自动钓鱼机器开始
-                if(((IPlayer)player).betterExperience$getInteractBlockEntity() instanceof AutoFishBlock.AutoFishMachineEntity entity){
+                if(player.containerMenu instanceof com.github.edg_thexu.better_experience.menu.AutoFishMenu menu
+                        && menu.stillValid(player) && menu.getContainer() instanceof AutoFishBlock.AutoFishMachineEntity entity){
                     entity.tryStart(player);
                 }
             }
             else if(packet.code == 2){
                 // 自动钓鱼机器停止
-                if(((IPlayer)player).betterExperience$getInteractBlockEntity() instanceof AutoFishBlock.AutoFishMachineEntity entity){
+                if(player.containerMenu instanceof com.github.edg_thexu.better_experience.menu.AutoFishMenu menu
+                        && menu.stillValid(player) && menu.getContainer() instanceof AutoFishBlock.AutoFishMachineEntity entity){
                     entity.stop();
                     player.sendSystemMessage(Component.literal("stopped fishing"));
                 }
@@ -56,7 +58,7 @@ public record ServerBoundPacketC2S(int code) implements CustomPacketPayload {
             }else if(packet.code == 5){
                 // 改变药水收纳状态
                 if (player.containerMenu instanceof PotionBagMenu menu) {
-                    menu.component = menu.component.withAutoCollect(!menu.component.isAutoCollect());
+                    menu.toggleAutoCollect();
                 }
             }else if(packet.code == 6){
                 // 改变更好重铸状态

@@ -25,7 +25,7 @@ public final class ModMenus {
                     new ChronopilotMenu(id, inventory, buffer.readBlockPos())));
 
     public static final Supplier<MenuType<AutoFishMenu>> AUTO_FISH_MENU = TYPES.register("auto_fish", () -> new MenuType<>(AutoFishMenu::new, FeatureFlags.VANILLA_SET));
-    public static final Supplier<MenuType<PotionBagMenu>> POTION_BAG_MENU = TYPES.register("potion_bag", () -> new MenuType<>(PotionBagMenu::new, FeatureFlags.VANILLA_SET));
+    public static final Supplier<MenuType<PotionBagMenu>> POTION_BAG_MENU = TYPES.register("potion_bag", () -> IMenuTypeExtension.create((id, inventory, buffer) -> new PotionBagMenu(id, inventory, buffer.readVarInt())));
 
 
 }

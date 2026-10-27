@@ -2,9 +2,8 @@ package com.github.edg_thexu.better_experience.networks.c2s;
 
 import com.github.edg_thexu.better_experience.Better_experience;
 import com.github.edg_thexu.better_experience.attachment.AutoPotionAttachment;
-import com.github.edg_thexu.better_experience.config.CommonConfig;
 import com.github.edg_thexu.better_experience.init.ModAttachments;
-import com.github.edg_thexu.better_experience.module.autopotion.PlayerInventoryManager;
+import com.github.edg_thexu.better_experience.module.potionbag.PotionBagEffects;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -13,6 +12,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.handling.ServerPayloadContext;
+
 
 public record PotionApplyPacketC2S(AutoPotionAttachment attachment) implements CustomPacketPayload {
 
@@ -34,9 +34,11 @@ public record PotionApplyPacketC2S(AutoPotionAttachment attachment) implements C
     public static void handle(PotionApplyPacketC2S packet, final IPayloadContext context) {
         context.enqueueWork(() -> {
 
-            if(context instanceof ServerPayloadContext && CommonConfig.AUTO_POTION_OPEN.get()) { // 在服务端进行判断
-                PlayerInventoryManager.apply(packet.attachment, context.player());
-            } else{
+            if (context instanceof ServerPayloadContext) {
+                var data = context.player().getData(ModAttachments.AUTO_POTION);
+                data.copyPreferences(packet.attachment);
+                PotionBagEffects.refresh(context.player());
+            } else {
                 context.player().getData(ModAttachments.AUTO_POTION).copyFromServer(packet.attachment);
             }
         });

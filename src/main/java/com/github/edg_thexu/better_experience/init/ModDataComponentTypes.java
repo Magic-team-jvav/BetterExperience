@@ -6,6 +6,7 @@ import com.github.edg_thexu.better_experience.data.component.AmmoChainSettings;
 import com.github.edg_thexu.better_experience.data.component.FluidStaffSettings;
 import com.github.edg_thexu.better_experience.data.component.FluidStaffStorage;
 import com.github.edg_thexu.better_experience.data.component.ItemContainerComponent;
+import com.github.edg_thexu.better_experience.data.component.PotionBagContents;
 import com.github.edg_thexu.better_experience.data.component.ReforgeHistory;
 import com.github.edg_thexu.better_experience.data.component.SpaceStaffSettings;
 import com.github.edg_thexu.better_experience.data.component.StaffSelectionShape;
@@ -21,6 +22,10 @@ public final class ModDataComponentTypes {
     public static final DeferredRegister.DataComponents TYPES = DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, Better_experience.MODID);
     public static final Supplier<DataComponentType<ReforgeHistory>> REFORGE_HISTORY = TYPES.registerComponentType(
             "reforge_history", builder -> builder.persistent(ReforgeHistory.CODEC).networkSynchronized(ReforgeHistory.STREAM_CODEC));
+
+    public static final Supplier<DataComponentType<PotionBagContents>> POTION_BAG_CONTENTS = TYPES.registerComponentType("potion_bag_contents", builder ->
+            builder.persistent(PotionBagContents.CODEC)
+                    .networkSynchronized(PotionBagContents.STREAM_CODEC));
 
     public static final Supplier<DataComponentType<ItemContainerComponent>> ITEM_CONTAINER_COMPONENT = TYPES.registerComponentType("item_container", builder ->
             builder.persistent(ItemContainerComponent.CODEC).networkSynchronized(ItemContainerComponent.STREAM_CODEC));

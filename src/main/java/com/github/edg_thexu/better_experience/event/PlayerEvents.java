@@ -8,6 +8,7 @@ import com.github.edg_thexu.better_experience.module.autofish.FishBugRepetition;
 import com.github.edg_thexu.better_experience.module.autopotion.ForbiddenConfig;
 import com.github.edg_thexu.better_experience.module.autopotion.PlayerAttribute;
 import com.github.edg_thexu.better_experience.module.autopotion.PlayerInventoryManager;
+import com.github.edg_thexu.better_experience.module.potionbag.PotionBagEffects;
 import com.github.edg_thexu.better_experience.networks.c2s.PotionApplyPacketC2S;
 import com.github.edg_thexu.better_experience.networks.s2c.ClientBoundConfigPacket;
 import net.minecraft.network.chat.Component;
@@ -22,12 +23,14 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 
+
 @EventBusSubscriber(modid = Better_experience.MODID)
 public class PlayerEvents {
     @SubscribeEvent
     public static void playerTick(PlayerTickEvent.Post event) {
         Player player = event.getEntity();
         PlayerInventoryManager.getInstance().detect(player);
+        PotionBagEffects.tick(player);
 
         if (player.level() instanceof ServerLevel sl) {
             PlayerAttribute.notifyDirty(sl);

@@ -1,8 +1,0 @@
-{
-    "parent": "minecraft:block/cube_column",
-    "textures": {
-        "side": "better_experience:block/reforge_block",
-        "end": "better_experience:block/reforge_block_top"
-    }
-
-}

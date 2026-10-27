@@ -25,15 +25,13 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
         tag(BlockTags.MINEABLE_WITH_AXE).add(ModBlocks.CHRONOPILOT.get());
         tag(BlockTags.NEEDS_STONE_TOOL).add(
                 ModBlocks.AUTO_FISH_BLOCK.get(),
-                ModBlocks.AUTO_SELL_BLOCK.get(),
-                ModBlocks.REFORGE_BLOCK.get()
+                ModBlocks.AUTO_SELL_BLOCK.get()
         );
 
 
         this.tag(BlockTags.MINEABLE_WITH_PICKAXE).add(
                 ModBlocks.AUTO_FISH_BLOCK.get(),
-                ModBlocks.AUTO_SELL_BLOCK.get(),
-                ModBlocks.REFORGE_BLOCK.get()
+                ModBlocks.AUTO_SELL_BLOCK.get()
         );
     }
 

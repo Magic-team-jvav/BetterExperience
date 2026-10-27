@@ -6,6 +6,7 @@ public class CommonConfig {
     public static ModConfigSpec.BooleanValue ANTI_RAGE_MODE;
     public static ModConfigSpec.DoubleValue ANTI_RAGE_EXTRA_INVULNERABILITY_SECONDS;
     public static ModConfigSpec.IntValue LOCATOR_SEARCH_RADIUS;
+    public static ModConfigSpec.IntValue POTION_BAG_EFFECT_COUNT;
     //************************* Item *************************
     /**
      * 是否开启药水无线续杯
@@ -101,6 +102,9 @@ public class CommonConfig {
         final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
 
         BUILDER.push("Item");
+        POTION_BAG_EFFECT_COUNT = BUILDER.comment("Potions of one type needed in a carried potion bag for a permanent effect. Items are not consumed.")
+                .translation("better_experience.configuration.potion_bag_effect_count")
+                .defineInRange("potion_bag_effect_count", 10, 1, 9999);
         LOCATOR_SEARCH_RADIUS = BUILDER.comment("Structure locator search radius in blocks; previously marked starts are excluded per player.")
                 .defineInRange("locator_search_radius", 32768, 256, 262144);
 

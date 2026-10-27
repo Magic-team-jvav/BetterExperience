@@ -46,7 +46,7 @@ public class AutoPotionAttachment implements INBTSerializable<CompoundTag> {
 
     @Override
     public void deserializeNBT(HolderLookup.Provider provider, CompoundTag tag) {
-        int size = tag.getInt("size");
+        int size = Math.clamp(tag.getInt("size"), 0, BuiltInRegistries.MOB_EFFECT.size());
         potions = new HashMap<>();
         for (int i = 0; i < size; i++) {
             String potion = tag.getString("potion" + i);
@@ -61,7 +61,8 @@ public class AutoPotionAttachment implements INBTSerializable<CompoundTag> {
             }
             potions.put(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(effect), amp);
         }
-        int forbiddenSize = tag.getInt("forbiddenSize");
+        forbiddens.clear();
+        int forbiddenSize = Math.clamp(tag.getInt("forbiddenSize"), 0, BuiltInRegistries.MOB_EFFECT.size());
         for (int i = 0; i < forbiddenSize; i++) {
             String potion = tag.getString("forbidden" + i);
             ResourceLocation location = ResourceLocation.tryParse(potion);
@@ -100,7 +101,7 @@ public class AutoPotionAttachment implements INBTSerializable<CompoundTag> {
 
     public void addPotion(Holder<MobEffect> potion, int amp) {
         if(potions.containsKey(potion)) {
-            if(potions.get(potion) > amp){
+            if(potions.get(potion) < amp){
                 potions.put(potion, amp);
                 dirty = true;
             }
@@ -122,36 +123,22 @@ public class AutoPotionAttachment implements INBTSerializable<CompoundTag> {
         sync(false);
     }
 
-    public void sync(boolean force){
-
-        if(force || dirty ||  !_potions.equals(potions) || _potions == potions) {
-
-            if(_potions == potions){
-                // 防止地址相等时数据始终一致
-                _potions = new HashMap<>(potions);
-            }
-
-            AutoPotionAttachment attachment = new AutoPotionAttachment();
-            for(var potion : potions.entrySet()){
-                if(!forbiddens.contains(potion.getKey()))
-                    attachment.potions.put(potion.getKey(), potion.getValue());
-            }
-            // 比较两个map是否相等，避免无意义的同步
-            if (attachment.potions.size() == _potions.size() && attachment.potions.entrySet().stream()
-                    .allMatch(entry -> _potions.containsKey(entry.getKey())
-                            && Objects.equals(_potions.get(entry.getKey()), entry.getValue()))) {
-                dirty = false;
-                return;
-            }
-            _potions = new HashMap<>(attachment.potions);
-            attachment.forbiddens = new HashSet<>(forbiddens);
-            PacketDistributor.sendToServer(new PotionApplyPacketC2S(attachment));
-            dirty = false;
-        }
+    public void sync(boolean force) {
+        if (!force && !dirty) return;
+        AutoPotionAttachment preferences = new AutoPotionAttachment();
+        preferences.forbiddens = new HashSet<>(forbiddens);
+        PacketDistributor.sendToServer(new PotionApplyPacketC2S(preferences));
+        dirty = false;
     }
 
-    public void copyFromServer(AutoPotionAttachment attachment){
+    public void copyPreferences(AutoPotionAttachment attachment) {
         this.forbiddens = new HashSet<>(attachment.forbiddens);
+    }
+
+    public void copyFromServer(AutoPotionAttachment attachment) {
+        copyPreferences(attachment);
+        this.potions = new HashMap<>(attachment.potions);
+        this._potions = new HashMap<>(attachment.potions);
     }
 
 }

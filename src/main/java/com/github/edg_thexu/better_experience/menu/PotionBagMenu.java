@@ -1,150 +1,179 @@
 package com.github.edg_thexu.better_experience.menu;
 
-import com.github.edg_thexu.better_experience.data.component.ItemContainerComponent;
-import com.github.edg_thexu.better_experience.init.ModDataComponentTypes;
 import com.github.edg_thexu.better_experience.init.ModMenus;
 import com.github.edg_thexu.better_experience.item.PotionBag;
-import com.github.edg_thexu.better_experience.module.autopotion.PlayerInventoryManager;
-import net.minecraft.core.NonNullList;
-import net.minecraft.world.Container;
+import com.github.edg_thexu.better_experience.module.potionbag.PotionBagEffects;
+import com.github.edg_thexu.better_experience.module.potionbag.PotionBagStorage;
+import com.github.edg_thexu.better_experience.module.potionbag.PotionEffectRules;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.DataSlot;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.ItemContainerContents;
 
-import java.util.List;
-import net.minecraft.world.inventory.ClickType;
 
+/** Presentation slots page over a growable vector. Only the server transfers items. */
 public class PotionBagMenu extends AbstractContainerMenu {
-    public final Container container;
-    public ItemContainerComponent component;
-
-    private final int containerRows;
+    public static final int PAGE_SIZE = 27;
+    private final SimpleContainer display = new SimpleContainer(PAGE_SIZE);
+    private final Player owner;
     private final ItemStack sourceBag;
     private final int sourceSlot;
-    public PotionBagMenu(int containerId, Inventory playerInventory) {
-        this(containerId, playerInventory, new ItemContainerComponent(18));
-    }
+    private final int[] quantities = new int[PAGE_SIZE];
+    private final boolean[] effectEnabled = new boolean[PAGE_SIZE];
+    private final DataSlot page = DataSlot.standalone();
+    private final DataSlot pages = DataSlot.standalone();
+    private final DataSlot collecting = DataSlot.standalone();
 
-    public PotionBagMenu(int containerId, Inventory playerInventory, ItemContainerComponent component) {
-        super(ModMenus.POTION_BAG_MENU.get(), containerId);
-        this.component = component;
-        this.sourceSlot = playerInventory.selected;
-        this.sourceBag = playerInventory.getItem(sourceSlot);
-
-        List<ItemStack> items = component.getItems();
-        this.container = new SimpleContainer(component.size);
-        this.containerRows = (int) Math.ceil(container.getContainerSize() / 9.0);
-        container.startOpen(playerInventory.player);
-        int i = (this.containerRows - 4) * 18;
-
-        int i1;
-        int j1;
-        for(i1 = 0; i1 < this.containerRows; ++i1) {
-            for(j1 = 0; j1 < 9; ++j1) {
-                ItemStack stack = items.get(j1 + i1 * 9);
-                Slot slot = new Slot(container, j1 + i1 * 9, 8 + j1 * 18, 18 + i1 * 18){
-                    @Override
-                    public boolean mayPlace(ItemStack stack) {
-                        return canPlace(stack);
-                    }
-                };
-                this.addSlot(slot);
-                slot.set(stack);
-            }
+    public PotionBagMenu(int id, Inventory inventory, int sourceSlot) {
+        super(ModMenus.POTION_BAG_MENU.get(), id);
+        this.owner = inventory.player;
+        this.sourceSlot = sourceSlot;
+        this.sourceBag = inventory.getItem(sourceSlot);
+        for (int i = 0; i < PAGE_SIZE; i++) {
+            addSlot(new Slot(display, i, 8 + i % 9 * 18, 28 + i / 9 * 18) {
+                @Override public boolean mayPlace(ItemStack stack) { return false; }
+                @Override public boolean mayPickup(Player player) { return false; }
+            });
         }
-
-        for(i1 = 0; i1 < 3; ++i1) {
-            for(j1 = 0; j1 < 9; ++j1) {
-                this.addSlot(new Slot(playerInventory, j1 + i1 * 9 + 9, 8 + j1 * 18, 103 + i1 * 18 + i));
-            }
+        for (int i = 0; i < 36; i++) {
+            int inventorySlot = i < 27 ? i + 9 : i - 27;
+            int y = i < 27 ? 118 + i / 9 * 18 : 176;
+            addSlot(new Slot(inventory, inventorySlot, 8 + i % 9 * 18, y) {
+                @Override public boolean mayPickup(Player player) { return getContainerSlot() != sourceSlot; }
+                @Override public boolean mayPlace(ItemStack stack) { return getContainerSlot() != sourceSlot; }
+            });
         }
-
-        for(i1 = 0; i1 < 9; ++i1) {
-            this.addSlot(new Slot(playerInventory, i1, 8 + i1 * 18, 161 + i) {
-                @Override
-                public boolean mayPickup(Player player) {
-                    return getContainerSlot() != sourceSlot && super.mayPickup(player);
-                }
-
-                @Override
-                public boolean mayPlace(ItemStack stack) {
-                    return getContainerSlot() != sourceSlot && super.mayPlace(stack);
+        addDataSlot(page);
+        addDataSlot(pages);
+        addDataSlot(collecting);
+        // Vanilla property packets transmit shorts; split each quantity to retain all 32 bits.
+        for (int i = 0; i < PAGE_SIZE; i++) {
+            final int index = i;
+            addDataSlot(new DataSlot() {
+                @Override public int get() { return effectEnabled[index] ? 1 : 0; }
+                @Override public void set(int value) { effectEnabled[index] = value != 0; }
+            });
+            for (int shift : new int[]{0, 16}) addDataSlot(new DataSlot() {
+                @Override public int get() { return quantities[index] >>> shift & 0xFFFF; }
+                @Override public void set(int value) {
+                    quantities[index] = quantities[index] & ~(0xFFFF << shift) | (value & 0xFFFF) << shift;
                 }
             });
         }
+        refresh();
     }
 
-    public static boolean canPlace(ItemStack stack){
-        return !PlayerInventoryManager.getApplyEffect(stack, true).isEmpty();
-    }
+    public int page() { return page.get(); }
+    public int pages() { return Math.max(1, pages.get()); }
+    public int quantity(int slot) { return quantities[slot]; }
+    public boolean effectEnabled(int slot) { return effectEnabled[slot]; }
+    public boolean autoCollect() { return collecting.get() != 0; }
+    public static boolean canPlace(ItemStack stack) { return PotionEffectRules.isPotion(stack); }
 
-    @Override
-    public void clicked(int slotId, int button, ClickType clickType, Player player) {
-        if ((slotId >= 0 && slotId < slots.size()
-                && slots.get(slotId).container == player.getInventory()
-                && slots.get(slotId).getContainerSlot() == sourceSlot)
-                || (clickType == ClickType.SWAP && button == sourceSlot)) {
-            return;
+    private void refresh() {
+        if (owner.level().isClientSide) return;
+        var contents = PotionBagStorage.read(sourceBag);
+        pages.set(Math.max(1, (contents.entries().size() + PAGE_SIZE) / PAGE_SIZE));
+        page.set(Math.min(page.get(), pages() - 1));
+        collecting.set(contents.autoCollect() ? 1 : 0);
+        for (int i = 0; i < PAGE_SIZE; i++) {
+            int index = page.get() * PAGE_SIZE + i;
+            var entry = index < contents.entries().size() ? contents.entries().get(index) : null;
+            display.setItem(i, entry == null ? ItemStack.EMPTY : entry.item());
+            quantities[i] = entry == null ? 0 : entry.count();
+            effectEnabled[i] = entry != null && entry.enabled();
         }
-        super.clicked(slotId, button, clickType, player);
     }
 
+    @Override public void broadcastChanges() {
+        refresh();
+        super.broadcastChanges();
+    }
 
-    @Override
-    public ItemStack quickMoveStack(Player player, int index) {
-        if (index < 0 || index >= slots.size()) return ItemStack.EMPTY;
-        Slot selected = slots.get(index);
-        if (selected.container == player.getInventory() && selected.getContainerSlot() == sourceSlot) return ItemStack.EMPTY;
-        ItemStack itemstack = ItemStack.EMPTY;
-        Slot slot = this.slots.get(index);
+    public void toggleAutoCollect() {
+        if (owner.level().isClientSide || !stillValid(owner)) return;
+        var contents = PotionBagStorage.read(sourceBag);
+        PotionBagStorage.write(sourceBag, contents.withAutoCollect(!contents.autoCollect()));
+        broadcastChanges();
+    }
 
-        if (slot.hasItem()) {
-            ItemStack itemstack1 = slot.getItem();
-            itemstack = itemstack1.copy();
-            if (index < containerRows * 9) {
-                if (!this.moveItemStackTo(itemstack1, containerRows * 9, this.slots.size(), true)) {
-                    return ItemStack.EMPTY;
-                }
-            } else if (!this.moveItemStackTo(itemstack1, 0, containerRows * 9, false)) {
-                return ItemStack.EMPTY;
+    @Override public boolean clickMenuButton(Player player, int button) {
+        if (player.level().isClientSide || !stillValid(player)) return false;
+        if (button == 2) toggleAutoCollect();
+        else if (button == 0 || button == 1) page.set(Math.clamp(page.get() + (button == 0 ? -1 : 1), 0, pages() - 1));
+        else return false;
+        broadcastChanges();
+        return true;
+    }
+
+    @Override public void clicked(int slotId, int button, ClickType type, Player player) {
+        if (player.level().isClientSide || !stillValid(player)) return;
+        if (type == ClickType.SWAP && button == sourceSlot) return;
+        if (slotId >= PAGE_SIZE && slotId < slots.size() && slots.get(slotId).getContainerSlot() == sourceSlot) return;
+        if (slotId >= 0 && slotId < PAGE_SIZE) {
+            int index = page.get() * PAGE_SIZE + slotId;
+            var contents = PotionBagStorage.read(sourceBag);
+            var entry = index < contents.entries().size() ? contents.entries().get(index) : null;
+            if (button == 1 && (type == ClickType.PICKUP || type == ClickType.QUICK_MOVE)) {
+                if (entry != null) PotionBagStorage.write(sourceBag, contents.withEffectEnabled(index, !entry.enabled()));
+            } else if (type == ClickType.QUICK_MOVE) quickMoveStack(player, slotId);
+            else if (type == ClickType.PICKUP && button == 0) {
+                ItemStack carried = getCarried();
+                if (!carried.isEmpty()) PotionBagStorage.insert(sourceBag, carried, carried.getCount());
+                else if (entry != null) setCarried(take(index, Integer.MAX_VALUE));
+            } else if (entry != null && type == ClickType.THROW && getCarried().isEmpty()) {
+                player.drop(take(index, button == 0 ? 1 : Integer.MAX_VALUE), true);
+            } else if (type == ClickType.SWAP && (button >= 0 && button < 9 || button == 40)) {
+                ItemStack target = player.getInventory().getItem(button);
+                if (!target.isEmpty()) PotionBagStorage.insert(sourceBag, target, target.getCount());
+                else if (entry != null) player.getInventory().setItem(button, take(index, Integer.MAX_VALUE));
+            } else if (entry != null && type == ClickType.CLONE && player.isCreative() && getCarried().isEmpty()) {
+                ItemStack copy = entry.item();
+                setCarried(copy.copyWithCount(copy.getMaxStackSize()));
             }
+        } else super.clicked(slotId, button, type, player);
+        broadcastChanges();
+        PotionBagEffects.refresh(player);
+    }
 
-            if (itemstack1.isEmpty()) {
-                slot.setByPlayer(ItemStack.EMPTY);
-            } else {
-                slot.setChanged();
-            }
+    private ItemStack take(int index, int requested) {
+        var contents = PotionBagStorage.read(sourceBag);
+        var entry = contents.entries().get(index);
+        ItemStack item = entry.item();
+        int amount = Math.min(entry.count(), Math.min(requested, item.getMaxStackSize()));
+        PotionBagStorage.write(sourceBag, contents.remove(index, amount));
+        return item.copyWithCount(amount);
+    }
+
+    @Override public ItemStack quickMoveStack(Player player, int slotId) {
+        if (player.level().isClientSide || !stillValid(player) || slotId < 0 || slotId >= slots.size()) return ItemStack.EMPTY;
+        if (slotId >= PAGE_SIZE) {
+            Slot slot = slots.get(slotId);
+            if (slot.getContainerSlot() == sourceSlot) return ItemStack.EMPTY;
+            ItemStack item = slot.getItem();
+            ItemStack original = item.copy();
+            if (PotionBagStorage.insert(sourceBag, item, item.getCount()) == 0) return ItemStack.EMPTY;
+            slot.setChanged();
+            return original;
         }
-
-        return itemstack;
+        int index = page.get() * PAGE_SIZE + slotId;
+        var contents = PotionBagStorage.read(sourceBag);
+        if (index >= contents.entries().size()) return ItemStack.EMPTY;
+        var entry = contents.entries().get(index);
+        ItemStack item = entry.item();
+        item.setCount(Math.min(entry.count(), item.getMaxStackSize()));
+        ItemStack original = item.copy();
+        if (!moveItemStackTo(item, PAGE_SIZE, slots.size(), true)) return ItemStack.EMPTY;
+        PotionBagStorage.write(sourceBag, contents.remove(index, original.getCount() - item.getCount()));
+        return original;
     }
 
-    @Override
-    public boolean stillValid(Player player) {
-        return player.getInventory().getItem(sourceSlot) == sourceBag
-                && sourceBag.getItem() instanceof PotionBag && container.stillValid(player);
-    }
-
-    @Override
-    public void removed(Player player) {
-        super.removed(player);
-        container.stopOpen(player);
-        if(!player.level().isClientSide) {
-            ItemStack itemStack = sourceBag;
-            if (itemStack.getItem() instanceof PotionBag) {
-                NonNullList<ItemStack> items = NonNullList.create();
-                for(int i = 0; i < container.getContainerSize(); i++){
-                    items.add(container.getItem(i));
-                }
-                ItemContainerComponent component = new ItemContainerComponent(
-                        ItemContainerContents.fromItems(items), this.component.isAutoCollect(), this.component.size);
-                itemStack.set(ModDataComponentTypes.ITEM_CONTAINER_COMPONENT, component);
-            }
-        }
-
+    @Override public boolean stillValid(Player player) {
+        return player == owner && sourceBag.getItem() instanceof PotionBag
+                && player.getInventory().getItem(sourceSlot) == sourceBag;
     }
 }

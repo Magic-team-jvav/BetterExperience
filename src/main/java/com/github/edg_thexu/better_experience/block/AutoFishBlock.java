@@ -129,142 +129,16 @@ public class AutoFishBlock extends BaseEntityBlock {
     }
 
     @Override
+    protected net.minecraft.world.InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
+        useItemOn(ItemStack.EMPTY, state, level, pos, player, InteractionHand.MAIN_HAND, hit);
+        return net.minecraft.world.InteractionResult.sidedSuccess(level.isClientSide);
+    }
+
+    @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(@NotNull Level pLevel, @NotNull BlockState pState, @NotNull BlockEntityType<T> pBlockEntityType) {
-        return pLevel.isClientSide ? createTickerHelper(pBlockEntityType, ModBlocks.AUTO_FISH_BLOCK_ENTITY.get(),  (level, pos, state, entity)-> {
-            entity.cacheTime = Math.max(0, entity.cacheTime - 1);
-//            System.out.println(entity.cacheTime);
-
-        }) : createTickerHelper(pBlockEntityType, ModBlocks.AUTO_FISH_BLOCK_ENTITY.get(),  (level, pos, state, entity)-> {
-
-            // 未开始
-            if(entity.dataAccess.get(0) == 0)
-                return;
-
-            // 启动游戏重新加载
-            Player player = entity.owner;
-            if(player == null && entity.ownerUUID != null && level instanceof ServerLevel serverLevel){
-                entity.owner = (Player) serverLevel.getEntity(entity.ownerUUID);
-                entity.tryStart(entity.owner);
-            }
-            // 尝试启动
-            if(entity.dataAccess.get(0) == 1){
-                entity.tryStart(player);
-            }
-
-
-            if(level instanceof ServerLevel serverLevel && player!= null && entity.target != null && entity.lastTick + entity.fishingTime < ++entity.ticks){
-//                for(int ii=0;ii<100;ii++) {
-
-                    ItemStack poleStack = entity.getItem(27);
-                    ItemStack bait = entity.getItem(28);
-                    ItemStack curios = entity.getItem(29);
-
-                    if (poleStack.getItem() instanceof FishingRodItem pole) {
-                        FishingHook hook;
-                        var oldHook = player.fishing;
-
-                        try {
-                            float power = AutoFishManager.computeFishingPower(null, poleStack, bait.getItem(), curios);
-                            if (ConfluenceLibHelper.isLoaded() && pole instanceof AbstractFishingPole pole1) {
-                                hook = pole1.getHook(poleStack, player, level, (int) power, 5);
-                            } else {
-                                hook = new FishingHook(player, level, (int) power, 5);
-                            }
-                        } catch (Exception e) {
-                            Better_experience.LOGGER.error("Failed to create fishing hook", e);
-                            return;
-                        }
-                        player.fishing = oldHook;
-                        ((IFishingHook) hook).betterExperience$setPos(new Vec3(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5));
-                        ((IFishingHook) hook).betterExperience$setSimulation(true);
-
-                        if (pole == FishingPoleItems.HOTLINE_FISHING_HOOK.get() ||
-                                (!bait.isEmpty() && bait.is(ModTags.Items.LAVA_PROOF_BAIT)) ||
-                                TCUtils.hasType(player, AccessoryItems.LAVAPROOF$FISHING$HOOK)
-                        ) org.confluence.mod.mixed.IFishingHook.of(hook).confluence$setIsLavaHook();
-
-                        hook.setPos(entity.target);
-                        hook.nibble = 10;
-
-                        // 模拟收杆
-                        hook.retrieve(poleStack);
-                        List<ItemStack> items = ((IFishingHook) hook).betterExperience$getItems();
-
-                        for (ItemStack item : items) {
-
-//                            if (item.getItem() != Items.ENCHANTED_BOOK) {
-//                                item.setCount(0);
-//                                continue;
-//                            }
-//                            boolean keep = false;
-//                            var keys = item.getComponents().get(DataComponents.STORED_ENCHANTMENTS).keySet();
-//                            for (var key : keys) {
-//                                if(key.getKey().location().getNamespace().equals(TerraEntity.MODID)){
-//                                    keep = true;
-//                                }
-//                            }
-//                            if(!keep){
-//                                item.setCount(0);
-//                                continue;
-//                            }
-
-                            // 尝试堆叠
-                            for (int i = 0; i < 27; i++) {
-                                ItemStack current = entity.getItem(i);
-                                if (current.isEmpty()) {
-                                    entity.setItem(i, item.copy());
-                                    item.setCount(0);
-                                    break;
-                                }
-                                if (current.is(item.getItem()) && current.getCount() < current.getMaxStackSize()) {
-                                    // 计算可以堆叠的数量
-                                    int transfer = Math.min(item.getCount(), current.getMaxStackSize() - current.getCount());
-                                    current.grow(transfer); // 增加当前物品的数量
-                                    item.shrink(transfer);  // 减少新物品的数量
-                                    if (item.isEmpty()) {
-                                        break; // 如果新物品被完全堆叠，返回true
-                                    }
-                                }
-                            }
-                            // 溢出
-                            if (!item.isEmpty()) {
-//                            var f = state.getValue(FACING);
-//                            float dir = f.getRotation().angle();
-//                            float r = 0.1f;
-//                            ItemEntity itemEntity = new ItemEntity(level,
-//                                    pos.getX() + 0.5 + r * Math.sin(dir),
-//                                    pos.getY() + 1,
-//                                    pos.getZ() + 0.5 + r * Math.cos(dir), item);
-                                LibEntityUtils.createItemEntity(item, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, level, 0);
-                            }
-                        }
-
-                        // 消耗鱼饵, 根据运气降低消耗概率
-                        if (!bait.isEmpty() && LibMathUtils.checkChance(0.33f - entity.owner.getLuck() * 0.2f, level.random)) {
-                            bait.shrink(1);
-                        }
-                        if (!entity.tryStart(entity.owner)) {
-                            return;
-                        }
-
-                        entity.lastTick = entity.ticks;
-
-                        if(ConfluenceLibHelper.isLoaded() && bait.getItem() instanceof BaitItem bait1){
-                            entity.cdReduce = (1 - bait1.getBaitBonus() * 0.5f);
-                        }
-//                        entity.fishingTime = (int) (20 * 10 * entity.cdReduce);
-                        entity.fishingTime = (int) (20);
-                        entity.updateState();
-
-                    } else {
-                        // 没有钓竿，终止
-                        entity.dataAccess.set(0, 0);
-                        entity.updateState();
-
-                    }
-                }
-//            }
-
+        return createTickerHelper(pBlockEntityType, ModBlocks.AUTO_FISH_BLOCK_ENTITY.get(), (level, pos, state, entity) -> {
+            if (level instanceof ServerLevel serverLevel) entity.serverTick(serverLevel);
+            else entity.cacheTime = Math.max(0, entity.cacheTime - 1);
         });
     }
 
@@ -306,7 +180,7 @@ public class AutoFishBlock extends BaseEntityBlock {
                 public int get(int id) {
                     return switch (id) {
                         case 0 -> isStarted;
-                        case 1->  (lastTick + fishingTime - ticks) / 20;
+                        case 1->  Math.max(0, lastTick + fishingTime - ticks + 19) / 20;
                         default -> 0;
                     };
                 }
@@ -350,23 +224,60 @@ public class AutoFishBlock extends BaseEntityBlock {
             };
         }
 
-        public boolean tryStart(Player player){
-            // 周围要有潮涌核心
-            BlockPos[] around = new BlockPos[]{
-                    this.getBlockPos().offset(0,0,1),
-                    this.getBlockPos().offset(0,0,-1),
-                    this.getBlockPos().offset(1,0,0),
-                    this.getBlockPos().offset(-1,0,0),
-                    this.getBlockPos().offset(0,1,0)
-//                    this.getBlockPos().offset(0,-1,0)
-            };
-            boolean hasConduit = false;
-            for(int i=0;i<5;i++){
-                if (level != null && level.getBlockState(around[i]).is(Blocks.CONDUIT)) {
-                    hasConduit = true;
-                    break;
-                }
+        public void serverTick(ServerLevel serverLevel) {
+            if (isStarted == 0) return;
+            if (ownerUUID == null && owner != null) ownerUUID = owner.getUUID();
+            owner = ownerUUID == null ? null : serverLevel.getServer().getPlayerList().getPlayer(ownerUUID);
+            if (owner == null || !owner.isAlive() || owner.level() != serverLevel) {
+                if (isStarted != 1) { isStarted = 1; updateState(); }
+                return;
             }
+            if (isStarted == 1 && !tryStart(owner)) return;
+            if (!(getItem(27).getItem() instanceof FishingRodItem) || !findTarget()) { stop(); return; }
+            if (++ticks - lastTick < fishingTime) return;
+            if (!hasConduit()) { stop(); return; }
+            ItemStack bait = getItem(28);
+            try {
+                for (ItemStack caught : AutoFishManager.catchItems((net.minecraft.server.level.ServerPlayer) owner,
+                        serverLevel, worldPosition, target, getItem(27), bait, getItem(29))) {
+                    ItemStack item = caught.copy();
+                    insertCatch(item);
+                    if (!item.isEmpty()) Containers.dropItemStack(serverLevel, worldPosition.getX() + 0.5,
+                            worldPosition.getY() + 1, worldPosition.getZ() + 0.5, item);
+                }
+                if (!bait.isEmpty() && serverLevel.random.nextFloat() < net.minecraft.util.Mth.clamp(0.33F - owner.getLuck() * 0.2F, 0, 1)) bait.shrink(1);
+            } catch (RuntimeException failure) {
+                Better_experience.LOGGER.error("Automatic fishing failed at {}", worldPosition, failure);
+                stop();
+                return;
+            }
+            lastTick = ticks;
+            fishingTime = 20;
+            updateState();
+        }
+
+        public void insertCatch(ItemStack item) {
+            for (int slot = 0; slot < 27 && !item.isEmpty(); slot++) {
+                ItemStack current = getItem(slot);
+                if (current.isEmpty() || !ItemStack.isSameItemSameComponents(current, item)) continue;
+                int count = Math.min(item.getCount(), Math.max(0, Math.min(getMaxStackSize(), current.getMaxStackSize()) - current.getCount()));
+                current.grow(count);
+                item.shrink(count);
+            }
+            for (int slot = 0; slot < 27 && !item.isEmpty(); slot++) {
+                if (getItem(slot).isEmpty()) setItem(slot, item.split(Math.min(item.getMaxStackSize(), getMaxStackSize())));
+            }
+            setChanged();
+        }
+
+        public boolean tryStart(Player player){
+            if (player == null || level == null || level.isClientSide || player.level() != level) return false;
+            if (!(getItem(27).getItem() instanceof FishingRodItem)) {
+                player.sendSystemMessage(Component.translatable("better_experience.autofish.missing_rod"));
+                stop();
+                return false;
+            }
+            boolean hasConduit = hasConduit();
             if(!hasConduit){
                 player.sendSystemMessage(Component.translatable("better_experience.autofish.info.lack").append(Component.translatable(Blocks.CONDUIT.getDescriptionId())));
                 this.stop();
@@ -375,39 +286,55 @@ public class AutoFishBlock extends BaseEntityBlock {
 
             if(this.findTarget()){
                 this.owner = player;
+                this.ownerUUID = player.getUUID();
+                this.lastTick = this.ticks;
+                this.fishingTime = 20;
 //                player.sendSystemMessage(Component.literal("start"));
                 this.isStarted = 2;
-                getBlockState().setValue(TURN, true);
                 updateState();
                 return true;
 
             }else{
-//                player.sendSystemMessage(Component.literal("no water"));
+                player.sendSystemMessage(Component.translatable("better_experience.autofish.missing_water"));
                 this.stop();
                 return false;
             }
 
         }
 
+        private boolean hasConduit() {
+            if (level == null) return false;
+            for (Direction direction : new Direction[]{Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST, Direction.UP}) {
+                if (level.getBlockState(worldPosition.relative(direction)).is(Blocks.CONDUIT)) return true;
+            }
+            return false;
+        }
+
         public void stop(){
             this.isStarted = 0;
             this.dataAccess.set(0,0);
-            getBlockState().setValue(TURN, false);
+            target = null;
             updateState();
         }
 
         public void updateState(){
+            setChanged();
             if(level instanceof ServerLevel sl){
-                sl.sendBlockUpdated(this.getBlockPos(), this.getBlockState(), this.getBlockState(), 2);
+                BlockState before = getBlockState();
+                BlockState after = before.setValue(TURN, isStarted == 2);
+                if (before != after) sl.setBlock(worldPosition, after, 3);
+                sl.sendBlockUpdated(worldPosition, before, after, 2);
             }
         }
 
         private boolean findTarget(){
+            if (level == null) return false;
+            target = null;
             BlockPos pos = this.getBlockPos();
             // 水下正下方
             for(int i = 1; i < 4; i++){
                 BlockState state = this.level.getBlockState(pos.below(i));
-                boolean flag = this.level != null && state.is(Blocks.WATER) || state.is(Blocks.LAVA);
+                boolean flag = state.getFluidState().is(net.minecraft.tags.FluidTags.WATER) || state.getFluidState().is(net.minecraft.tags.FluidTags.LAVA);
                 if (flag || (ConfluenceHelper.isLoaded() && (state.is(org.confluence.mod.common.init.block.ModBlocks.SHIMMER) || state.is(org.confluence.mod.common.init.block.ModBlocks.HONEY)))) {
                     target = new Vec3(pos.getX() + 0.5, pos.getY() - i, pos.getZ() + 0.5);
                     return true;
@@ -448,8 +375,12 @@ public class AutoFishBlock extends BaseEntityBlock {
         protected void loadAdditional(@NotNull CompoundTag tag, HolderLookup.@NotNull Provider registries) {
             this.setItems(NonNullList.withSize(getContainerSize(), ItemStack.EMPTY));
             super.loadAdditional(tag, registries);
-            isStarted = tag.getInt("started");
-
+            isStarted = tag.getInt("started") == 0 ? 0 : 1;
+            owner = null;
+            ownerUUID = null;
+            ticks = 0;
+            lastTick = 0;
+            fishingTime = 20;
             if(tag.contains("owner")){
                 this.ownerUUID = tag.getUUID("owner");
             }
@@ -460,8 +391,7 @@ public class AutoFishBlock extends BaseEntityBlock {
             CompoundTag tag = super.getUpdateTag(registries);
             tag.putInt("started", isStarted);
             tag.putInt("fishTime", fishingTime);
-            if(owner != null)
-                tag.putUUID("owner", owner.getUUID());
+            if (ownerUUID != null) tag.putUUID("owner", ownerUUID);
             return tag;
         }
 
@@ -469,8 +399,7 @@ public class AutoFishBlock extends BaseEntityBlock {
         protected void saveAdditional(@NotNull CompoundTag tag, HolderLookup.@NotNull Provider registries) {
             super.saveAdditional(tag, registries);
             tag.putInt("started", isStarted);
-            if(owner != null)
-                tag.putUUID("owner", owner.getUUID());
+            if (ownerUUID != null) tag.putUUID("owner", ownerUUID);
         }
         private final AnimatableInstanceCache CACHE = GeckoLibUtil.createInstanceCache(this);
 
@@ -494,7 +423,7 @@ public class AutoFishBlock extends BaseEntityBlock {
         @Override
         public boolean canPlaceItemThroughFace(int i, @NotNull ItemStack itemStack, @Nullable Direction direction) {
             if(direction == Direction.UP){
-                return itemStack.getItem() instanceof BaitItem;
+                return itemStack.getItem() instanceof org.confluence.mod.common.item.fishing.IBait;
             }
             return true;
         }

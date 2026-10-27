@@ -18,6 +18,38 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AutoFishManager {
+    public static List<ItemStack> catchItems(net.minecraft.server.level.ServerPlayer player,
+            net.minecraft.server.level.ServerLevel level, net.minecraft.core.BlockPos machine,
+            net.minecraft.world.phys.Vec3 target, ItemStack pole, ItemStack bait, ItemStack accessory) {
+        var previousHook = player.fishing;
+        var playerData = org.confluence.mod.mixed.IPlayer.of(player);
+        ItemStack previousBait = playerData.confluence$getCurrentBait();
+        net.minecraft.world.entity.projectile.FishingHook hook = null;
+        try {
+            float power = computeFishingPower(null, pole, bait.isEmpty() ? null : bait.getItem(), accessory);
+            hook = pole.getItem() instanceof org.confluence.mod.common.item.fishing.AbstractFishingPole fishingPole
+                    ? fishingPole.getHook(pole, player, level, (int) power, 5)
+                    : new net.minecraft.world.entity.projectile.FishingHook(player, level, (int) power, 5);
+            var simulation = (com.github.edg_thexu.better_experience.mixed.IFishingHook) hook;
+            simulation.betterExperience$setSimulation(true);
+            simulation.betterExperience$setPos(net.minecraft.world.phys.Vec3.atCenterOf(machine));
+            hook.setPos(target);
+            hook.nibble = 10;
+            player.fishing = hook;
+            playerData.confluence$setCurrentBait(bait.copyWithCount(1));
+            if (pole.is(org.confluence.mod.common.init.item.FishingPoleItems.HOTLINE_FISHING_HOOK)
+                    || bait.is(org.confluence.mod.common.init.ModTags.Items.LAVA_PROOF_BAIT)
+                    || TCUtils.hasType(player, AccessoryItems.LAVAPROOF$FISHING$HOOK)) {
+                org.confluence.mod.mixed.IFishingHook.of(hook).confluence$setIsLavaHook();
+            }
+            hook.retrieve(pole);
+            return simulation.betterExperience$getItems().stream().map(ItemStack::copy).toList();
+        } finally {
+            if (hook != null) hook.discard();
+            player.fishing = previousHook;
+            playerData.confluence$setCurrentBait(previousBait);
+        }
+    }
 
     /**
      * 计算渔力
@@ -30,7 +62,7 @@ public class AutoFishManager {
     public static float computeFishingPower(@Nullable Player player, @Nullable ItemStack pole, @Nullable Item bait, @Nullable ItemStack curios){
 
         // 人物属性
-        float base = 2 + LibEnchantmentUtils.getEnchantmentLevel(Enchantments.LUCK_OF_THE_SEA, pole); // 0 1 2 3
+        float base = 2 + (pole == null || pole.isEmpty() ? 0 : LibEnchantmentUtils.getEnchantmentLevel(Enchantments.LUCK_OF_THE_SEA, pole));
         if (player != null && TCHelper.isLoaded()) {
             base += TCUtils.getValue(player, AccessoryItems.FISHING$POWER);
         }
@@ -54,7 +86,7 @@ public class AutoFishManager {
 
 
         // 鱼饵加成
-        float bounds = 1 + (bait == null? 0 : (ConfluenceHelper.isLoaded() && bait instanceof BaitItem ? (((BaitItem) bait).getBaitBonus()): 0));
+        float bounds = 1 + (bait == null? 0 : (ConfluenceHelper.isLoaded() && bait instanceof org.confluence.mod.common.item.fishing.IBait value ? value.getBaitBonus() : 0));
         // 饰品加成
         float curiosBonus = 0;
         if(curios != null && !curios.isEmpty() && TCHelper.isLoaded()) {
