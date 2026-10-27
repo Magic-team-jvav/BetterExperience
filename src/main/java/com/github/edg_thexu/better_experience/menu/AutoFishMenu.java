@@ -21,7 +21,7 @@ public class AutoFishMenu extends ChestMenu {
 
 
     public AutoFishMenu(int containerId, Inventory playerInventory) {
-        this(containerId, playerInventory, new SimpleContainer(36), new SimpleContainerData(2));
+        this(containerId, playerInventory, new SimpleContainer(30), new SimpleContainerData(2));
 
     }
 
@@ -42,7 +42,7 @@ public class AutoFishMenu extends ChestMenu {
                 if(!ConfluenceHelper.isLoaded()){
                     return false;
                 }
-                return stack.getItem() instanceof BaitItem;
+                return stack.getItem() instanceof org.confluence.mod.common.item.fishing.IBait;
             }
         });
         addSlot(new Slot(container, 29, startX + 36, -16) {
@@ -58,27 +58,26 @@ public class AutoFishMenu extends ChestMenu {
         addDataSlots(access);
     }
 
+    @Override
     public ItemStack quickMoveStack(Player player, int index) {
-
-        Slot slot = this.slots.get(index);
-        if (slot.hasItem()) {
-            ItemStack itemstack1 = slot.getItem();
-            for(int i = 27 + 36; i < slots.size() ; i ++){
-                if(index != i) {
-                    if (!this.moveItemStackTo(itemstack1, i, i + 1, false)) {
-                        continue;
-                    }
-                }
-                else {
-                    if (!this.moveItemStackTo(itemstack1, 36, 36 + 27, true)) {
-                        break;
-                    }
-                }
-                slots.get(i).setChanged();
-                return itemstack1;
+        if (index < 0 || index >= slots.size()) return ItemStack.EMPTY;
+        Slot slot = slots.get(index);
+        if (!slot.hasItem()) return ItemStack.EMPTY;
+        ItemStack stack = slot.getItem();
+        ItemStack before = stack.copy();
+        if (index < 27 || index >= 63) {
+            if (!moveItemStackTo(stack, 27, 63, true)) return ItemStack.EMPTY;
+        } else {
+            boolean moved = false;
+            for (int equipment = 63; equipment < 66 && !stack.isEmpty(); equipment++) {
+                if (slots.get(equipment).mayPlace(stack)) moved |= moveItemStackTo(stack, equipment, equipment + 1, false);
             }
+            if (!stack.isEmpty()) moved |= moveItemStackTo(stack, 0, 27, false);
+            if (!moved) return ItemStack.EMPTY;
         }
-
-        return super.quickMoveStack(player, index);
+        if (stack.isEmpty()) slot.setByPlayer(ItemStack.EMPTY);
+        else slot.setChanged();
+        slot.onTake(player, stack);
+        return before;
     }
 }

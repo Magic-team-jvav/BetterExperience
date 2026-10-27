@@ -4,7 +4,6 @@ import com.github.edg_thexu.better_experience.Better_experience;
 import com.github.edg_thexu.better_experience.block.AutoFishBlock;
 import com.github.edg_thexu.better_experience.block.AutoSellBlock;
 import com.github.edg_thexu.better_experience.block.ChronopilotBlock;
-import com.github.edg_thexu.better_experience.block.ReforgeBlock;
 import com.github.edg_thexu.better_experience.intergration.confluence.ConfluenceHelper;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.BlockItem;
@@ -39,8 +38,6 @@ public class ModBlocks {
     public static final DeferredBlock<AutoSellBlock> AUTO_SELL_BLOCK = registerDecoration("auto_sell_block", ()-> new AutoSellBlock(Block.Properties.ofFullCopy(Blocks.STONE).noOcclusion()), ModBlocks::registerWithItem, ConfluenceHelper::isLoaded);
     public static final Supplier<BlockEntityType<AutoSellBlock.AutoSellBlockEntity>> AUTO_SELL_BLOCK_ENTITY = registerBlockEntityDecoration("auto_sell_block_entity", () -> BlockEntityType.Builder.of(AutoSellBlock.AutoSellBlockEntity::new, AUTO_SELL_BLOCK.get()).build(null), ModBlocks::registerBlockEntity, ConfluenceHelper::isLoaded);
 
-    public static final DeferredBlock<ReforgeBlock> REFORGE_BLOCK = registerDecoration("reforge_block", ()-> new ReforgeBlock(Block.Properties.ofFullCopy(Blocks.STONE)), ModBlocks::registerWithItem, ConfluenceHelper::isLoaded);
-    public static final Supplier<BlockEntityType<ReforgeBlock.ReforgeBlockEntity>> REFORGE_BLOCK_ENTITY = registerBlockEntityDecoration("reforge_block_entity", () -> BlockEntityType.Builder.of(ReforgeBlock.ReforgeBlockEntity::new, REFORGE_BLOCK.get()).build(null), ModBlocks::registerBlockEntity, ConfluenceHelper::isLoaded);
 
 
     private static <B extends Block> DeferredBlock<B> registerWithItem(String id, Supplier<B> block) {

@@ -90,22 +90,6 @@ public class GameEvent {
         Level level = event.getHookEntity().level();
         if(ihook.betterExperience$isSimulation() && level instanceof ServerLevel serverLevel){
             List<ItemStack> items = event.getDrops();
-            if(ConfluenceHelper.isLoaded()) {
-                int luck = hook.luck;
-
-                Player player = hook.getPlayerOwner();
-                float chance = player != null && player.hasEffect(ModEffects.CRATE) ? 0.25f : 0.1f;
-                chance += luck / 30f;
-
-                if (LibMathUtils.checkChance(chance, level.random)) {
-                    ResourceKey<LootTable> lootTable = IMinecraftServer.isHardmode(level.getServer()) ? ModLootTables.CRATE_HARDMODE : ModLootTables.CRATE;
-                    items = serverLevel.getServer().reloadableRegistries().getLootTable(lootTable)
-                            .getRandomItems(new LootParams.Builder(serverLevel)
-                                    .withParameter(LootContextParams.ORIGIN, hook.position())
-                                    .withParameter(LootContextParams.THIS_ENTITY, hook)
-                                    .create(LootContextParamSets.GIFT));
-                }
-            }
             ihook.betterExperience$setItems(items);
             event.setCanceled(true);
         }

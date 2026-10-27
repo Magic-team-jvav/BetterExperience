@@ -108,7 +108,6 @@ public class ModChineseProvider extends LanguageProvider {
         add(ModItems.POTION_BAG.get(), "药水袋");
         add(ModBlocks.AUTO_FISH_BLOCK.get(), "自动钓鱼机");
         add(ModBlocks.AUTO_SELL_BLOCK.get(), "自动贩卖机");
-        add(ModBlocks.REFORGE_BLOCK.get(), "重铸机");
 
         add("better_experience.staff.choose_corners", "%s+左键选区");
         add("better_experience.staff.first_corner", "已选A，左键选B");
@@ -291,11 +290,21 @@ public class ModChineseProvider extends LanguageProvider {
         add("better_experience.tooltip.magic_boom_staff.locked", "锁定后：左键爆破，Shift+右键取消");
         add("better_experience.tooltip.magic_boom_staff.move", "Shift+滚轮移动；Shift+中键前进");
         add("better_experience.tooltip.magic_boom_staff.mana", "每8格消耗1魔力，向上取整");
-        add("better_experience.tooltip.potion_bag.info", "存放药水和食物");
+        add("better_experience.configuration.potion_bag_effect_count", "药水袋常驻效果所需数量");
+        add("better_experience.potion_bag.capacity", "种类 %s / 容量 %s · 自动扩容");
+        add("better_experience.potion_bag.effect_on", "药效：开启");
+        add("better_experience.potion_bag.effect_off", "药效：关闭");
+        add("better_experience.potion_bag.toggle_help", "右键开关药效 · 左键存取");
+        add("better_experience.potion_bag.quantity", "数量：%s");
+        add("better_experience.potion_bag.collect_on", "收集：开");
+        add("better_experience.potion_bag.collect_off", "收集：关");
+        add("better_experience.tooltip.potion_bag.info", "同种药水占一格，容量自动扩展");
         add("better_experience.tooltip.jei.fetch_ingredients", "从周围箱子取出材料");
         add("better_experience.tooltip.better_reforge.enable", "启用更好的重铸");
 
         add("better_experience.gui.fast_storage", "一键存储");
+        add("better_experience.autofish.missing_rod", "请先在自动钓鱼机中放入鱼竿。");
+        add("better_experience.autofish.missing_water", "自动钓鱼机正下方1至3格内需要可钓鱼的液体。");
         add("better_experience.gui.open_config", "打开更好的体验配置");
         add("better_experience.gui.potion_screen.auto_collect.message", "自动收集药水");
 

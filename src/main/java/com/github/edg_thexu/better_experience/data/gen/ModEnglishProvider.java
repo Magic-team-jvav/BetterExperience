@@ -294,15 +294,25 @@ public class ModEnglishProvider extends LanguageProvider {
         add("better_experience.tooltip.magic_boom_staff.locked", "Locked: LMB blast | Shift+RMB clear");
         add("better_experience.tooltip.magic_boom_staff.move", "Shift+Scroll: move | Shift+MMB: forward");
         add("better_experience.tooltip.magic_boom_staff.mana", "1 mana per 8 blocks, rounded up");
-        add("better_experience.tooltip.potion_bag.info", "Stores potions and food");
+        add("better_experience.configuration.potion_bag_effect_count", "Potions per type for a permanent bag effect");
+        add("better_experience.potion_bag.capacity", "Types %s / Capacity %s | Auto-expands");
+        add("better_experience.potion_bag.effect_on", "Effect: On");
+        add("better_experience.potion_bag.effect_off", "Effect: Off");
+        add("better_experience.potion_bag.toggle_help", "RMB: toggle effect | LMB: transfer");
+        add("better_experience.potion_bag.quantity", "Quantity: %s");
+        add("better_experience.potion_bag.collect_on", "Collect: On");
+        add("better_experience.potion_bag.collect_off", "Collect: Off");
+        add("better_experience.tooltip.potion_bag.info", "One slot per potion type; expands automatically");
         add("better_experience.tooltip.jei.fetch_ingredients", "Fetch ingredients from nearby chests");
 
         add("better_experience.tooltip.better_reforge.enable", "Enable Better Reforging");
 
 
         add("better_experience.gui.fast_storage", "Fast Storage");
+        add("better_experience.autofish.missing_rod", "Insert a fishing rod into the automatic fishing machine first.");
+        add("better_experience.autofish.missing_water", "The fishing machine needs fishable fluid 1-3 blocks directly below it.");
         add("better_experience.gui.open_config", "Open Better Experience Settings");
-        add("better_experience.gui.potion_screen.auto_collect.message", "Auto Collect Potions and Food");
+        add("better_experience.gui.potion_screen.auto_collect.message", "Auto Collect Potions");
 
         // Config
         add("better_experience.configuration.Player", "Player");

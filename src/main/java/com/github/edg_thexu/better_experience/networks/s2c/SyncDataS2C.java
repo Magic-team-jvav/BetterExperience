@@ -8,7 +8,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
-import org.confluence.terraentity.utils.AdapterUtils;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -52,11 +52,11 @@ public record SyncDataS2C(int dataId, Object data) implements CustomPacketPayloa
     }
 
     public static <T> void syncAll(int dataId, T value) {
-        AdapterUtils.sendToAllPlayers(new SyncDataS2C(dataId, value));
+        PacketDistributor.sendToAllPlayers(new SyncDataS2C(dataId, value));
     }
 
     public static <T> void sync(ServerPlayer player, int dataId, T value) {
-        AdapterUtils.sendToPlayer(player, new SyncDataS2C(dataId, value));
+        PacketDistributor.sendToPlayer(player, new SyncDataS2C(dataId, value));
     }
 
     public static void syncForbiddenConfig(ServerPlayer player) {
