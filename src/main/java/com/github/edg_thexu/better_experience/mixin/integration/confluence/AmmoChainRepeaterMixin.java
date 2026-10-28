@@ -26,7 +26,10 @@ public abstract class AmmoChainRepeaterMixin extends CrossbowItem {
 
     protected AmmoChainRepeaterMixin(Properties properties) { super(properties); }
 
-    @WrapOperation(method = {"onLeftClick", "lambda$onLeftClick$1"}, at = @At(value = "INVOKE",
+    /** 自动连射：射击入口被拆成 onLeftClick 与 shootOnLeftClick，
+     *  旧版把 RepeaterContents.isEmpty 判断写在 onLeftClick（含 lambda$onLeftClick$1）里，新版移到了 shootOnLeftClick。
+     *  同时列出三个位置，任意一个命中即可在旧/新版本生效。 */
+    @WrapOperation(method = {"onLeftClick", "lambda$onLeftClick$1", "shootOnLeftClick"}, at = @At(value = "INVOKE",
             target = "Lorg/confluence/mod/common/component/RepeaterContents;isEmpty()Z"))
     private boolean betterExperience$chainNotEmpty(RepeaterContents contents, Operation<Boolean> original,
             @Local(argsOnly = true) Player player, @Local(argsOnly = true) ItemStack weapon) {
