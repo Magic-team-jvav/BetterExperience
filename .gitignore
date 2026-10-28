@@ -12,7 +12,8 @@ out
 *.iws
 *.iml
 .idea
-.vscode/
+.vscode/*
+!.vscode/settings.json
 *.log
 logs/
 
@@ -26,3 +27,4 @@ run
 run-data
 
 src/generated
+src/test
