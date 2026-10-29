@@ -4,6 +4,7 @@ package com.github.edg_thexu.better_experience.data.gen.recipe;
 import com.github.edg_thexu.better_experience.Better_experience;
 import com.github.edg_thexu.better_experience.init.ModBlocks;
 import com.github.edg_thexu.better_experience.init.ModItems;
+import com.github.edg_thexu.better_experience.intergration.confluence.ConfluenceHelper;
 import com.github.edg_thexu.better_experience.module.worldoptions.ConvenienceRules;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
@@ -14,6 +15,7 @@ import net.minecraft.world.item.crafting.AbstractCookingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.ItemLike;
+import net.neoforged.neoforge.common.conditions.ModLoadedCondition;
 import org.confluence.mod.common.init.item.MaterialItems;
 
 import java.util.concurrent.CompletableFuture;
@@ -54,14 +56,18 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy("has_gold_ingot",has(Items.GOLD_INGOT))
                 .save(recipeOutput);
 
-        ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, ModBlocks.AUTO_SELL_BLOCK)
-                .pattern("aaa")
-                .pattern("aba")
-                .pattern("aaa")
-                .define('a', MaterialItems.PLATINUM_INGOT)
-                .define('b',Items.CHEST)
-                .unlockedBy("has_platinum_ingot",has(MaterialItems.PLATINUM_INGOT))
-                .save(recipeOutput, "confluence:auto_sell_block");
+        // Confluence 熔炉材料只在联动时生成，避免未安装汇流的数据生成丢失该配方。
+        if (ConfluenceHelper.isLoaded()) {
+            RecipeOutput confluenceOnly = recipeOutput.withConditions(new ModLoadedCondition("confluence"));
+            ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, ModBlocks.AUTO_SELL_BLOCK)
+                    .pattern("aaa")
+                    .pattern("aba")
+                    .pattern("aaa")
+                    .define('a', MaterialItems.PLATINUM_INGOT)
+                    .define('b', Items.CHEST)
+                    .unlockedBy("has_platinum_ingot", has(MaterialItems.PLATINUM_INGOT))
+                    .save(confluenceOnly, "confluence:auto_sell_block");
+        }
 
         ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.SPACE_STAFF)
                 .pattern("  a").pattern(" b ").pattern("b  ")

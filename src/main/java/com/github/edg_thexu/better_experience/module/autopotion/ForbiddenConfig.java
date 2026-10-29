@@ -70,12 +70,28 @@ public class ForbiddenConfig extends SimplePreparableReloadListener<ForbiddenCon
     }
 
     public static final MapCodec<ForbiddenConfig> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-            BuiltInRegistries.ITEM.byNameCodec().listOf().fieldOf("forbidden_items").forGetter(i->i.snapshot.items.stream().toList()),
+            // 用字符串解码，未安装对应模组时跳过未知物品而不是让整份配置加载失败。
+            Codec.STRING.listOf().fieldOf("forbidden_items").forGetter(i->i.snapshot.items.stream().map(ForbiddenConfig::itemId).toList()),
             EffectAmp.CODEC.listOf().fieldOf("forbidden_effects").forGetter(i->i.snapshot.effects),
             Codec.STRING.listOf().optionalFieldOf("forbidden_modid_effect").forGetter(i->Optional.of(i.snapshot.modIds.stream().toList()))
-    ).apply(instance, (item, effect, modId)-> modId
-            .map(strings -> new ForbiddenConfig(new HashSet<>(item), effect, new HashSet<>(strings)))
-            .orElseGet(() -> new ForbiddenConfig(new HashSet<>(item), effect, new HashSet<>()))));
+    ).apply(instance, (items, effect, modId)-> modId
+            .map(strings -> new ForbiddenConfig(resolveItems(items), effect, new HashSet<>(strings)))
+            .orElseGet(() -> new ForbiddenConfig(resolveItems(items), effect, new HashSet<>()))));
+
+    private static String itemId(Item item) {
+        return BuiltInRegistries.ITEM.getKey(item).toString();
+    }
+
+    private static Set<Item> resolveItems(List<String> ids) {
+        Set<Item> items = new HashSet<>();
+        for (String id : ids) {
+            ResourceLocation location = ResourceLocation.tryParse(id);
+            Optional<Item> item = location == null ? Optional.empty() : BuiltInRegistries.ITEM.getOptional(location);
+            if (item.isPresent()) items.add(item.get());
+            else Better_experience.LOGGER.warn("Skipping unknown item {} in potion config", id);
+        }
+        return items;
+    }
 
 
     @Override

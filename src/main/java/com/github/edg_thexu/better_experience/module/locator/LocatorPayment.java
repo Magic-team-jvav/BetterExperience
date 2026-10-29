@@ -1,5 +1,6 @@
 package com.github.edg_thexu.better_experience.module.locator;
 
+import com.github.edg_thexu.better_experience.intergration.confluence.ConfluenceHelper;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
@@ -24,8 +25,13 @@ public final class LocatorPayment {
 
     private LocatorPayment() {}
 
+    /** Confluence coins only exist with Confluence installed, so the locator is free without it. */
+    public static boolean isFree(Player player) {
+        return player.isCreative() || !ConfluenceHelper.isLoaded();
+    }
+
     public static boolean canAfford(Player player) {
-        if (player.isCreative()) return true;
+        if (isFree(player)) return true;
         long balance = 0;
         for (var slot : coinSlots(player)) {
             var stack = slot.container.getItem(slot.index);
@@ -45,7 +51,7 @@ public final class LocatorPayment {
     }
 
     public static Result pay(ServerPlayer player) {
-        if (player.isCreative()) return Result.PAID;
+        if (isFree(player)) return Result.PAID;
         var result = pay(coinSlots(player), COPPER_COST, LocatorPayment::coinValue, value -> {
             for (int i = 0; i < COIN_VALUES.length; i++) {
                 if (COIN_VALUES[i] == value) return PlayerUtils.INDEX_2_COIN.apply(3 - i).getDefaultInstance();

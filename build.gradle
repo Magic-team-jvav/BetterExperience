@@ -42,7 +42,7 @@ modrinth {
     loaders = ["neoforge"] // Must also be an array - no need to specify this if you're using Loom or ForgeGradle
     changelog = "changelog.md"
     dependencies { // A special DSL for creating dependencies
-        required.project "confluence" // Creates a new required dependency
+        optional.project "confluence" // 联动而非必需：未安装汇流时本模组降级运行
     }
 }
 
@@ -217,6 +217,19 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 // Use the matching artifacts built from the adjacent Confluence workspace.
 def confluenceBuildLibs = file(providers.gradleProperty('confluenceBuildLibs')
         .getOrElse('../confluence-neoforge-dev-1.21.1/build/libs'))
+// 母项目整体构建时主 jar 会汇总到 build/libs；只构建单模块时它只落在模块目录里，两处都找一次。
+def confluenceMainJar = file(new File(confluenceBuildLibs, 'ConfluenceOtherworld-neoforge-1.2.11+1.21.1-261027.jar'))
+if (!confluenceMainJar.exists()) {
+    confluenceMainJar = file('../confluence-neoforge-dev-1.21.1/ConfluenceOtherworld/build/libs/ConfluenceOtherworld-neoforge-1.2.11+1.21.1-261027.jar')
+}
+// 汇流系列只用于编译：运行期是否加载由玩家决定，缺失时对应功能自动降级。
+def confluenceJars = [
+        confluenceMainJar,
+        new File(confluenceBuildLibs, 'terra_entity-1.3.0.jar'),
+        new File(confluenceBuildLibs, 'TerraGuns-neoforge-1.3.0+1.21.1.jar'),
+        new File(confluenceBuildLibs, 'TerraCurio-neoforge-1.3.2+1.21.1.jar'),
+        new File(confluenceBuildLibs, 'confluence_magic_lib-1.3.1.jar')
+]
 
 dependencies {
 
@@ -234,15 +247,13 @@ dependencies {
 //    implementation "mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}"
 //    implementation "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
 
-//    implementation "curse.maven:confluence-1209464:7677430"
-    implementation(files(new File(confluenceBuildLibs, 'ConfluenceOtherworld-neoforge-1.2.11+1.21.1-261025.jar')))
-    implementation(files(new File(confluenceBuildLibs, 'terra_entity-1.3.0.jar')))
-    implementation(files(new File(confluenceBuildLibs, 'TerraGuns-neoforge-1.3.0+1.21.1.jar')))
-    implementation(files(new File(confluenceBuildLibs, 'TerraCurio-neoforge-1.3.2+1.21.1.jar')))
+    // 汇流系列只用于编译：运行期是否加载由玩家决定，缺失时对应功能自动降级。
+    compileOnly files(confluenceJars)
 
-//    implementation "curse.maven:confluence-1209464:6867835"
-//    implementation("org.confluence.lib:Confluence-Magic-Lib:0.0.2a-SNAPSHOT")
-    implementation(files(new File(confluenceBuildLibs, 'confluence_magic_lib-1.3.1.jar')))
+    // 本地联调汇流联动功能时才把整套放进运行环境：gradlew runClient -PwithConfluence
+    if (providers.gradleProperty('withConfluence').isPresent()) {
+        runtimeOnly files(confluenceJars)
+    }
 
 //    compileOnly(files("libs/ConfluenceOtherworld-1.1.4-beta.jar"))
 //    compileOnly(files("libs/terra_entity-1.1.15.jar"))
@@ -334,6 +345,8 @@ tasks.withType(Copy).configureEach { duplicatesStrategy = DuplicatesStrategy.EXC
 sourceSets.test {
     compileClasspath += sourceSets.main.compileClasspath
     runtimeClasspath += sourceSets.main.runtimeClasspath
+    // 测试是开发期集成测试，直接带上汇流系列；游戏内运行环境仍由 -PwithConfluence 决定。
+    runtimeClasspath += files(confluenceJars)
 }
 
 tasks.register('staffSelectionTest', JavaExec) {

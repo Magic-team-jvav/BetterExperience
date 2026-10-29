@@ -1,7 +1,6 @@
 package com.github.edg_thexu.better_experience.event;
 
 import com.github.edg_thexu.better_experience.Better_experience;
-import com.github.edg_thexu.better_experience.intergration.confluence.ConfluenceHelper;
 import com.github.edg_thexu.better_experience.mixed.IFishingHook;
 import com.github.edg_thexu.better_experience.module.autopotion.ForbiddenConfig;
 import com.github.edg_thexu.better_experience.module.boomstaff.ExplodeManager;
@@ -28,10 +27,6 @@ import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.entity.player.ItemFishedEvent;
 import net.neoforged.neoforge.event.server.ServerStoppedEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
-import org.confluence.lib.util.LibMathUtils;
-import org.confluence.mod.common.init.ModEffects;
-import org.confluence.mod.common.init.ModLootTables;
-import org.confluence.mod.mixed.IMinecraftServer;
 
 import java.util.List;
 

@@ -74,6 +74,12 @@ public class ModEnglishProvider extends LanguageProvider {
         add("better_experience.world_options.crops", "Crop growth speed: %s×");
         add("better_experience.world_options.saplings", "Sapling growth speed: %s×");
         add("better_experience.world_options.growth_help", "0 pauses natural growth; 1 is normal; 2 roughly halves average growth time. Maximum 20×. Light, soil and space rules still apply. Bonemeal, global random ticks and unloaded areas are unchanged.");
+        add("better_experience.world_options.coin_drop", "Hostile coin drops: %s×");
+        add("better_experience.world_options.coin_drop_help", "Multiplies coins dropped by hostile mobs: 0 drops none, 1 is the original amount, up to 10×. Only affects Confluence coins.");
+        add("better_experience.world_options.ammo_saver", "Large ammo stacks are kept: %s");
+        add("better_experience.world_options.ammo_saver_help", "Shots do not consume ammo stacks larger than 640. Applies to bows, crossbows and guns.");
+        add("better_experience.world_options.keep_buffs", "Keep buffs on death: %s");
+        add("better_experience.world_options.keep_buffs_help", "Beneficial effects survive death and respawn; harmful effects are still lost.");
         add("better_experience.spawning.title", "Better Experience · Settings");
         add("better_experience.spawning.rate", "Spawn rate: %s×");
         add("better_experience.spawning.cap", "Spawn cap: %s×");

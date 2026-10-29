@@ -1,6 +1,8 @@
 package com.github.edg_thexu.better_experience;
 
 import com.github.edg_thexu.better_experience.config.CommonConfig;
+import com.github.edg_thexu.better_experience.intergration.confluence.ConfluenceGunEvents;
+import com.github.edg_thexu.better_experience.intergration.confluence.ConfluenceHelper;
 import com.github.edg_thexu.better_experience.intergration.terra_gun.TerraGunEvents;
 import com.github.edg_thexu.better_experience.init.*;
 import com.github.edg_thexu.better_experience.intergration.terra_gun.TGHelper;
@@ -47,6 +49,9 @@ public class Better_experience {
         if(TGHelper.isLoaded()){
 //            TerraGunEvents.init();
             NeoForge.EVENT_BUS.register(new TerraGunEvents());
+        }
+        if (ConfluenceHelper.isLoaded()) {
+            NeoForge.EVENT_BUS.register(new ConfluenceGunEvents());
         }
     }
 

@@ -2,6 +2,7 @@ package com.github.edg_thexu.better_experience.mixin;
 
 import com.github.edg_thexu.better_experience.config.CommonConfig;
 import com.github.edg_thexu.better_experience.module.ammochain.AmmoChainManager;
+import com.github.edg_thexu.better_experience.module.worldoptions.WorldOptions;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Share;
@@ -38,6 +39,9 @@ public class ProjectileWeaponItemMixin {
     @WrapOperation(method = "useAmmo", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/enchantment/EnchantmentHelper;processAmmoUse(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/ItemStack;I)I"))
     private static int betterExperience$useAmmo(ServerLevel level, ItemStack weapon, ItemStack ammo, int count, Operation<Integer> original) {
         if (CommonConfig.INFINITE_AMMO.get() && ammo.getCount() > CommonConfig.INFINITE_AMMO_STACK_SIZE.get()) {
+            return 0;
+        }
+        if (WorldOptions.keepsAmmo(level, ammo)) {
             return 0;
         }
         return original.call(level, weapon, ammo, count);

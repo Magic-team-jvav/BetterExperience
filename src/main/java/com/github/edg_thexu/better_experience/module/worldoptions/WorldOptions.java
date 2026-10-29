@@ -6,12 +6,16 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
 
 /** Server-owned options shared by every dimension of one save. */
 public final class WorldOptions extends SavedData {
     public static final double MAX_GROWTH = 20.0;
+    public static final double MAX_COIN_DROP = 10.0;
+    /** Ammo stacks larger than this are not consumed while {@link Feature#AMMO_SAVER} is on. */
+    public static final int AMMO_SAVER_MIN_STACK = 640;
     private static final Factory<WorldOptions> FACTORY = new Factory<>(WorldOptions::new, WorldOptions::load);
     private Values values = Values.DEFAULT;
     private static volatile Values clientValues = Values.DEFAULT;
@@ -34,7 +38,9 @@ public final class WorldOptions extends SavedData {
         PERMANENT_NIGHT_VISION("permanent_night_vision"),
         EXTRA_GOLEM_IRON("extra_golem_iron"),
         LEATHER_RECIPE("leather_recipe"),
-        ENCHANTED_APPLE_RECIPE("enchanted_apple_recipe");
+        ENCHANTED_APPLE_RECIPE("enchanted_apple_recipe"),
+        AMMO_SAVER("ammo_saver"),
+        KEEP_BUFFS("keep_buffs");
 
         private final String key;
 
@@ -43,24 +49,33 @@ public final class WorldOptions extends SavedData {
         public String key() { return key; }
     }
 
-    public record Values(int flags, double crops, double saplings) {
-        public static final Values DEFAULT = new Values(0, 1.0, 1.0);
+    public record Values(int flags, double crops, double saplings, double coinDrop) {
+        public static final Values DEFAULT = new Values(0, 1.0, 1.0, 1.0);
         private static final int ALLOWED_FLAGS = (1 << Feature.values().length) - 1;
         public static final StreamCodec<FriendlyByteBuf, Values> STREAM_CODEC = StreamCodec.of((buf, value) -> {
             buf.writeVarInt(value.flags);
             buf.writeDouble(value.crops);
             buf.writeDouble(value.saplings);
-        }, buf -> new Values(buf.readVarInt(), buf.readDouble(), buf.readDouble()));
+            buf.writeDouble(value.coinDrop);
+        }, buf -> new Values(buf.readVarInt(), buf.readDouble(), buf.readDouble(), buf.readDouble()));
+
+        public Values(int flags, double crops, double saplings) {
+            this(flags, crops, saplings, 1.0);
+        }
 
         public boolean enabled(Feature feature) { return (flags & (1 << feature.ordinal())) != 0; }
 
         public Values with(Feature feature, boolean enabled) {
             int bit = 1 << feature.ordinal();
-            return new Values(enabled ? flags | bit : flags & ~bit, crops, saplings);
+            return new Values(enabled ? flags | bit : flags & ~bit, crops, saplings, coinDrop);
+        }
+
+        public Values withCoinDrop(double coinDrop) {
+            return new Values(flags, crops, saplings, coinDrop);
         }
 
         public boolean valid() {
-            return (flags & ~ALLOWED_FLAGS) == 0 && validGrowth(crops) && validGrowth(saplings);
+            return (flags & ~ALLOWED_FLAGS) == 0 && validGrowth(crops) && validGrowth(saplings) && validCoinDrop(coinDrop);
         }
     }
 
@@ -85,6 +100,20 @@ public final class WorldOptions extends SavedData {
         return Double.isFinite(value) && value >= 0.0 && value <= MAX_GROWTH;
     }
 
+    public static boolean validCoinDrop(double value) {
+        return Double.isFinite(value) && value >= 0.0 && value <= MAX_COIN_DROP;
+    }
+
+    /** Coin drop multiplier of the hosting world; clients and unsupported levels use the default. */
+    public static double coinDrop(Level level) {
+        return level instanceof ServerLevel serverLevel ? get(serverLevel.getServer()).values.coinDrop() : 1.0;
+    }
+
+    /** Ammo stacks above {@link #AMMO_SAVER_MIN_STACK} are never consumed while the option is enabled. */
+    public static boolean keepsAmmo(Level level, ItemStack ammo) {
+        return ammo.getCount() > AMMO_SAVER_MIN_STACK && enabled(level, Feature.AMMO_SAVER);
+    }
+
     public boolean update(Values updated) {
         if (!updated.valid()) return false;
         if (!values.equals(updated)) {
@@ -102,7 +131,8 @@ public final class WorldOptions extends SavedData {
         }
         double crops = tag.contains("crops") && validGrowth(tag.getDouble("crops")) ? tag.getDouble("crops") : 1.0;
         double saplings = tag.contains("saplings") && validGrowth(tag.getDouble("saplings")) ? tag.getDouble("saplings") : 1.0;
-        options.values = new Values(flags, crops, saplings);
+        double coinDrop = tag.contains("coin_drop") && validCoinDrop(tag.getDouble("coin_drop")) ? tag.getDouble("coin_drop") : 1.0;
+        options.values = new Values(flags, crops, saplings, coinDrop);
         return options;
     }
 
@@ -111,6 +141,7 @@ public final class WorldOptions extends SavedData {
         for (Feature feature : Feature.values()) tag.putBoolean(feature.key(), values.enabled(feature));
         tag.putDouble("crops", values.crops());
         tag.putDouble("saplings", values.saplings());
+        tag.putDouble("coin_drop", values.coinDrop());
         return tag;
     }
 }

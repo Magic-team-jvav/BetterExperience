@@ -1,4 +1,10 @@
 {
+    "neoforge:conditions": [
+        {
+            "type": "neoforge:mod_loaded",
+            "modid": "confluence"
+        }
+    ],
     "type": "confluence:heavy_work_bench",
     "pattern": [
         "  ab",

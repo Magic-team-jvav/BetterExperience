@@ -26,6 +26,7 @@ public final class WorldOptionsScreen extends Screen {
     private WorldOptions.Values draft = WorldOptions.Values.DEFAULT;
     private GrowthSlider crops;
     private GrowthSlider saplings;
+    private CoinDropSlider coinDrop;
     private Button apply;
     private Button reset;
     private boolean dirty;
@@ -67,7 +68,7 @@ public final class WorldOptionsScreen extends Screen {
         int panelWidth = Math.min(340, width - 24);
         int left = (width - panelWidth) / 2;
         int half = (panelWidth - 4) / 2;
-        top = Math.max(28, (height - 208) / 2);
+        top = Math.max(28, (height - 230) / 2);
         rebuildToggles(left, half);
         previous = addRenderableWidget(Button.builder(Component.literal("<"), ignored -> changePage(-1))
                 .bounds(left, top + 92, 22, 16).build());
@@ -75,14 +76,15 @@ public final class WorldOptionsScreen extends Screen {
                 .bounds(left + panelWidth - 22, top + 92, 22, 16).build());
         crops = addRenderableWidget(new GrowthSlider(left, top + 112, panelWidth, false));
         saplings = addRenderableWidget(new GrowthSlider(left, top + 134, panelWidth, true));
+        coinDrop = addRenderableWidget(new CoinDropSlider(left, top + 156, panelWidth));
         apply = addRenderableWidget(Button.builder(text("apply"), ignored -> send(true))
-                .bounds(left, top + 156, half, 20).build());
+                .bounds(left, top + 178, half, 20).build());
         reset = addRenderableWidget(Button.builder(text("defaults"), ignored -> {
             draft = WorldOptions.Values.DEFAULT;
             changed();
-        }).bounds(left + half + 4, top + 156, half, 20).build());
+        }).bounds(left + half + 4, top + 178, half, 20).build());
         addRenderableWidget(Button.builder(Component.translatable("gui.done"), ignored -> onClose())
-                .bounds(left, top + 178, panelWidth, 20).build());
+                .bounds(left, top + 200, panelWidth, 20).build());
         refresh();
         send(false);
     }
@@ -128,7 +130,8 @@ public final class WorldOptionsScreen extends Screen {
         });
         crops.setMultiplier(draft.crops());
         saplings.setMultiplier(draft.saplings());
-        crops.active = saplings.active = reset.active = editable;
+        coinDrop.setMultiplier(draft.coinDrop());
+        crops.active = saplings.active = coinDrop.active = reset.active = editable;
         apply.active = editable && dirty;
         previous.active = page > 0;
         next.active = page + 1 < pages();
@@ -200,8 +203,37 @@ public final class WorldOptionsScreen extends Screen {
 
         @Override
         protected void applyValue() {
-            draft = sapling ? new WorldOptions.Values(draft.flags(), draft.crops(), multiplier())
-                    : new WorldOptions.Values(draft.flags(), multiplier(), draft.saplings());
+            draft = sapling ? new WorldOptions.Values(draft.flags(), draft.crops(), multiplier(), draft.coinDrop())
+                    : new WorldOptions.Values(draft.flags(), multiplier(), draft.saplings(), draft.coinDrop());
+            changed();
+        }
+    }
+
+    private final class CoinDropSlider extends AbstractSliderButton {
+
+        CoinDropSlider(int x, int y, int width) {
+            super(x, y, width, 20, Component.empty(), draft.coinDrop() / WorldOptions.MAX_COIN_DROP);
+            setTooltip(Tooltip.create(text("coin_drop_help")));
+            updateMessage();
+        }
+
+        void setMultiplier(double multiplier) {
+            value = multiplier / WorldOptions.MAX_COIN_DROP;
+            updateMessage();
+        }
+
+        private double multiplier() {
+            return Math.round(value * WorldOptions.MAX_COIN_DROP * 10.0) / 10.0;
+        }
+
+        @Override
+        protected void updateMessage() {
+            setMessage(text("coin_drop", String.format(Locale.ROOT, "%.1f", multiplier())));
+        }
+
+        @Override
+        protected void applyValue() {
+            draft = draft.withCoinDrop(multiplier());
             changed();
         }
     }

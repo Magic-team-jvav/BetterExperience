@@ -2,6 +2,8 @@ package com.github.edg_thexu.better_experience.module.boss;
 
 import com.github.edg_thexu.better_experience.Better_experience;
 import com.github.edg_thexu.better_experience.config.CommonConfig;
+import com.github.edg_thexu.better_experience.intergration.confluence_lib.ConfluenceLibHelper;
+import com.github.edg_thexu.better_experience.intergration.terra_entity.TEHelper;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -13,8 +15,6 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
-import org.confluence.lib.api.entity.Boss;
-import org.confluence.terraentity.entity.boss.AbstractTerraBossBase;
 
 @EventBusSubscriber(modid = Better_experience.MODID)
 public final class BossSpawnSuppression {
@@ -51,7 +51,8 @@ public final class BossSpawnSuppression {
     }
 
     static boolean isBoss(LivingEntity entity) {
-        return entity instanceof Boss || entity instanceof AbstractTerraBossBase
-                || entity.getType().is(Tags.EntityTypes.BOSSES);
+        return entity.getType().is(Tags.EntityTypes.BOSSES)
+                || ConfluenceLibHelper.isLoaded() && ConfluenceLibBossCheck.isBoss(entity)
+                || TEHelper.isLoaded() && TerraEntityBossCheck.isBoss(entity);
     }
 }

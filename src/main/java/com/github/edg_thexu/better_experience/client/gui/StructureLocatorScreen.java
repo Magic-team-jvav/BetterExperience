@@ -80,7 +80,7 @@ public final class StructureLocatorScreen extends Screen {
                 .bounds(left + 262, top + 172, 28, 18).build());
         save = addRenderableWidget(Button.builder(Component.translatable("better_experience.locator.select"), button -> choose(false))
                 .bounds(left + 10, top + 196, 136, 18).build());
-        boolean free = minecraft.player != null && minecraft.player.isCreative();
+        boolean free = minecraft.player != null && LocatorPayment.isFree(minecraft.player);
         var price = Component.translatable(free ? "better_experience.locator.locate_free" : "better_experience.locator.locate", LocatorPayment.GOLD_COST);
         search = addRenderableWidget(Button.builder(price, button -> choose(true))
                 .bounds(left + 154, top + 196, 136, 18).build());

@@ -1,6 +1,7 @@
 package com.github.edg_thexu.better_experience.item;
 
 import com.github.edg_thexu.better_experience.init.ModDataComponentTypes;
+import com.github.edg_thexu.better_experience.intergration.confluence.ConfluenceHelper;
 import com.github.edg_thexu.better_experience.module.locator.LocatorCatalog;
 import com.github.edg_thexu.better_experience.module.locator.LocatorNames;
 import com.github.edg_thexu.better_experience.module.locator.LocatorPayment;
@@ -45,7 +46,8 @@ public final class StructureLocatorOrb extends Item {
         var target = stack.get(ModDataComponentTypes.LOCATOR_STRUCTURE.get());
         tooltip.add(Component.translatable("better_experience.locator.tooltip.use"));
         tooltip.add(Component.translatable("better_experience.locator.tooltip.settings"));
-        tooltip.add(Component.translatable("better_experience.locator.cost_help", LocatorPayment.GOLD_COST));
+        tooltip.add(Component.translatable(ConfluenceHelper.isLoaded()
+                ? "better_experience.locator.cost_help" : "better_experience.locator.locate_free", LocatorPayment.GOLD_COST));
         tooltip.add(Component.translatable("better_experience.locator.tooltip.history"));
         if (target != null) tooltip.add(Component.translatable("better_experience.locator.target", LocatorNames.structure(target)));
     }

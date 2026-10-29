@@ -1,6 +1,8 @@
 package com.github.edg_thexu.better_experience.intergration.terra_gun;
 
 import com.github.edg_thexu.better_experience.config.CommonConfig;
+import com.github.edg_thexu.better_experience.module.worldoptions.WorldOptions;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
 import org.confluence.terra_guns.api.event.GunEvent;
 
@@ -26,7 +28,14 @@ public class TerraGunEvents {
 //            }
 //        }
 
-        if(CommonConfig.INFINITE_AMMO.get() && event.getBulletStack().getCount() >= CommonConfig.INFINITE_AMMO_STACK_SIZE.get()){
+        ItemStack bullet = event.getBulletStack();
+        if (bullet == null) return;
+        if(CommonConfig.INFINITE_AMMO.get() && bullet.getCount() >= CommonConfig.INFINITE_AMMO_STACK_SIZE.get()){
+            event.setCanceled(true);
+            return;
+        }
+        // 世界选项：弹药堆叠超过阈值时不消耗（与汇流枪械保持一致）。
+        if (WorldOptions.keepsAmmo(event.getPlayer().level(), bullet)) {
             event.setCanceled(true);
         }
     }

@@ -27,7 +27,6 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
-import org.confluence.lib.util.LibUtils;
 
 import java.util.ArrayDeque;
 import java.util.Collections;
@@ -136,7 +135,7 @@ public final class FluidStaffManager {
         Set<IFluidHandler> seen = Collections.newSetFromMap(new IdentityHashMap<>());
         var unsided = FluidUtil.getFluidHandler(job.level, pos, null);
         unsided.ifPresent(handler -> transferHandler(job, handler, seen));
-        for (Direction direction : LibUtils.DIRECTIONS) {
+        for (Direction direction : Direction.values()) {
             if (!active(job) || exhausted(job)) break;
             FluidUtil.getFluidHandler(job.level, pos, direction).ifPresent(handler -> transferHandler(job, handler, seen));
         }

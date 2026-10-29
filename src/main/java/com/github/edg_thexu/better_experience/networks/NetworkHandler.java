@@ -37,7 +37,8 @@ import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 public final class NetworkHandler {
 
     public static void register(RegisterPayloadHandlersEvent event) {
-        PayloadRegistrar registrar = event.registrar("19");
+        // 20: block state payloads now use the in-house codec instead of Confluence Lib.
+        PayloadRegistrar registrar = event.registrar("20");
         registrar.playToServer(com.github.edg_thexu.better_experience.networks.c2s.ReforgeHistoryPacket.TYPE,
                 com.github.edg_thexu.better_experience.networks.c2s.ReforgeHistoryPacket.STREAM_CODEC,
                 com.github.edg_thexu.better_experience.networks.c2s.ReforgeHistoryPacket::handle);

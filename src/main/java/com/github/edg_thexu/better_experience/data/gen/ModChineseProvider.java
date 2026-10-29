@@ -64,6 +64,12 @@ public class ModChineseProvider extends LanguageProvider {
         add("better_experience.world_options.crops", "农作物生长速度：%s×");
         add("better_experience.world_options.saplings", "树苗生长速度：%s×");
         add("better_experience.world_options.growth_help", "0 暂停自然生长，1 为原速，2 倍约为一半平均耗时，最高 20 倍。保留光照、土壤及空间要求，不改变骨粉、全局随机刻或未加载区域。");
+        add("better_experience.world_options.coin_drop", "敌怪金币掉落：%s×");
+        add("better_experience.world_options.coin_drop_help", "缩放敌怪死亡掉落的金币数量：0 不掉落，1 为原本数量，最高 10 倍。仅影响汇流钱币掉落。");
+        add("better_experience.world_options.ammo_saver", "大堆弹药不消耗：%s");
+        add("better_experience.world_options.ammo_saver_help", "弹药堆叠超过 640 发时射击不再消耗，适用于弓、弩与枪械。");
+        add("better_experience.world_options.keep_buffs", "死亡保留增益：%s");
+        add("better_experience.world_options.keep_buffs_help", "死亡重生后保留有益状态效果，减益效果仍会消失。");
         add("better_experience.spawning.title", "更好的体验 · 设置");
         add("better_experience.spawning.rate", "刷怪速率：%s×");
         add("better_experience.spawning.cap", "刷怪上限：%s×");
@@ -107,7 +113,8 @@ public class ModChineseProvider extends LanguageProvider {
         add(ModItems.STAR_BOOM_STAFF.get(), "星爆魔杖");
         add(ModItems.POTION_BAG.get(), "药水袋");
         add(ModBlocks.AUTO_FISH_BLOCK.get(), "自动钓鱼机");
-        add(ModBlocks.AUTO_SELL_BLOCK.get(), "自动贩卖机");
+        // 自动贩卖机只在联动汇流时注册，这里按描述键翻译，保证数据生成稳定。
+        add("block.better_experience.auto_sell_block", "自动贩卖机");
 
         add("better_experience.staff.choose_corners", "%s+左键选区");
         add("better_experience.staff.first_corner", "已选A，左键选B");

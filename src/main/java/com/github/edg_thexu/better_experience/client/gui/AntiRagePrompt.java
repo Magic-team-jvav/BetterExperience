@@ -1,6 +1,7 @@
 package com.github.edg_thexu.better_experience.client.gui;
 
 import com.github.edg_thexu.better_experience.Better_experience;
+import com.github.edg_thexu.better_experience.intergration.confluence.ConfluenceHelper;
 import com.github.edg_thexu.better_experience.networks.c2s.AntiRageSettingsPacket;
 import com.github.edg_thexu.better_experience.networks.s2c.AntiRageSnapshotPacket;
 import net.minecraft.client.Minecraft;
@@ -20,14 +21,14 @@ public final class AntiRagePrompt {
 
     @SubscribeEvent
     public static void init(ScreenEvent.Init.Post event) {
-        if (!(event.getScreen() instanceof AskForSoftcoreScreen screen)) return;
+        if (!ConfluenceHelper.isLoaded() || !(event.getScreen() instanceof AskForSoftcoreScreen screen)) return;
         int top = (screen.height - 110) / 2 - 33;
         event.addListener(new Toggle((screen.width - 190) / 2, Math.min(screen.height - 24, top + 176)));
         if (Minecraft.getInstance().player != null) PacketDistributor.sendToServer(new AntiRageSettingsPacket(false, false));
     }
 
     public static void receive(AntiRageSnapshotPacket packet) {
-        if (!(Minecraft.getInstance().screen instanceof AskForSoftcoreScreen screen)) return;
+        if (!ConfluenceHelper.isLoaded() || !(Minecraft.getInstance().screen instanceof AskForSoftcoreScreen screen)) return;
         for (var child : screen.children()) {
             if (child instanceof Toggle toggle) toggle.accept(packet);
         }

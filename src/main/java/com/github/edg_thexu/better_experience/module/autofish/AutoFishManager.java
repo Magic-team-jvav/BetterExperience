@@ -2,15 +2,24 @@ package com.github.edg_thexu.better_experience.module.autofish;
 
 import com.github.edg_thexu.better_experience.intergration.confluence.ConfluenceHelper;
 import com.github.edg_thexu.better_experience.intergration.terra_curios.TCHelper;
+import com.github.edg_thexu.better_experience.mixed.IFishingHook;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.FishingHook;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
-import org.confluence.lib.util.LibEnchantmentUtils;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
+import net.minecraft.world.phys.Vec3;
 import org.confluence.mod.common.init.item.AccessoryItems;
-import org.confluence.mod.common.item.fishing.BaitItem;
 import org.confluence.terra_curio.util.TCUtils;
 
 import javax.annotation.Nullable;
@@ -18,21 +27,49 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AutoFishManager {
-    public static List<ItemStack> catchItems(net.minecraft.server.level.ServerPlayer player,
-            net.minecraft.server.level.ServerLevel level, net.minecraft.core.BlockPos machine,
-            net.minecraft.world.phys.Vec3 target, ItemStack pole, ItemStack bait, ItemStack accessory) {
+    public static List<ItemStack> catchItems(ServerPlayer player, ServerLevel level, BlockPos machine,
+            Vec3 target, ItemStack pole, ItemStack bait, ItemStack accessory) {
+        return ConfluenceHelper.isLoaded()
+                ? catchWithConfluence(player, level, machine, target, pole, bait, accessory)
+                : catchVanilla(player, level, machine, target, pole);
+    }
+
+    /** Vanilla simulation used when Confluence is absent: same hook, no Confluence bait or pole API. */
+    private static List<ItemStack> catchVanilla(ServerPlayer player, ServerLevel level, BlockPos machine,
+            Vec3 target, ItemStack pole) {
+        var previousHook = player.fishing;
+        FishingHook hook = null;
+        try {
+            float power = computeFishingPower(null, pole, null, null);
+            hook = new FishingHook(player, level, (int) power, 5);
+            var simulation = (IFishingHook) hook;
+            simulation.betterExperience$setSimulation(true);
+            simulation.betterExperience$setPos(Vec3.atCenterOf(machine));
+            hook.setPos(target);
+            hook.nibble = 10;
+            player.fishing = hook;
+            hook.retrieve(pole);
+            return simulation.betterExperience$getItems().stream().map(ItemStack::copy).toList();
+        } finally {
+            if (hook != null) hook.discard();
+            player.fishing = previousHook;
+        }
+    }
+
+    private static List<ItemStack> catchWithConfluence(ServerPlayer player, ServerLevel level, BlockPos machine,
+            Vec3 target, ItemStack pole, ItemStack bait, ItemStack accessory) {
         var previousHook = player.fishing;
         var playerData = org.confluence.mod.mixed.IPlayer.of(player);
         ItemStack previousBait = playerData.confluence$getCurrentBait();
-        net.minecraft.world.entity.projectile.FishingHook hook = null;
+        FishingHook hook = null;
         try {
             float power = computeFishingPower(null, pole, bait.isEmpty() ? null : bait.getItem(), accessory);
             hook = pole.getItem() instanceof org.confluence.mod.common.item.fishing.AbstractFishingPole fishingPole
                     ? fishingPole.getHook(pole, player, level, (int) power, 5)
-                    : new net.minecraft.world.entity.projectile.FishingHook(player, level, (int) power, 5);
-            var simulation = (com.github.edg_thexu.better_experience.mixed.IFishingHook) hook;
+                    : new FishingHook(player, level, (int) power, 5);
+            var simulation = (IFishingHook) hook;
             simulation.betterExperience$setSimulation(true);
-            simulation.betterExperience$setPos(net.minecraft.world.phys.Vec3.atCenterOf(machine));
+            simulation.betterExperience$setPos(Vec3.atCenterOf(machine));
             hook.setPos(target);
             hook.nibble = 10;
             player.fishing = hook;
@@ -62,7 +99,7 @@ public class AutoFishManager {
     public static float computeFishingPower(@Nullable Player player, @Nullable ItemStack pole, @Nullable Item bait, @Nullable ItemStack curios){
 
         // 人物属性
-        float base = 2 + (pole == null || pole.isEmpty() ? 0 : LibEnchantmentUtils.getEnchantmentLevel(Enchantments.LUCK_OF_THE_SEA, pole));
+        float base = 2 + (pole == null || pole.isEmpty() ? 0 : luckOfTheSea(pole));
         if (player != null && TCHelper.isLoaded()) {
             base += TCUtils.getValue(player, AccessoryItems.FISHING$POWER);
         }
@@ -96,6 +133,14 @@ public class AutoFishManager {
             }
         }
         return (base + curiosBonus * 0.1f) * (bounds + multiplier);
+    }
+
+    private static int luckOfTheSea(ItemStack stack) {
+        ItemEnchantments enchantments = stack.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
+        for (Object2IntMap.Entry<Holder<Enchantment>> entry : enchantments.entrySet()) {
+            if (entry.getKey().is(Enchantments.LUCK_OF_THE_SEA)) return entry.getValue();
+        }
+        return 0;
     }
 
 }

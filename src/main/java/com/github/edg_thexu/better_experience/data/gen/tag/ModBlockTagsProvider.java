@@ -4,6 +4,7 @@ import com.github.edg_thexu.better_experience.Better_experience;
 import com.github.edg_thexu.better_experience.init.ModBlocks;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
@@ -23,16 +24,10 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
     @Override
     protected void addTags(HolderLookup.@NotNull Provider provider) {
         tag(BlockTags.MINEABLE_WITH_AXE).add(ModBlocks.CHRONOPILOT.get());
-        tag(BlockTags.NEEDS_STONE_TOOL).add(
-                ModBlocks.AUTO_FISH_BLOCK.get(),
-                ModBlocks.AUTO_SELL_BLOCK.get()
-        );
-
-
-        this.tag(BlockTags.MINEABLE_WITH_PICKAXE).add(
-                ModBlocks.AUTO_FISH_BLOCK.get(),
-                ModBlocks.AUTO_SELL_BLOCK.get()
-        );
+        // 自动贩卖机只在联动汇流时注册，用可选条目避免未安装汇流时整个原版标签加载失败。
+        ResourceLocation autoSellBlock = Better_experience.space("auto_sell_block");
+        tag(BlockTags.NEEDS_STONE_TOOL).add(ModBlocks.AUTO_FISH_BLOCK.get()).addOptional(autoSellBlock);
+        this.tag(BlockTags.MINEABLE_WITH_PICKAXE).add(ModBlocks.AUTO_FISH_BLOCK.get()).addOptional(autoSellBlock);
     }
 
     @Override

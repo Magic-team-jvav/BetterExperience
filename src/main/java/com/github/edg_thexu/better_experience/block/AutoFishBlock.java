@@ -1,6 +1,7 @@
 package com.github.edg_thexu.better_experience.block;
 
 import com.github.edg_thexu.better_experience.Better_experience;
+import com.github.edg_thexu.better_experience.client.renderer.SimpleGeoItemRenderer;
 import com.github.edg_thexu.better_experience.init.ModBlocks;
 import com.github.edg_thexu.better_experience.intergration.confluence.ConfluenceHelper;
 import com.github.edg_thexu.better_experience.intergration.confluence_lib.ConfluenceLibHelper;
@@ -45,15 +46,6 @@ import net.minecraft.world.level.block.state.properties.ChestType;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import org.confluence.lib.util.LibMathUtils;
-import org.confluence.lib.util.LibEntityUtils;
-import org.confluence.mod.client.renderer.item.SimpleGeoItemRenderer;
-import org.confluence.mod.common.init.ModTags;
-import org.confluence.mod.common.init.item.AccessoryItems;
-import org.confluence.mod.common.init.item.FishingPoleItems;
-import org.confluence.mod.common.item.fishing.AbstractFishingPole;
-import org.confluence.mod.common.item.fishing.BaitItem;
-import org.confluence.terra_curio.util.TCUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoBlockEntity;
@@ -423,7 +415,7 @@ public class AutoFishBlock extends BaseEntityBlock {
         @Override
         public boolean canPlaceItemThroughFace(int i, @NotNull ItemStack itemStack, @Nullable Direction direction) {
             if(direction == Direction.UP){
-                return itemStack.getItem() instanceof org.confluence.mod.common.item.fishing.IBait;
+                return ConfluenceHelper.isLoaded() && itemStack.getItem() instanceof org.confluence.mod.common.item.fishing.IBait;
             }
             return true;
         }

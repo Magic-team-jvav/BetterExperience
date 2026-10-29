@@ -34,6 +34,7 @@
     "integration.confluence.AmmoChainGunAmmoMixin",
     "integration.confluence.AmmoChainGunShotMixin",
     "integration.confluence.TerraProjectileWeaponMixin",
+    "integration.confluence.EnemyCoinDropMultiplierMixin",
     "integration.confluence.DaedalusStormbowMixin",
     "integration.confluence.AmmoChainStormbowReleaseMixin",
     "integration.confluence.AmmoChainRepeaterMixin",
