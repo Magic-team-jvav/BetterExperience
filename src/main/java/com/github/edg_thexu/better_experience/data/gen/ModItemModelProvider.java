@@ -53,8 +53,7 @@ public class ModItemModelProvider extends ItemModelProvider {
                             .texture("layer0", "minecraft:item/chain").texture("layer1", "minecraft:item/arrow");
                     return;
                 }
-                String texture = (path.equals("space_staff") || path.equals("fluid_staff") || path.equals("void_staff")) ? "star_boom_staff" : path;
-                withExistingParent("item/"+path, "item/handheld").texture("layer0", Better_experience.space("item/"+texture));
+                withExistingParent("item/"+path, "item/handheld").texture("layer0", Better_experience.space("item/"+path));
                 }
             catch (Exception e){
                 withExistingParent("item/"+path, MISSING_ITEM);
