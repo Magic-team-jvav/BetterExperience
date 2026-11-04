@@ -17,6 +17,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.confluence.mod.common.init.ModAttachmentTypes;
+import org.confluence.mod.common.item.storage.VoidBagItem;
+import org.confluence.mod.common.attachment.PlayerVoidVaultContainer;
 
 import java.util.HashMap;
 import java.util.List;
@@ -79,6 +81,9 @@ public final class PotionBagEffects {
                 if (ConfluenceHelper.isLoaded()) {
                     addNormalItems(player.getData(ModAttachmentTypes.PIGGY_BANK).getItems(), available);
                     addNormalItems(player.getData(ModAttachmentTypes.SAFE).getItems(), available);
+                    if (VoidBagItem.hasOpenBag(player)) {
+                        addNormalItems(PlayerVoidVaultContainer.of(player).getItems(), available);
+                    }
                 }
             }
         }

@@ -7,6 +7,7 @@ public class CommonConfig {
     public static ModConfigSpec.DoubleValue ANTI_RAGE_EXTRA_INVULNERABILITY_SECONDS;
     public static ModConfigSpec.IntValue LOCATOR_SEARCH_RADIUS;
     public static ModConfigSpec.IntValue POTION_BAG_EFFECT_COUNT;
+    public static ModConfigSpec.BooleanValue RARE_DROP_PITY;
     //************************* Item *************************
     /**
      * 是否开启药水无线续杯
@@ -180,6 +181,13 @@ public class CommonConfig {
 
         BUILDER.pop();
         BUILDER.push("Entity");
+
+        RARE_DROP_PITY = BUILDER
+                .comment("Accumulate each eligible rare drop's chance after hostile kills or opening treasure bags. "
+                        + "Progress is saved per player and loot source. Dropped items stop accumulating until the eligible collection is complete. "
+                        + "The server setting applies; disabled by default.")
+                .translation("better_experience.configuration.rare_drop_pity")
+                .define("rare_drop_pity", false);
 
         SLIME_DIE_NO_LAVA = BUILDER
                 .comment("Forbidden slime to generate lava?")

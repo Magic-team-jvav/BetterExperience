@@ -28,3 +28,4 @@ run-data
 
 src/generated
 src/test
+gradle/gradle-daemon-jvm.properties

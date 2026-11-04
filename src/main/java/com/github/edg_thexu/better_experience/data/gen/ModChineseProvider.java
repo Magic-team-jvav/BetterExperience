@@ -15,6 +15,8 @@ public class ModChineseProvider extends LanguageProvider {
 
     @Override
     protected void addTranslations() {
+        add("better_experience.configuration.rare_drop_pity", "稀有掉落累计保底");
+        add("better_experience.configuration.rare_drop_pity.tooltip", "敌怪及宝藏袋的稀有物品按基础概率累计；掉落后停止累计，当前可掉落物品集齐后重置。按玩家记录，以服务端设置为准。");
         add("better_experience.anti_rage.prompt.toggle", "防急眼模式：%s");
         add("better_experience.anti_rage.prompt.help", "3 次死亡开启不掉落，4 次起延长受击无敌帧，10 次给予临时创造。仅房主或 OP 可修改；不改变上方软核选择。");
         add("better_experience.anti_rage.prompt.read_only", "以服务器配置为准，仅房主或 OP 可修改。");
@@ -112,6 +114,8 @@ public class ModChineseProvider extends LanguageProvider {
         add(ModItems.MAGIC_BOOM_STAFF.get(), "法爆魔杖");
         add(ModItems.STAR_BOOM_STAFF.get(), "星爆魔杖");
         add(ModItems.POTION_BAG.get(), "药水袋");
+        add(ModItems.DEBUG_ITEM.get(), "调试物品");
+        add(ModItems.UNIVERSAL_CONTROLLER.get(), "万能控制器");
         add(ModBlocks.AUTO_FISH_BLOCK.get(), "自动钓鱼机");
         // 自动贩卖机只在联动汇流时注册，这里按描述键翻译，保证数据生成稳定。
         add("block.better_experience.auto_sell_block", "自动贩卖机");

@@ -25,6 +25,8 @@ public class ModEnglishProvider extends LanguageProvider {
 
     @Override
     protected void addTranslations() {
+        add("better_experience.configuration.rare_drop_pity", "Cumulative rare drop pity");
+        add("better_experience.configuration.rare_drop_pity.tooltip", "Accumulate rare hostile drops and treasure bag rewards by their base chances. Collected rewards stop accumulating until the eligible set is complete. Saved per player; server setting applies.");
         add("better_experience.anti_rage.prompt.toggle", "Anti-Rage: %s");
         add("better_experience.anti_rage.prompt.help", "Death 3 enables keep inventory; deaths 4+ extend hit protection; death 10 grants temporary creative. Host or OP only. Independent of the softcore choice above.");
         add("better_experience.anti_rage.prompt.read_only", "Uses server settings. Only the host or an OP can change this.");

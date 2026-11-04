@@ -5,6 +5,7 @@ import com.github.edg_thexu.better_experience.attachment.AutoPotionAttachment;
 import com.github.edg_thexu.better_experience.attachment.EnderChestAttachment;
 import com.github.edg_thexu.better_experience.attachment.TempAttachment;
 import com.github.edg_thexu.better_experience.module.antirage.AntiRageState;
+import com.github.edg_thexu.better_experience.module.lootpity.LootPityState;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
@@ -20,6 +21,7 @@ public class ModAttachments {
     public static final Supplier<AttachmentType<EnderChestAttachment>> SAFE_CHEST = TYPES.register("safe_chest", () -> AttachmentType.serializable(EnderChestAttachment::new).copyOnDeath().build());
     public static final Supplier<AttachmentType<TempAttachment>> TEMP_DATA = TYPES.register("temp_data", () -> AttachmentType.serializable(TempAttachment::new).copyOnDeath().build());
     public static final Supplier<AttachmentType<AntiRageState>> ANTI_RAGE = TYPES.register("anti_rage", () -> AttachmentType.serializable(AntiRageState::new).copyOnDeath().build());
+    public static final Supplier<AttachmentType<LootPityState>> LOOT_PITY = TYPES.register("loot_pity", () -> AttachmentType.serializable(LootPityState::new).copyOnDeath().build());
 
 
 }
