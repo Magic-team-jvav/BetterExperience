@@ -1,7 +1,7 @@
 package com.github.edg_thexu.better_experience.module.autofish;
 
 import com.github.edg_thexu.better_experience.intergration.confluence.ConfluenceHelper;
-import com.github.edg_thexu.better_experience.intergration.terra_curios.TCHelper;
+import com.github.edg_thexu.better_experience.intergration.confluence.ConfluenceFishingSupport;
 import com.github.edg_thexu.better_experience.mixed.IFishingHook;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import net.minecraft.core.BlockPos;
@@ -17,6 +17,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.phys.Vec3;
 import org.confluence.mod.common.init.item.AccessoryItems;
@@ -59,32 +60,31 @@ public class AutoFishManager {
     private static List<ItemStack> catchWithConfluence(ServerPlayer player, ServerLevel level, BlockPos machine,
             Vec3 target, ItemStack pole, ItemStack bait, ItemStack accessory) {
         var previousHook = player.fishing;
-        var playerData = org.confluence.mod.mixed.IPlayer.of(player);
-        ItemStack previousBait = playerData.confluence$getCurrentBait();
         FishingHook hook = null;
         try {
-            float power = computeFishingPower(null, pole, bait.isEmpty() ? null : bait.getItem(), accessory);
+            int luck = EnchantmentHelper.getFishingLuckBonus(level, pole, player);
+            int speed = (int) (EnchantmentHelper.getFishingTimeReduction(level, pole, player) * 20);
             hook = pole.getItem() instanceof org.confluence.mod.common.item.fishing.AbstractFishingPole fishingPole
-                    ? fishingPole.getHook(pole, player, level, (int) power, 5)
-                    : new FishingHook(player, level, (int) power, 5);
+                    ? fishingPole.getHook(pole, player, level, luck, speed)
+                    : new FishingHook(player, level, luck, speed);
             var simulation = (IFishingHook) hook;
             simulation.betterExperience$setSimulation(true);
             simulation.betterExperience$setPos(Vec3.atCenterOf(machine));
             hook.setPos(target);
             hook.nibble = 10;
             player.fishing = hook;
-            playerData.confluence$setCurrentBait(bait.copyWithCount(1));
             if (pole.is(org.confluence.mod.common.init.item.FishingPoleItems.HOTLINE_FISHING_HOOK)
                     || bait.is(org.confluence.mod.common.init.ModTags.Items.LAVA_PROOF_BAIT)
                     || TCUtils.hasType(player, AccessoryItems.LAVAPROOF$FISHING$HOOK)) {
                 org.confluence.mod.mixed.IFishingHook.of(hook).confluence$setIsLavaHook();
             }
-            hook.retrieve(pole);
+            try (var ignored = ConfluenceFishingSupport.bind(player, hook, pole, bait, accessory)) {
+                hook.retrieve(pole);
+            }
             return simulation.betterExperience$getItems().stream().map(ItemStack::copy).toList();
         } finally {
             if (hook != null) hook.discard();
             player.fishing = previousHook;
-            playerData.confluence$setCurrentBait(previousBait);
         }
     }
 
@@ -97,12 +97,10 @@ public class AutoFishManager {
      * @return 渔力
      */
     public static float computeFishingPower(@Nullable Player player, @Nullable ItemStack pole, @Nullable Item bait, @Nullable ItemStack curios){
+        if (ConfluenceHelper.isLoaded()) return ConfluenceFishingSupport.power(player, pole, bait, curios);
 
         // 人物属性
         float base = 2 + (pole == null || pole.isEmpty() ? 0 : luckOfTheSea(pole));
-        if (player != null && TCHelper.isLoaded()) {
-            base += TCUtils.getValue(player, AccessoryItems.FISHING$POWER);
-        }
 
         // 鱼竿加成
         float multiplier = 0;
@@ -123,16 +121,7 @@ public class AutoFishManager {
 
 
         // 鱼饵加成
-        float bounds = 1 + (bait == null? 0 : (ConfluenceHelper.isLoaded() && bait instanceof org.confluence.mod.common.item.fishing.IBait value ? value.getBaitBonus() : 0));
-        // 饰品加成
-        float curiosBonus = 0;
-        if(curios != null && !curios.isEmpty() && TCHelper.isLoaded()) {
-            var component = TCUtils.getAccessoriesComponent(curios);
-            if( component != null && component.contains(AccessoryItems.FISHING$POWER)) {
-                curiosBonus = component.get(AccessoryItems.FISHING$POWER).get();
-            }
-        }
-        return (base + curiosBonus * 0.1f) * (bounds + multiplier);
+        return base * (1 + multiplier);
     }
 
     private static int luckOfTheSea(ItemStack stack) {

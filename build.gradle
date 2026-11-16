@@ -218,17 +218,29 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 def confluenceBuildLibs = file(providers.gradleProperty('confluenceBuildLibs')
         .getOrElse('../confluence-neoforge-dev-1.21.1/build/libs'))
 // 母项目整体构建时主 jar 会汇总到 build/libs；只构建单模块时它只落在模块目录里，两处都找一次。
-def confluenceMainJar = file(new File(confluenceBuildLibs, 'ConfluenceOtherworld-neoforge-1.2.11+1.21.1-261027.jar'))
+def confluenceJarName = "ConfluenceOtherworld-neoforge-${confluence_version}.jar"
+def confluenceMainJar = file(new File(confluenceBuildLibs, confluenceJarName))
 if (!confluenceMainJar.exists()) {
-    confluenceMainJar = file('../confluence-neoforge-dev-1.21.1/ConfluenceOtherworld/build/libs/ConfluenceOtherworld-neoforge-1.2.11+1.21.1-261027.jar')
+    confluenceMainJar = file("../confluence-neoforge-dev-1.21.1/ConfluenceOtherworld/build/libs/${confluenceJarName}")
 }
+// Compile against the exact libraries embedded in this Confluence build. NeoForge loads
+// these nested jars itself at runtime; standalone copies can shadow newer interfaces.
+def confluenceNestedDirectory = layout.buildDirectory.dir('confluence-compile-libs')
+def extractConfluenceCompileDependencies = tasks.register('extractConfluenceCompileDependencies', Sync) {
+    from(zipTree(confluenceMainJar)) {
+        include 'META-INF/jarjar/*.jar'
+        eachFile { details -> details.path = details.name }
+    }
+    includeEmptyDirs = false
+    into confluenceNestedDirectory
+}
+def confluenceNestedJars = files(fileTree(confluenceNestedDirectory) { include '*.jar' })
+        .builtBy(extractConfluenceCompileDependencies)
 // 汇流系列只用于编译：运行期是否加载由玩家决定，缺失时对应功能自动降级。
 def confluenceJars = [
         confluenceMainJar,
         new File(confluenceBuildLibs, 'terra_entity-1.3.0.jar'),
-        new File(confluenceBuildLibs, 'TerraGuns-neoforge-1.3.0+1.21.1.jar'),
-        new File(confluenceBuildLibs, 'TerraCurio-neoforge-1.3.2+1.21.1.jar'),
-        new File(confluenceBuildLibs, 'confluence_magic_lib-1.3.1.jar')
+        new File(confluenceBuildLibs, 'TerraGuns-neoforge-1.3.0+1.21.1.jar')
 ]
 
 dependencies {
@@ -249,10 +261,14 @@ dependencies {
 
     // 汇流系列只用于编译：运行期是否加载由玩家决定，缺失时对应功能自动降级。
     compileOnly files(confluenceJars)
+    compileOnly confluenceNestedJars
 
     // 本地联调汇流联动功能时才把整套放进运行环境：gradlew runClient -PwithConfluence
     if (providers.gradleProperty('withConfluence').isPresent()) {
-        runtimeOnly files(confluenceJars)
+        runtimeOnly files(confluenceMainJar)
+    }
+    if (providers.gradleProperty('withLegacyConfluenceAddons').isPresent()) {
+        runtimeOnly files(confluenceJars.drop(1))
     }
 
 //    compileOnly(files("libs/ConfluenceOtherworld-1.1.4-beta.jar"))
@@ -347,6 +363,7 @@ sourceSets.test {
     runtimeClasspath += sourceSets.main.runtimeClasspath
     // 测试是开发期集成测试，直接带上汇流系列；游戏内运行环境仍由 -PwithConfluence 决定。
     runtimeClasspath += files(confluenceJars)
+    runtimeClasspath += confluenceNestedJars
 }
 
 tasks.register('staffSelectionTest', JavaExec) {
