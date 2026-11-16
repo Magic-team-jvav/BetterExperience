@@ -9,7 +9,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import org.confluence.mod.common.item.bow.BaseTerraBowItem;
 import org.confluence.mod.common.item.crossbow.BaseTerraRepeaterItem;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -19,12 +18,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.List;
 
-@Mixin(value = {BaseTerraBowItem.class, BaseTerraRepeaterItem.class}, remap = false)
+@Mixin(value = BaseTerraRepeaterItem.class, remap = false)
 public class TerraProjectileWeaponMixin {
-    /// The bow splits `shoot` into a public entry point and a private overload that spawns the entities,
-    /// so the chain bookkeeping cannot rely on `@Share` locals and keeps the state on the item instead.
     private static final String SHOOT = "shoot(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/InteractionHand;Lnet/minecraft/world/item/ItemStack;Ljava/util/List;FFZLnet/minecraft/world/entity/LivingEntity;)V";
-    private static final String SHOOT_WITH_SPREAD = "shoot(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/InteractionHand;Lnet/minecraft/world/item/ItemStack;Ljava/util/List;FFZZFLnet/minecraft/world/entity/LivingEntity;)V";
 
     @Unique private ItemStack betterExperience$ammoChainWeapon;
     @Unique private ItemStack betterExperience$ammoChainAmmo;
@@ -47,7 +43,7 @@ public class TerraProjectileWeaponMixin {
         }
     }
 
-    @WrapOperation(method = {SHOOT, SHOOT_WITH_SPREAD}, at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;addFreshEntity(Lnet/minecraft/world/entity/Entity;)Z", remap = true))
+    @WrapOperation(method = SHOOT, at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;addFreshEntity(Lnet/minecraft/world/entity/Entity;)Z", remap = true))
     private boolean betterExperience$recordProjectile(ServerLevel level, Entity projectile, Operation<Boolean> original) {
         boolean added = original.call(level, projectile);
         if (added) {
