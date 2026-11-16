@@ -38,81 +38,76 @@ import java.util.Map;
 
 @EventBusSubscriber(modid = Better_experience.MODID)
 public class ModEvent {
-    @SubscribeEvent
-    public static void registerPayloadHandlers(RegisterPayloadHandlersEvent event) {
-        NetworkHandler.register(event);
-    }
+	@SubscribeEvent
+	public static void registerPayloadHandlers(RegisterPayloadHandlersEvent event) {
+		NetworkHandler.register(event);
+	}
 
-    @SubscribeEvent
-    public static void registerPayloadHandlers(ModConfigEvent.Reloading event) {
-        if (event.getConfig().getSpec() == CommonConfig.SPEC) {
-            // 重新加载人物属性
-            PlayerAttribute.dirty = true;
-        }
-    }
+	@SubscribeEvent
+	public static void reloadCommonConfig(ModConfigEvent.Reloading event) {
+		if (event.getConfig().getSpec() != CommonConfig.SPEC) {
+			return;
+		}
+		PlayerAttribute.requestReload();
+		var server = ServerLifecycleHooks.getCurrentServer();
+		if (server != null) {
+			server.execute(() -> {
+				if (ServerLifecycleHooks.getCurrentServer() == server) {
+					ClientBoundConfigPacket.syncAll();
+				}
+			});
+		}
+	}
 
-    @SubscribeEvent(priority = EventPriority.LOWEST)
-    public static void modifyDefaultComponents(ModifyDefaultComponentsEvent event) {
-        try {
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public static void modifyDefaultComponents(ModifyDefaultComponentsEvent event) {
+		try {
 
-            if (CommonConfig.MODIFY_MAX_STACK_SIZE.get()) {
-                for (Map.Entry<ResourceKey<Item>, Item> entry : BuiltInRegistries.ITEM.entrySet()) {
-                    Item item = entry.getValue();
-                    DataComponentMap components = item.components();
-                    if (components.has(DataComponents.MAX_DAMAGE) || ConfluenceHelper.isLoaded() && PrefixUtils.couldReforge(item.getDefaultInstance()))
-                        continue;
-                    String namespace = entry.getKey().location().getNamespace();
-                    if ("minecraft".equals(namespace) || ConfluenceHelper.isLoaded() && Confluence.MODID.equals(namespace)) {
-                        int maxStackSize = item.getDefaultMaxStackSize();
-                        if (maxStackSize == 1 || components.has(DataComponents.FOOD) || components.has(DataComponents.POTION_CONTENTS)) {
-                            event.modify(item, builder -> builder.set(DataComponents.MAX_STACK_SIZE, 99));
-                        } else if (maxStackSize == 16) {
-                            event.modify(item, builder -> builder.set(DataComponents.MAX_STACK_SIZE, 999));
-                        } else if (maxStackSize == 64) {
-                            event.modify(item, builder -> builder.set(DataComponents.MAX_STACK_SIZE, 9999));
-                        }
-                    }
-                }
-            }
-        } catch (IllegalStateException ignored) {
+			if (CommonConfig.MODIFY_MAX_STACK_SIZE.get()) {
+				for (Map.Entry<ResourceKey<Item>, Item> entry : BuiltInRegistries.ITEM.entrySet()) {
+					Item item = entry.getValue();
+					DataComponentMap components = item.components();
+					if (components.has(DataComponents.MAX_DAMAGE) || ConfluenceHelper.isLoaded() && PrefixUtils.couldReforge(item.getDefaultInstance()))
+						continue;
+					String namespace = entry.getKey().location().getNamespace();
+					if ("minecraft".equals(namespace) || ConfluenceHelper.isLoaded() && Confluence.MODID.equals(namespace)) {
+						int maxStackSize = item.getDefaultMaxStackSize();
+						if (maxStackSize == 1 || components.has(DataComponents.FOOD) || components.has(DataComponents.POTION_CONTENTS)) {
+							event.modify(item, builder -> builder.set(DataComponents.MAX_STACK_SIZE, 99));
+						} else if (maxStackSize == 16) {
+							event.modify(item, builder -> builder.set(DataComponents.MAX_STACK_SIZE, 999));
+						} else if (maxStackSize == 64) {
+							event.modify(item, builder -> builder.set(DataComponents.MAX_STACK_SIZE, 9999));
+						}
+					}
+				}
+			}
+		} catch (IllegalStateException ignored) {
 
-        }
+		}
 
-        if(ConfluenceLibHelper.isLoaded()){
-            event.modify(ModItems.POTION_BAG, builder -> builder.set(ConfluenceMagicLib.MOD_RARITY.get(), ModRarity.ORANGE));
-            event.modify(ModItems.MAGIC_BOOM_STAFF, builder -> builder.set(ConfluenceMagicLib.MOD_RARITY.get(), ModRarity.YELLOW));
-            event.modify(ModItems.STAR_BOOM_STAFF, builder -> builder.set(ConfluenceMagicLib.MOD_RARITY.get(), ModRarity.CYAN));
-            event.modify(ModBlocks.AUTO_FISH_BLOCK, builder -> builder.set(ConfluenceMagicLib.MOD_RARITY.get(), ModRarity.BLUE));
+		if(ConfluenceLibHelper.isLoaded()){
+			event.modify(ModItems.POTION_BAG, builder -> builder.set(ConfluenceMagicLib.MOD_RARITY.get(), ModRarity.ORANGE));
+			event.modify(ModItems.MAGIC_BOOM_STAFF, builder -> builder.set(ConfluenceMagicLib.MOD_RARITY.get(), ModRarity.YELLOW));
+			event.modify(ModItems.STAR_BOOM_STAFF, builder -> builder.set(ConfluenceMagicLib.MOD_RARITY.get(), ModRarity.CYAN));
+			event.modify(ModBlocks.AUTO_FISH_BLOCK, builder -> builder.set(ConfluenceMagicLib.MOD_RARITY.get(), ModRarity.BLUE));
 
-        }
-    }
-    @SubscribeEvent
-    public static void registerConfig(ModConfigEvent.Reloading event) {
-//        try{
-            if(event.getConfig().getSpec() == CommonConfig.SPEC){
-                if(ServerLifecycleHooks.getCurrentServer() != null) {
-                    ClientBoundConfigPacket.syncAll();
-                }
-            }
-//        }catch(Exception ignored){
-//        }
-
-    }
-
-    @SubscribeEvent
-    public static void registerCapabilities(RegisterCapabilitiesEvent event) {
-        event.registerItem(Capabilities.FluidHandler.ITEM, (stack, context) -> new FluidStaffHandler(stack), ModItems.FLUID_STAFF.get());
-        List<Block> supportBlocks = new ArrayList<>();
-        supportBlocks.add(ModBlocks.AUTO_FISH_BLOCK.get());
-        if(ConfluenceHelper.isLoaded()){
-            supportBlocks.add(ModBlocks.AUTO_SELL_BLOCK.get());
-        }
-        event.registerBlock(Capabilities.ItemHandler.BLOCK, (level, pos, state, blockEntity, side) -> {
-            if(blockEntity instanceof WorldlyContainer container){
-                return new SidedInvWrapper(container, side);
-            }
-            return null;
-        }, supportBlocks.toArray(new Block[0]));
-    }
+		}
+	}
+	@SubscribeEvent
+	public static void registerCapabilities(RegisterCapabilitiesEvent event) {
+		event.registerItem(Capabilities.FluidHandler.ITEM, (stack, context) -> new FluidStaffHandler(stack), ModItems.FLUID_STAFF.get());
+		List<Block> supportBlocks = new ArrayList<>();
+		supportBlocks.add(ModBlocks.AUTO_FISH_BLOCK.get());
+		if(ConfluenceHelper.isLoaded()){
+			supportBlocks.add(ModBlocks.AUTO_SELL_BLOCK.get());
+		}
+		event.registerBlock(Capabilities.ItemHandler.BLOCK, (level, pos, state, blockEntity, side) -> {
+			if(blockEntity instanceof WorldlyContainer container){
+				return new SidedInvWrapper(container, side);
+			}
+			return null;
+		}, supportBlocks.toArray(new Block[0]));
+	}
 
 }

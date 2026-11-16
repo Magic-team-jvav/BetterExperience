@@ -8,7 +8,9 @@ import com.github.edg_thexu.better_experience.module.autofish.FishBugRepetition;
 import com.github.edg_thexu.better_experience.module.autopotion.ForbiddenConfig;
 import com.github.edg_thexu.better_experience.module.autopotion.PlayerAttribute;
 import com.github.edg_thexu.better_experience.module.autopotion.PlayerInventoryManager;
+import com.github.edg_thexu.better_experience.module.locator.StructureLocatorManager;
 import com.github.edg_thexu.better_experience.module.potionbag.PotionBagEffects;
+import com.github.edg_thexu.better_experience.module.voidstaff.VoidStaffManager;
 import com.github.edg_thexu.better_experience.networks.c2s.PotionApplyPacketC2S;
 import com.github.edg_thexu.better_experience.networks.s2c.ClientBoundConfigPacket;
 import net.minecraft.network.chat.Component;
@@ -26,52 +28,75 @@ import net.neoforged.neoforge.network.PacketDistributor;
 
 @EventBusSubscriber(modid = Better_experience.MODID)
 public class PlayerEvents {
-    @SubscribeEvent
-    public static void playerTick(PlayerTickEvent.Post event) {
-        Player player = event.getEntity();
-        PlayerInventoryManager.getInstance().detect(player);
-        PotionBagEffects.tick(player);
+	@SubscribeEvent
+	public static void playerTick$Post(PlayerTickEvent.Post event) {
+		Player player = event.getEntity();
+		PlayerInventoryManager.getInstance().detect(player);
+		PotionBagEffects.tick(player);
 
-        if (player.level() instanceof ServerLevel sl) {
-            PlayerAttribute.notifyDirty(sl);
-            FishBugRepetition.detect(player);
-        }
-    }
+		if (player.level() instanceof ServerLevel) {
+			FishBugRepetition.detect(player);
+		}
+	}
 
-    @SubscribeEvent
-    public static void entityJoinLevel(EntityJoinLevelEvent event) {
-        // 欢迎语
-        if (event.getEntity() instanceof ServerPlayer player) {
-            if (player.connection.tickCount == 0)
-                player.sendSystemMessage(Component.translatable("better_experience.welcome_message"));
-            EnderChestAttachment.syncAll(player);
-//            player.getInventory().add(ModItems.MAGIC_BOOM_STAFF.toStack());
-            ClientBoundConfigPacket.sync(player);
-            PacketDistributor.sendToPlayer(player, new PotionApplyPacketC2S(player.getData(ModAttachments.AUTO_POTION)));
+	@SubscribeEvent
+	public static void entityJoinLevel(EntityJoinLevelEvent event) {
+		// 欢迎语
+		if (event.getEntity() instanceof ServerPlayer player) {
+			if (player.connection.tickCount == 0) {
+				player.sendSystemMessage(Component.translatable("better_experience.welcome_message"));
+			}
+			EnderChestAttachment.syncAll(player);
+			ClientBoundConfigPacket.sync(player);
+			PacketDistributor.sendToPlayer(player, new PotionApplyPacketC2S(player.getData(ModAttachments.AUTO_POTION)));
 
-        }
-    }
+		}
+	}
 
-    @SubscribeEvent
-    public static void playerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
-        if(event.getEntity() instanceof ServerPlayer player) {
-            ForbiddenConfig.sync(player);
-        }
-    }
+	@SubscribeEvent
+	public static void playerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
+		if (event.getEntity() instanceof ServerPlayer player) {
+			ForbiddenConfig.sync(player);
+			PlayerAttribute.applyAdditionalAttributes(player);
+			StructureLocatorManager.getInstance().synchronize(player);
+			VoidStaffManager.synchronize(player);
+		}
+	}
 
-    @SubscribeEvent(priority = EventPriority.LOWEST)
-    public static void playerRespawn(PlayerEvent.PlayerRespawnEvent event) {
-        if (event.getEntity() instanceof ServerPlayer player) {
-            // 同步所有相关容器
-            EnderChestAttachment.syncAll(player);
-            if (CommonConfig.FILL_LIFE_ON_RESPAWN.get())
-                player.setHealth(player.getMaxHealth());
-            PlayerAttribute.applyAdditionalAttributes(player);
-        }
-    }
+	@SubscribeEvent
+	public static void playerChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
+		if (event.getEntity() instanceof ServerPlayer player) {
+			StructureLocatorManager.getInstance().cancel(player.getUUID());
+			StructureLocatorManager.getInstance().synchronize(player);
+			VoidStaffManager.synchronize(player);
+		}
+	}
 
-    @SubscribeEvent(priority = EventPriority.LOWEST)
-    public static void breakSpeed(PlayerEvent.BreakSpeed event) {
-        event.setNewSpeed((float) (event.getNewSpeed() * CommonConfig.BLOCK_BREAK_SPEED_MULTIPLIER.get()));
-    }
+	@SubscribeEvent
+	public static void playerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
+		StructureLocatorManager.getInstance().cancel(event.getEntity().getUUID());
+	}
+
+	@SubscribeEvent
+	public static void playerRespawn(PlayerEvent.PlayerRespawnEvent event) {
+		if (event.getEntity() instanceof ServerPlayer player) {
+			VoidStaffManager.synchronize(player);
+		}
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public static void applyRespawnOptions(PlayerEvent.PlayerRespawnEvent event) {
+		if (event.getEntity() instanceof ServerPlayer player) {
+			EnderChestAttachment.syncAll(player);
+			if (CommonConfig.FILL_LIFE_ON_RESPAWN.get()) {
+				player.setHealth(player.getMaxHealth());
+			}
+			PlayerAttribute.applyAdditionalAttributes(player);
+		}
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public static void breakSpeed(PlayerEvent.BreakSpeed event) {
+		event.setNewSpeed((float) (event.getNewSpeed() * CommonConfig.BLOCK_BREAK_SPEED_MULTIPLIER.get()));
+	}
 }

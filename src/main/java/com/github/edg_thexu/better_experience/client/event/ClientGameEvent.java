@@ -20,6 +20,8 @@ import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import com.github.edg_thexu.better_experience.module.autopotion.ForbiddenConfig;
+import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.client.event.RenderGuiEvent;
@@ -33,73 +35,78 @@ import org.confluence.mod.common.item.common.BaseHammerItem;
 @EventBusSubscriber(modid = Better_experience.MODID,value = Dist.CLIENT)
 public class ClientGameEvent {
 
-    @SubscribeEvent
-    public static void renderLevelStage(RenderLevelStageEvent event) {
-        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_PARTICLES) {
-            AABBBuffer.getInstance().render(event);
-            VoidStaffRenderer.render(event);
+	@SubscribeEvent
+	public static void renderLevelStage(RenderLevelStageEvent event) {
+		if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_PARTICLES) {
+			AABBBuffer.getInstance().render(event);
+			VoidStaffRenderer.render(event);
 
-        }
-    }
+		}
+	}
 
-    @SubscribeEvent
-    public static void event(InputEvent.MouseScrollingEvent event){
-        if (VoidStaffClient.scroll(event.getScrollDeltaY()) || StaffSelectionHandler.scroll(event.getScrollDeltaY())) event.setCanceled(true);
-    }
+	@SubscribeEvent
+	public static void mouseScrolling(InputEvent.MouseScrollingEvent event){
+		if (VoidStaffClient.scroll(event.getScrollDeltaY()) || StaffSelectionHandler.scroll(event.getScrollDeltaY())) event.setCanceled(true);
+	}
 
-    @SubscribeEvent
-    public static void staffTick(ClientTickEvent.Post event) {
-        StaffSelectionHandler.tick();
-        LocatorClient.tick();
-        VoidStaffClient.tick();
-        while (StaffKeyMappings.SPACE_SETTINGS.consumeClick()) {
-            var minecraft = Minecraft.getInstance();
-            if (minecraft.screen == null && VoidStaffClient.active()) {
-                minecraft.setScreen(new VoidStaffWheelScreen());
-                continue;
-            }
-            if (minecraft.screen == null && minecraft.player != null
-                    && minecraft.player.getMainHandItem().getItem() instanceof ShapeSelectionStaff) {
-                minecraft.setScreen(SpaceShapeWheelScreen.forHeldStaff(
-                        minecraft.player.getInventory().selected, minecraft.player.getMainHandItem()));
-            }
-        }
-    }
+	@SubscribeEvent
+	public static void clientTick$Post(ClientTickEvent.Post event) {
+		StaffSelectionHandler.tick();
+		LocatorClient.tick();
+		VoidStaffClient.tick();
+		while (StaffKeyMappings.SPACE_SETTINGS.consumeClick()) {
+			var minecraft = Minecraft.getInstance();
+			if (minecraft.screen == null && VoidStaffClient.active()) {
+				minecraft.setScreen(new VoidStaffWheelScreen());
+				continue;
+			}
+			if (minecraft.screen == null && minecraft.player != null
+					&& minecraft.player.getMainHandItem().getItem() instanceof ShapeSelectionStaff) {
+				minecraft.setScreen(SpaceShapeWheelScreen.forHeldStaff(
+						minecraft.player.getInventory().selected, minecraft.player.getMainHandItem()));
+			}
+		}
+	}
 
-    @SubscribeEvent
-    public static void renderSpaceStaffPreview(RenderGuiEvent.Post event) {
-        SpaceStaffHud.render(event.getGuiGraphics());
-        LocatorClient.render(event.getGuiGraphics());
-        VoidStaffClient.hud(event.getGuiGraphics());
-    }
+	@SubscribeEvent
+	public static void renderGui$Post(RenderGuiEvent.Post event) {
+		SpaceStaffHud.render(event.getGuiGraphics());
+		LocatorClient.render(event.getGuiGraphics());
+		VoidStaffClient.hud(event.getGuiGraphics());
+	}
 
-    @SubscribeEvent
-    public static void event(InputEvent.MouseButton.Pre event){
-        if (event.getAction() == 1 && VoidStaffClient.mouseClicked(event.getButton())) {
-            event.setCanceled(true);
-            return;
-        }
-        if (event.getAction() == 1 && StaffSelectionHandler.mouseClicked(event.getButton())) {
-            event.setCanceled(true);
-            return;
-        }
-        if(!ConfluenceHelper.isLoaded()){
-            return;
-        }
-        if (Minecraft.getInstance().player != null && ClientConfig.MULTI_FISHING.get() &&  event.getButton() == 0 && event.getAction() == 1 && Minecraft.getInstance().player.getMainHandItem().getItem() instanceof BaseHammerItem) {
-            PacketDistributor.sendToServer(new ServerBoundPacketC2S(3));
+	@SubscribeEvent
+	public static void mouseButton$Pre(InputEvent.MouseButton.Pre event){
+		if (event.getAction() == 1 && VoidStaffClient.mouseClicked(event.getButton())) {
+			event.setCanceled(true);
+			return;
+		}
+		if (event.getAction() == 1 && StaffSelectionHandler.mouseClicked(event.getButton())) {
+			event.setCanceled(true);
+			return;
+		}
+		if(!ConfluenceHelper.isLoaded()){
+			return;
+		}
+		if (Minecraft.getInstance().player != null && ClientConfig.MULTI_FISHING.get() &&  event.getButton() == 0 && event.getAction() == 1 && Minecraft.getInstance().player.getMainHandItem().getItem() instanceof BaseHammerItem) {
+			PacketDistributor.sendToServer(new ServerBoundPacketC2S(3));
 
-        }
+		}
 
-    }
+	}
 
-    @SubscribeEvent
-    public static void closeScreen(ScreenEvent.Closing event){
-        if ((ConfluenceHelper.isLoaded() && event.getScreen() instanceof ExtraInventoryScreen)
-                || event.getScreen() instanceof PotionBagScreen) {
-            if (Minecraft.getInstance().player != null) {
-                Minecraft.getInstance().player.getData(ModAttachments.AUTO_POTION).sync(true);
-            }
-        }
-    }
+	@SubscribeEvent
+	public static void loggingOut(ClientPlayerNetworkEvent.LoggingOut event) {
+		ForbiddenConfig.clearClient();
+	}
+
+	@SubscribeEvent
+	public static void closeScreen(ScreenEvent.Closing event){
+		if ((ConfluenceHelper.isLoaded() && event.getScreen() instanceof ExtraInventoryScreen)
+				|| event.getScreen() instanceof PotionBagScreen) {
+			if (Minecraft.getInstance().player != null) {
+				Minecraft.getInstance().player.getData(ModAttachments.AUTO_POTION).sync(true);
+			}
+		}
+	}
 }

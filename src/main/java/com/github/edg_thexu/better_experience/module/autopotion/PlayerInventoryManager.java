@@ -37,99 +37,96 @@ import java.util.*;
  */
 public class PlayerInventoryManager {
 
-    private static final int DETECT_INTERVAL = 60;
-    public boolean serverOpenAutoPotion = true;
-    public static List<Pair<Holder<MobEffect>, Integer>> getApplyEffect(ItemStack stack, boolean ignoreCount) {
-        return PotionEffectRules.effects(stack, ignoreCount);
-    }
+	private static final int DETECT_INTERVAL = 60;
+	public static List<Pair<Holder<MobEffect>, Integer>> getApplyEffect(ItemStack stack, boolean ignoreCount) {
+		return PotionEffectRules.effects(stack, ignoreCount);
+	}
 
-    public static List<Pair<Holder<MobEffect>, Integer>> getApplyEffect(ItemStack stack) {
-        return getApplyEffect(stack, false);
-    }
+	public static List<Pair<Holder<MobEffect>, Integer>> getApplyEffect(ItemStack stack) {
+		return getApplyEffect(stack, false);
+	}
 
-    public static boolean canApply(ItemStack stack){
-        return !getApplyEffect(stack).isEmpty();
-    }
+	public static boolean canApply(ItemStack stack){
+		return !getApplyEffect(stack).isEmpty();
+	}
 
-    private static PlayerInventoryManager instance;
+	private static final PlayerInventoryManager INSTANCE = new PlayerInventoryManager();
 
-    public static PlayerInventoryManager getInstance(){
-        if(instance == null)
-            instance = new PlayerInventoryManager();
-        return instance;
-    }
+	public static PlayerInventoryManager getInstance() {
+		return INSTANCE;
+	}
 
-    public void detect(Player player) {
-        if (!player.level().isClientSide && player.tickCount % DETECT_INTERVAL == 0) detectServer(player);
-    }
+	public void detect(Player player) {
+		if (!player.level().isClientSide && player.tickCount % DETECT_INTERVAL == 0) detectServer(player);
+	}
 
-    // 自动存钱
-    private void detectServer(Player player){
-        NonNullList<ItemStack> items = player.getInventory().items;
-        boolean autoSave = false;
-        for (ItemStack stack : items) {
-            if (ConfluenceHelper.isLoaded() && CommonConfig.AUTO_SAVE_MONEY.get() && stack.is(FunctionalBlocks.PIGGY_BANK.asItem())) {
-                autoSave = true;
-                break;
-            }
-        }
-        if(autoSave){
-            var piggyData = player.getData(ModAttachmentTypes.PIGGY_BANK.get());
-            for(ItemStack stack : items){
-                if(stack.is(ModTags.Items.COINS)){
-                   ModUtils.tryPlaceBackItemStackToItemStacks(stack, piggyData.getItems());
-                }
-            }
-            var extraInv = player.getData(ModAttachmentTypes.EXTRA_INVENTORY.get());
-            for(int i = 0; i < 4; i++){
-                ItemStack stack = extraInv.getCoins(i);
-                if(!stack.isEmpty()){
-                    ModUtils.tryPlaceBackItemStackToItemStacks(stack, piggyData.getItems());
-                }
-            }
-            int slotIdx = 0;
-            boolean dirty = false;
-            for (var item : piggyData.getItems()) {
-                if (item.is(ModTags.Items.COINS) && item.getCount() == 100) {
-                    int index = PlayerUtils.COIN_2_INDEX.applyAsInt(item.getItem()) - 1;
-                    if (index >= 0) {
-                        piggyData.getItems().set(slotIdx, new ItemStack(PlayerUtils.INDEX_2_COIN.apply(3 - index)));
-                        dirty = true;
-                    }
-                }
-                slotIdx++;
-            }
-            if (dirty) {
-                List<ItemStack> coins = new ArrayList<>();
-                for (var item : piggyData.getItems()) {
-                    if (item.is(ModTags.Items.COINS)) coins.add(item);
-                }
-                ModUtils.unionItemStacks(coins);
-            }
-        }
-    }
+	// 自动存钱
+	private void detectServer(Player player){
+		NonNullList<ItemStack> items = player.getInventory().items;
+		boolean autoSave = false;
+		for (ItemStack stack : items) {
+			if (ConfluenceHelper.isLoaded() && CommonConfig.AUTO_SAVE_MONEY.get() && stack.is(FunctionalBlocks.PIGGY_BANK.asItem())) {
+				autoSave = true;
+				break;
+			}
+		}
+		if(autoSave){
+			var piggyData = player.getData(ModAttachmentTypes.PIGGY_BANK.get());
+			for(ItemStack stack : items){
+				if(stack.is(ModTags.Items.COINS)){
+				   ModUtils.tryPlaceBackItemStackToItemStacks(stack, piggyData.getItems());
+				}
+			}
+			var extraInv = player.getData(ModAttachmentTypes.EXTRA_INVENTORY.get());
+			for(int i = 0; i < 4; i++){
+				ItemStack stack = extraInv.getCoins(i);
+				if(!stack.isEmpty()){
+					ModUtils.tryPlaceBackItemStackToItemStacks(stack, piggyData.getItems());
+				}
+			}
+			int slotIdx = 0;
+			boolean dirty = false;
+			for (var item : piggyData.getItems()) {
+				if (item.is(ModTags.Items.COINS) && item.getCount() == 100) {
+					int index = PlayerUtils.COIN_2_INDEX.applyAsInt(item.getItem()) - 1;
+					if (index >= 0) {
+						piggyData.getItems().set(slotIdx, new ItemStack(PlayerUtils.INDEX_2_COIN.apply(3 - index)));
+						dirty = true;
+					}
+				}
+				slotIdx++;
+			}
+			if (dirty) {
+				List<ItemStack> coins = new ArrayList<>();
+				for (var item : piggyData.getItems()) {
+					if (item.is(ModTags.Items.COINS)) coins.add(item);
+				}
+				ModUtils.unionItemStacks(coins);
+			}
+		}
+	}
 
-    /**
-     * 渲染物品应用的背景
-     */
-    @OnlyIn(Dist.CLIENT)
-    public static void renderApply(AbstractContainerScreen screen, @Nullable Container container, ItemStack stack, GuiGraphics guiGraphics, int x, int y, float partialTick){
+	/**
+	 * 渲染物品应用的背景
+	 */
+	@OnlyIn(Dist.CLIENT)
+	public static void renderApply(AbstractContainerScreen<?> screen, @Nullable Container container, ItemStack stack, GuiGraphics guiGraphics, int x, int y, float partialTick){
 
-        String title = screen.getTitle().toString();
-        if((
-                ConfluenceHelper.isLoaded() && container instanceof PlayerContainer<?> ||  // 猪猪存钱罐和保险箱
-                screen instanceof InventoryScreen || // 背包
-                screen instanceof CreativeModeInventoryScreen || // 创造栏
-                screen instanceof PotionBagScreen || // 药水袋
-                screen instanceof ContainerScreen && (title.contains("enderchest") || title.contains("piggy_bank") || title.contains("safe")) ||
-                        ConfluenceHelper.isLoaded() && screen instanceof ExtraInventoryScreen||  // 额外栏
-                        CuriosHelper.isLoaded() && screen instanceof CuriosScreen  // 饰品栏
-        )
-                && canApply(stack)){
+		String title = screen.getTitle().toString();
+		if((
+				ConfluenceHelper.isLoaded() && container instanceof PlayerContainer<?> ||  // 猪猪存钱罐和保险箱
+				screen instanceof InventoryScreen || // 背包
+				screen instanceof CreativeModeInventoryScreen || // 创造栏
+				screen instanceof PotionBagScreen || // 药水袋
+				screen instanceof ContainerScreen && (title.contains("enderchest") || title.contains("piggy_bank") || title.contains("safe")) ||
+						ConfluenceHelper.isLoaded() && screen instanceof ExtraInventoryScreen||  // 额外栏
+						CuriosHelper.isLoaded() && screen instanceof CuriosScreen  // 饰品栏
+		)
+				&& PotionEffectRules.canApplyClient(stack)){
 
-            guiGraphics.fillGradient(RenderType.guiOverlay(), x, y, x + 16, y + 16, 0x00200800, 0xf020FFF0, 0);
+			guiGraphics.fillGradient(RenderType.guiOverlay(), x, y, x + 16, y + 16, 0x00200800, 0xf020FFF0, 0);
 
-        }
-    }
+		}
+	}
 
 }

@@ -18,13 +18,8 @@ import java.util.List;
 import java.util.Map;
 
 public class JeiHelper {
-    static Boolean isLoad;
-
     public static boolean isLoaded() {
-        if(isLoad == null){
-            isLoad = ModList.get().isLoaded("jei");
-        }
-        return isLoad;
+        return ModList.get().isLoaded("jei");
     }
 
 

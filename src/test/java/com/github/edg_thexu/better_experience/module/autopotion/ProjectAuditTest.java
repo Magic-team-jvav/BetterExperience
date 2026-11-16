@@ -44,12 +44,20 @@ public final class ProjectAuditTest {
                 new ForbiddenConfig.EffectAmp(speed, 2),
                 new ForbiddenConfig.EffectAmp(speed, 1)), Set.of("example"));
         require(config.isEffectForbidden(speed, 1) && !config.isEffectForbidden(speed, 0), "duplicate effects");
-        ForbiddenConfig.handleServer(config);
-        require(ForbiddenConfig.getInstance().isItemForbidden(Items.STONE), "config synchronization");
-        ForbiddenConfig.handleServer(new ForbiddenConfig(Set.of(), List.of(), Set.of()));
-        require(!ForbiddenConfig.getInstance().isItemForbidden(Items.STONE)
-                && !ForbiddenConfig.getInstance().isEffectForbidden(speed, 3)
-                && !ForbiddenConfig.getInstance().isModForbidden("example"), "reload removes stale values");
+        ForbiddenConfig.clearServer();
+        try {
+            ForbiddenConfig.applyClient(config);
+            require(ForbiddenConfig.forClient().isItemForbidden(Items.STONE), "client sync");
+            require(!ForbiddenConfig.getInstance().isItemForbidden(Items.STONE),
+                    "client sync must not change the integrated server's rules");
+            ForbiddenConfig.clearClient();
+            require(!ForbiddenConfig.forClient().isItemForbidden(Items.STONE)
+                    && !ForbiddenConfig.forClient().isEffectForbidden(speed, 3)
+                    && !ForbiddenConfig.forClient().isModForbidden("example"),
+                    "logout removes stale client rules");
+        } finally {
+            ForbiddenConfig.clearClient();
+        }
         System.out.println("Project audit regression checks passed");
     }
 
